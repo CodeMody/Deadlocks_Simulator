@@ -1,0 +1,96 @@
+#define _XOPEN_SOURCE 600
+#include "../core/event.h"
+#include <stdlib.h>
+#include <stdbool.h>
+
+struct EventHeap {
+    Event *data;      /* 1‑based indexing for easier parent/child math */
+    size_t size;      /* number of elements stored */
+    size_t capacity;  /* allocated slots (including dummy at index 0) */
+};
+
+#define LEFT(i)   ((i) << 1)
+#define RIGHT(i)  (((i) << 1) + 1)
+#define PARENT(i) ((i) >> 1)
+
+static void heap_swap(Event *a, Event *b)
+{
+    Event tmp = *a;
+    *a = *b;
+    *b = tmp;
+}
+
+/* -------------------------------------------------------------- */
+EventHeap *event_heap_create(void)
+{
+    EventHeap *h = calloc(1, sizeof(*h));
+    h->capacity = 16;
+    h->data = calloc(h->capacity, sizeof(Event));   /* index 0 unused */
+    return h;
+}
+
+void event_heap_destroy(EventHeap *h)
+{
+    if (!h) return;
+    free(h->data);
+    free(h);
+}
+
+/* -------------------------------------------------------------- */
+static void heap_sift_up(EventHeap *h, size_t idx)
+{
+    while (idx > 1 && h->data[PARENT(idx)].time > h->data[idx].time) {
+        heap_swap(&h->data[PARENT(idx)], &h->data[idx]);
+        idx = PARENT(idx);
+    }
+}
+
+static void heap_sift_down(EventHeap *h, size_t idx)
+{
+    while (LEFT(idx) <= h->size) {
+        size_t smallest = LEFT(idx);
+        if (RIGHT(idx) <= h->size &&
+            h->data[RIGHT(idx)].time < h->data[smallest].time)
+            smallest = RIGHT(idx);
+        if (h->data[idx].time <= h->data[smallest].time) break;
+        heap_swap(&h->data[idx], &h->data[smallest]);
+        idx = smallest;
+    }
+}
+
+/* -------------------------------------------------------------- */
+void event_push(EventHeap *h, const Event *ev)
+{
+    if (h->size + 1 >= h->capacity) {
+        h->capacity *= 2;
+        h->data = realloc(h->data, h->capacity * sizeof(Event));
+    }
+    h->size++;
+    h->data[h->size] = *ev;
+    heap_sift_up(h, h->size);
+}
+
+/* -------------------------------------------------------------- */
+bool event_pop(EventHeap *h, Event *out)
+{
+    if (h->size == 0) return false;
+    *out = h->data[1];
+    h->data[1] = h->data[h->size];
+    h->size--;
+    heap_sift_down(h, 1);
+    return true;
+}
+
+/* -------------------------------------------------------------- */
+bool event_peek(const EventHeap *h, Event *out)
+{
+    if (h->size == 0) return false;
+    *out = h->data[1];
+    return true;
+}
+
+/* -------------------------------------------------------------- */
+size_t event_size(const EventHeap *h)
+{
+    return h->size;
+}
