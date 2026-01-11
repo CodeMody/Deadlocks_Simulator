@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 
-/* Private context – just a counter */
+/* Privater Kontext – nur ein Zähler */
 typedef struct {
     uint64_t deadlocks;   /* how many times we refused a request */
     uint32_t n_procs;
@@ -94,4 +94,5 @@ Policy *banker_policy_create(uint32_t n_procs,
     pol->cleanup    = banker_cleanup;
     pol->private    = ctx;
     return pol;
+
 }
