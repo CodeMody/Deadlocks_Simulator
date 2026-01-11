@@ -4,16 +4,17 @@
 #include <stdbool.h>
 #include <stdio.h>
 
-/* Privater Kontext – nur ein Zähler */
+/* Privater Kontext enthält einen Zähler */
 typedef struct {
-    uint64_t deadlocks;   /* how many times we refused a request */
-    uint32_t n_procs;
-    uint32_t n_res;
+    uint64_t deadlocks;   /* Anzahl der abgelehnten Requests */
+    uint32_t n_procs;     /* Anzahl der Prozesse */
+    uint32_t n_res;       /* Anzahl der Ressourcenklassen */
 } BankerCtx;
 
 /* --------------------------------------------------------------
-on_request – Simuliert die Anfrage, führt die Sicherheitsprüfung durch,
-und gewährt die Berechtigung nur, wenn der resultierende Zustand sicher ist.
+   on_request simuliert die Ressourcenanforderung,
+   führt den Safety-Check des Bankiers aus und
+   genehmigt die Anfrage nur, wenn der resultierende Zustand sicher ist.
    -------------------------------------------------------------- */
 static bool banker_on_request(Policy *p,
                               SystemState *st,
@@ -26,15 +27,15 @@ static bool banker_on_request(Policy *p,
     uint32_t amt = ev->amount;
 
     /* ---------------------------------------------------------
-       Quick check: enough free instances?
+       Schneller test sind genügend freie Instanzen vorhanden?
        --------------------------------------------------------- */
     if (amt > st->available[rc]) {
         ctx->deadlocks++;
-        return false;          /* postpone */
+        return false;          /* Anfrage verschieben */
     }
 
     /* ---------------------------------------------------------
-       Simulate the allocation
+       Simulation der Ressourcenvergabe
        --------------------------------------------------------- */
     st->available[rc]       -= amt;
     st->allocation[pid][rc] += amt;
@@ -43,21 +44,21 @@ static bool banker_on_request(Policy *p,
     bool safe = state_is_safe(st);
 
     /* ---------------------------------------------------------
-       Roll back the simulation
+       Rückgängigmachen der Simulation
        --------------------------------------------------------- */
     st->available[rc]       += amt;
     st->allocation[pid][rc] -= amt;
     st->request[pid][rc]    += amt;
 
     if (!safe) {
-        ctx->deadlocks++;      /* would lead to deadlock → postpone */
+        ctx->deadlocks++;      /* würde zu einem Deadlock führen → verschieben */
         return false;
     }
-    return true;               /* safe → grant */
+    return true;               /* sicherer Zustand → Anfrage genehmigen */
 }
 
 /* --------------------------------------------------------------
-   on_tick – nothing needed.
+   on_tick keine Aktion erforderlich
    -------------------------------------------------------------- */
 static void banker_on_tick(Policy *p,
                            SystemState *st,
@@ -67,7 +68,7 @@ static void banker_on_tick(Policy *p,
 }
 
 /* --------------------------------------------------------------
-   cleanup
+   cleanup gibt alle von der Policy belegten Ressourcen frei
    -------------------------------------------------------------- */
 static void banker_cleanup(Policy *p)
 {
@@ -76,7 +77,7 @@ static void banker_cleanup(Policy *p)
 }
 
 /* --------------------------------------------------------------
-   Factory
+   Factory-Funktion erzeugt eine neue Banker-Policy
    -------------------------------------------------------------- */
 Policy *banker_policy_create(uint32_t n_procs,
                              uint32_t n_res)
@@ -93,6 +94,6 @@ Policy *banker_policy_create(uint32_t n_procs,
     pol->on_tick    = banker_on_tick;
     pol->cleanup    = banker_cleanup;
     pol->private    = ctx;
-    return pol;
 
+    return pol;
 }
