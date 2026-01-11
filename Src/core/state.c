@@ -1,4 +1,4 @@
-#define _XOPEN_SOURCE 600          /* for usleep() if needed */
+#define _XOPEN_SOURCE 600          /* für das usleep() falls es gebracuht wird  */
 #include "../core/state.h"
 #include <stdlib.h>
 #include <string.h>
@@ -6,7 +6,7 @@
 #include <stdbool.h>
 
 /* -----------------------------------------------------------------
-   Helper to allocate a 2‑D uint32_t matrix (rows × cols) and zero‑init.
+   2D-Matrix anlegen und mit 0 initialiseren
    ----------------------------------------------------------------- */
 static uint32_t **alloc_matrix(uint32_t rows, uint32_t cols)
 {
@@ -17,7 +17,7 @@ static uint32_t **alloc_matrix(uint32_t rows, uint32_t cols)
 }
 
 /* -----------------------------------------------------------------
-   Helper to free a matrix allocated with alloc_matrix().
+   2D-Matrix wird freigegeben
    ----------------------------------------------------------------- */
 static void free_matrix(uint32_t **m, uint32_t rows)
 {
@@ -28,14 +28,14 @@ static void free_matrix(uint32_t **m, uint32_t rows)
 }
 
 /* --------------------------------------------------------------
-   Public API
+   Öffentliche API
    -------------------------------------------------------------- */
 SystemState *state_create(uint32_t n_classes,
                           const uint32_t *instances)
 {
     SystemState *st = calloc(1, sizeof(*st));
     st->n_classes = n_classes;
-    st->n_procs   = 0;                     /* will be set later */
+    st->n_procs   = 0;
 
     st->instances = calloc(n_classes, sizeof(uint32_t));
     st->available = calloc(n_classes, sizeof(uint32_t));
@@ -48,8 +48,8 @@ SystemState *state_create(uint32_t n_classes,
     return st;
 }
 
-/* --------------------------------------------------------------
-   Allocate the C and R matrices once you know the number of processes.
+/* -------------------------------------------------------------
+    Speicher für Prozess-Matrizen angelegt
    -------------------------------------------------------------- */
 void state_allocate_process_matrices(SystemState *st, uint32_t n_procs)
 {
@@ -59,7 +59,7 @@ void state_allocate_process_matrices(SystemState *st, uint32_t n_procs)
 }
 
 /* --------------------------------------------------------------
-   Destroy everything.
+   Alles wird freigegeben
    -------------------------------------------------------------- */
 void state_destroy(SystemState *st)
 {
@@ -72,7 +72,7 @@ void state_destroy(SystemState *st)
 }
 
 /* --------------------------------------------------------------
-   Simple setters (used by the scheduler).
+   Setzt eine Zuweisung
    -------------------------------------------------------------- */
 void state_set_allocation(SystemState *st,
                           uint32_t pid,
@@ -83,6 +83,7 @@ void state_set_allocation(SystemState *st,
     st->allocation[pid][class_id] = amount;
 }
 
+/* Setzt eine Anforderung auf*/
 void state_set_request(SystemState *st,
                        uint32_t pid,
                        uint32_t class_id,
@@ -93,7 +94,7 @@ void state_set_request(SystemState *st,
 }
 
 /* --------------------------------------------------------------
-   Safety‑check – the classic Banker algorithm (multi‑resource).
+   Prüft, ob Bedarf ≤ verfügbar (Hilfsfunktion)
    -------------------------------------------------------------- */
 static bool need_leq_work(const uint32_t *need,
                           const uint32_t *work,
@@ -104,6 +105,7 @@ static bool need_leq_work(const uint32_t *need,
     return true;
 }
 
+/*Sicherheitsprüfung nach dem Bankier-Algorithmus*/
 bool state_is_safe(const SystemState *st)
 {
     uint32_t n_p = st->n_procs;
@@ -138,7 +140,7 @@ bool state_is_safe(const SystemState *st)
 }
 
 /* --------------------------------------------------------------
-   Debug printer (optional – uses utils.h if you have it).
+   Ausgabe des aktuellen Systemzustands
    -------------------------------------------------------------- */
 void state_print(const SystemState *st)
 {

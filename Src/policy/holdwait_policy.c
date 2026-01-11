@@ -4,16 +4,15 @@
 #include <stdbool.h>
 #include <stdio.h>
 
-/* Private context – just a counter */
 typedef struct {
-    uint64_t deadlocks;
-    uint32_t n_procs;
-    uint32_t n_res;
+    uint64_t deadlocks;   /* Anzahl der verschobenen Anfragen */
+    uint32_t n_procs;     /* Anzahl der Prozesse */
+    uint32_t n_res;       /* Anzahl der Ressourcenklassen */
 } HWCtx;
 
 /* --------------------------------------------------------------
-   on_request – if the process already holds *any* resource,
-   we refuse the request (this eliminates the Hold‑and‑Wait condition).
+   on_request Falls ein Prozess bereits Ressource hält, wird die Anfrage abgelehnt.
+   Dadurch wird die Hold-and-Wait-Bedingung eliminiert.
    -------------------------------------------------------------- */
 static bool hw_on_request(Policy *p,
                           SystemState *st,
@@ -24,25 +23,25 @@ static bool hw_on_request(Policy *p,
     uint32_t rc  = ev->class_id;
     uint32_t amt = ev->amount;
 
-    /* Does the process already hold something? */
+    /* Prüfen, ob der Prozess bereits Ressourcen hält */
     for (uint32_t r = 0; r < st->n_classes; ++r) {
         if (st->allocation[pid][r] > 0) {
-            ctx->deadlocks++;          /* we are postponing */
+            ctx->deadlocks++;          /* Anfrage wird verschoben */
             return false;
         }
     }
 
-    /* Enough free instances? */
+    /* Prüfen, ob genügend freie Instanzen vorhanden sind */
     if (amt > st->available[rc]) {
-        ctx->deadlocks++;
+        ctx->deadlocks++;              /* aktuell nicht erfüllbar */
         return false;
     }
 
-    return true;   /* grant */
+    return true;   /* Anfrage genehmigen */
 }
 
 /* --------------------------------------------------------------
-   on_tick – nothing needed.
+   on_tick für diese Policy ist keine Aktion erforderlich
    -------------------------------------------------------------- */
 static void hw_on_tick(Policy *p,
                        SystemState *st,
@@ -52,7 +51,7 @@ static void hw_on_tick(Policy *p,
 }
 
 /* --------------------------------------------------------------
-   cleanup
+   cleanup gibt alle von der Policy belegten Ressourcen frei
    -------------------------------------------------------------- */
 static void hw_cleanup(Policy *p)
 {
@@ -61,7 +60,7 @@ static void hw_cleanup(Policy *p)
 }
 
 /* --------------------------------------------------------------
-   Factory
+   Factory-Funktion erzeugt eine Hold-and-Wait-Policy
    -------------------------------------------------------------- */
 Policy *holdwait_policy_create(uint32_t n_procs,
                                uint32_t n_res)
@@ -73,10 +72,11 @@ Policy *holdwait_policy_create(uint32_t n_procs,
     ctx->n_procs   = n_procs;
     ctx->n_res     = n_res;
 
-    pol->name       = "Hold‑and‑Wait Elim";
+    pol->name       = "Hold-and-Wait Elim";
     pol->on_request = hw_on_request;
     pol->on_tick    = hw_on_tick;
     pol->cleanup    = hw_cleanup;
     pol->private    = ctx;
+
     return pol;
 }

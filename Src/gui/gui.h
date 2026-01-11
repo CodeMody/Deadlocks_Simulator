@@ -1,61 +1,58 @@
 /*=====================================================================
  *  gui.h
  *  ---------------------------------------------------------------
- *  Public interface for the GTK‑3 front‑end of the dead‑lock simulator.
+ *  Öffentliches Interface für das GTK-3Fronted des deadlock Simulator
  *
- *  The GUI lets you:
- *      • choose one of the three policies (Graph‑Detect, Banker,
- *        Hold‑and‑Wait)
- *      • step the simulation manually or let it run automatically
- *      • see a textual snapshot of the system state
- *      • see a counter that shows how many requests have been
- *        postponed (i.e. how many potential dead‑locks have been
- *        detected)
- *
- *  Compile‑time requirement: the GTK‑3 development package must be
- *  installed (e.g. `sudo apt‑get install libgtk-3-dev` on Ubuntu,
- *  `brew install gtk+3` on macOS, or the MSYS2 `mingw-w64-x86_64-gtk3`
- *  package on Windows).
+ *  Die Oberfläche ermöglicht
+*     Auswahl einer der drei Policies (Graph-Detect, Banker,
+ *    Hold-and-Wait)
+ *    Manuelles Weiterlaufen der Simulation (Step) oder
+ *    automatischen Ablauf
+ *    Anzeige eines textuellen Snapshots des Systemzustands
+ *    Anzeige eines Zählers, der angibt, wie viele Requests
+ *    verschoben wurden (d. h. wie viele potenzielle Deadlocks erkannt wurden)
  *====================================================================*/
 
 #ifndef GUI_H
 #define GUI_H
 
 /* --------------------------------------------------------------
-   GTK‑3 header – defines GtkWidget, GtkButton, GtkLabel, …   */
+     GTK-3-Header – definiert GtkWidget, GtkButton, GtkLabel, … */
 #include <gtk/gtk.h>
 
 /* --------------------------------------------------------------
-   Standard integer types – we need uint64_t for the counter.   */
+   Standard-Ganttahltypen, uint64_t wird für den Zähler benötigt   */
 #include <stdint.h>
 
-/* --------------------------------------------------------------
-   Project‑specific headers.                                    */
 #include "../core/scheduler.h"
 #include "../policy/policy.h"
 
 /* -----------------------------------------------------------------
-   Create the main application window.  Returns the top‑level
-   GtkWidget (you can ignore the return value if you just want the
-   window to appear).
+   Erstellt das Hauptfenster der Anwendung.
+   Gibt das Top-Level-GtkWidget zurück (der Rückgabewert kann
+   ignoriert werden, wenn lediglich das Fenster angezeigt
+   werden soll).
    ----------------------------------------------------------------- */
 GtkWidget *gui_create_window(void);
 
 /* -----------------------------------------------------------------
-   Replace the current policy with a newly created one.  The function
-   destroys the old scheduler (and its policy) and builds a fresh
-   scheduler that uses the supplied policy.
+   Ersetzt die aktuell aktive Policy durch eine neu erzeugte.
+   Die Funktion zerstört den alten Scheduler (inklusive seiner
+   Policy) und erstellt einen neuen Scheduler, der die übergebene
+   Policy verwendet.
    ----------------------------------------------------------------- */
 void gui_set_policy(Policy *new_policy);
 
 /* -----------------------------------------------------------------
-   Advance the simulation by one logical tick and refresh the UI.
+   Führt die Simulation um einen logischen Zeitschritt weiter
+   und aktualisiert die grafische Oberfläche.
    ----------------------------------------------------------------- */
 void gui_step(void);
 
 /* -----------------------------------------------------------------
-   Return the current dead‑lock / postponement counter (read from the
-   policy’s private context).  If no policy is active, returns 0.
+   Gibt den aktuellen Deadlock- bzw. Verschiebungszähler zurück
+   (aus dem privaten Kontext der Policy gelesen).
+   Falls keine Policy aktiv ist, wird 0 zurückgegeben.
    ----------------------------------------------------------------- */
 uint64_t gui_get_deadlock_counter(void);
 

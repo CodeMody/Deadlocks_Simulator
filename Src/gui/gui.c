@@ -1,13 +1,16 @@
 /*=====================================================================
- *  gui.c
- *  ---------------------------------------------------------------
- *  GTK‑3 front‑end for the dead‑lock simulator.
- *  gui.c does the following
- *   • stops the periodic timeout before destroying the old scheduler,
- *   • destroys the scheduler, its policy and the SystemState cleanly,
- *   • creates a fresh scheduler with the newly selected policy,
- *   • resets the dead‑lock counter label,
- *   • restarts the timeout.
+ * Diese Datei implementiert die grafische Oberfläche mit folgenden Aufgaben
+ *      Stoppt den periodischen Timer bevor der alte Scheduler zerstört wird
+ *      Zerstört Scheduler, Policy und SystemState sauber
+ *      Erstellt einen neuen Scheduler mit der neu gewählten Policy
+ *      Setzt den Deadlock-Counter zurück
+ *      Startet den Timer neu
+ *
+ * Es sind Diese Architekturen vorhanden
+ *      Buttons oben (Policy-Auswahl + Step)
+ *      Label für den Deadlock-Counter
+ *      TextView für den Systemzustad (scrollbar)
+ *      Automatisches Update jede Sekunde
  *====================================================================*/
 
 #include "../gui/gui.h"
@@ -19,23 +22,23 @@
 #include <string.h>
 
 /* -----------------------------------------------------------------
-   Global objects – there is only one scheduler/policy at a time.
+   Globale Objekte es gibt immer nur einen Aktiven Scheduler/Policy zu gleichen Zeit
    ----------------------------------------------------------------- */
-static Scheduler   *g_sched          = NULL;   /* current scheduler   */
-static Policy      *g_policy         = NULL;   /* current policy      */
-static GtkTextView *g_text_view      = NULL;   /* snapshot view       */
-static GtkLabel    *g_deadlock_label = NULL;   /* dead‑lock counter   */
+static Scheduler   *g_sched          = NULL;   /* aktueller Scheduler   */
+static Policy      *g_policy         = NULL;   /* aktuelle Policy      */
+static GtkTextView *g_text_view      = NULL;   /* Anzeige des Systemzustands      */
+static GtkLabel    *g_deadlock_label = NULL;   /* Deadlock-Zähler   */
 
 /* -----------------------------------------------------------------
-   Timeout source ID – we keep it so we can stop the timeout while
-   we rebuild the simulation.
+   Timeout-Source-ID wird gespeichert um den Timer beim
+   Neuaufbau der Simulation stoppen zu können
    ----------------------------------------------------------------- */
 static guint g_timeout_id = 0;
 
 /* -----------------------------------------------------------------
-   Helper: allocate the allocation / request matrices and store the
-   number of processes in the SystemState (required by the Banker
-   safety check).
+   Das ist eine hilfsfunktion heißt Allokiert die Allocation und Request-Matrizen
+   und speichert die Anzahl der Prozesse im SystemState
+   (benötigt für den Safety-Check des Bankiers)
    ----------------------------------------------------------------- */
 static void allocate_state_matrices(SystemState *st, uint32_t n_procs)
 {
@@ -49,11 +52,11 @@ static void allocate_state_matrices(SystemState *st, uint32_t n_procs)
     for (uint32_t i = 0; i < n_procs; ++i)
         st->request[i] = calloc(n_classes, sizeof(uint32_t));
 
-    st->n_procs = n_procs;          /* store it for the Banker check */
+    st->n_procs = n_procs;          /* wird für den Banker-Check benötigt */
 }
 
 /* -----------------------------------------------------------------
-   Helper: free the matrices.
+   Gibt die Matrizen wieder frei
    ----------------------------------------------------------------- */
 static void free_state_matrices(SystemState *st, uint32_t n_procs)
 {
@@ -72,16 +75,17 @@ static void free_state_matrices(SystemState *st, uint32_t n_procs)
 }
 
 /* -----------------------------------------------------------------
-   Build a fresh demo SystemState (2 resources, 3 processes).  This
-   function is called every time we switch policies.
+   Erstelllt einen neuen Demo-SystemState
+   (2 Ressourcenklassen, 3 Prozesse)
+   Diese Funktion wird bei jedem Policy-Wechsel aufgerufen
    ----------------------------------------------------------------- */
 static SystemState *build_demo_state(void)
 {
-    uint32_t instances[2] = {2, 3};          /* 2 printers, 3 disks */
+    uint32_t instances[2] = {2, 3};          /* 2 Drucker, 3 Festplatten*/
     SystemState *st = state_create(2, instances);
-    allocate_state_matrices(st, 3);         /* 3 processes */
+    allocate_state_matrices(st, 3);         /* 3 Prozesse  */
 
-    /* maximum demand (the need matrix) */
+    /* Maximale Anforderungen (Need-Matrix)*/
     uint32_t max0[2] = {1, 2};
     uint32_t max1[2] = {2, 1};
     uint32_t max2[2] = {1, 1};
@@ -95,7 +99,7 @@ static SystemState *build_demo_state(void)
 }
 
 /* -----------------------------------------------------------------
-   Insert the four demo request events (identical to the console demo).
+   Fügt die vier Demo-Request-Events ein
    ----------------------------------------------------------------- */
 static void schedule_demo_events(Scheduler *sched)
 {
@@ -115,8 +119,9 @@ static void schedule_demo_events(Scheduler *sched)
 }
 
 /* -----------------------------------------------------------------
-   Produce a textual snapshot (the same format you printed on the
-   console).  The caller must free the returned string.
+    Erzeugt einen textuellen Snapshot des Systemzustands
+    (gleiches Format wie die Konsolenausgabe).
+    Der Rückgabestring muss vom Aufrufer freigegeben werden.
    ----------------------------------------------------------------- */
 static char *make_snapshot_text(void)
 {
@@ -162,7 +167,7 @@ static char *make_snapshot_text(void)
 }
 
 /* -----------------------------------------------------------------
-   Update the snapshot view.
+   Aktualisiert die Snapshot_Anzeige
    ----------------------------------------------------------------- */
 static void gui_update_snapshot(void)
 {
@@ -173,14 +178,14 @@ static void gui_update_snapshot(void)
 }
 
 /* -----------------------------------------------------------------
-   Update the dead‑lock counter label.
+   Aktualisiert das deadlock-Zähler-Label
    ----------------------------------------------------------------- */
 static void gui_update_deadlock_label(void)
 {
     uint64_t cnt = 0;
     if (g_policy && g_policy->private) {
-        /* All three policies store the counter as the first field of
-           their private struct, so we can read it generically. */
+        /* Alle drei Policies speichern den Zähler
+           als erstes Feld ihrer privaten Struktur */
         cnt = *((uint64_t *)g_policy->private);
     }
     char label[64];
@@ -189,19 +194,20 @@ static void gui_update_deadlock_label(void)
 }
 
 /* -----------------------------------------------------------------
-   Public: step the simulation by one tick and refresh the UI.
+   Ist eine Öffentliche Funktion führt die Simulation um einen Tick weiter
+   und aktualisiert die GUI
    ----------------------------------------------------------------- */
 void gui_step(void)
 {
     if (!g_sched) return;
     uint64_t now = scheduler_current_time(g_sched);
-    scheduler_run_until(g_sched, now + 1);   /* process all events ≤ now+1 */
+    scheduler_run_until(g_sched, now + 1);   /* Prozesse der Events ≤ now+1 */
     gui_update_snapshot();
     gui_update_deadlock_label();
 }
 
 /* -----------------------------------------------------------------
-   Public: return the dead‑lock counter (used by the label updater).
+   Öffentliche Funktion gibt den Deadlock-Zähler zurück
    ----------------------------------------------------------------- */
 uint64_t gui_get_deadlock_counter(void)
 {
@@ -211,80 +217,65 @@ uint64_t gui_get_deadlock_counter(void)
 }
 
 /* -----------------------------------------------------------------
-   Public: destroy the current scheduler/policy and create a new one
-   with the supplied policy object.
+   Öffentliche Funktion zerstört den aktuellen Scheduler/Policy
+   und erstellt einen neuen mit der übergebenen Policy
    ----------------------------------------------------------------- */
 void gui_set_policy(Policy *new_policy)
 {
-    /* -------------------------------------------------------------
-       1) Stop the periodic timeout while we tear everything down.
-       ------------------------------------------------------------- */
+    /* 1) Periodischen Timer stoppen */
     if (g_timeout_id != 0) {
         g_source_remove(g_timeout_id);
         g_timeout_id = 0;
     }
 
-    /* -------------------------------------------------------------
-       2) Clean up the old scheduler / policy / state.
-       ------------------------------------------------------------- */
+    /* 2) Alten Scheduler / State / Policy aufräumen */
     if (g_sched) {
         SystemState *old_st = scheduler_state(g_sched);
-        scheduler_destroy(g_sched);               /* also calls old_policy->cleanup */
+        scheduler_destroy(g_sched);
         free_state_matrices(old_st, old_st->n_procs);
         state_destroy(old_st);
         g_sched = NULL;
     }
-    /* The old policy pointer is already freed by scheduler_destroy(),
-       but we set the global to NULL for safety. */
     g_policy = NULL;
 
-    /* -------------------------------------------------------------
-       3) Store the new policy.
-       ------------------------------------------------------------- */
-    g_policy = new_policy;        /* the factory already zero‑initialised the counter */
+    /* 3) Neue Policy setzen */
+    g_policy = new_policy;
 
-    /* -------------------------------------------------------------
-       4) Build a fresh demo system.
-       ------------------------------------------------------------- */
+    /* 4) Neuen Demo-SystemState erstellen */
     SystemState *st = build_demo_state();
 
-    /* -------------------------------------------------------------
-       5) Create the scheduler that uses the new policy.
-       ------------------------------------------------------------- */
+    /* 5) Neuen Scheduler erzeugen */
     g_sched = scheduler_create(st, g_policy);
 
-    /* -------------------------------------------------------------
-       6) Insert the demo events.
-       ------------------------------------------------------------- */
+    /* 6) Demo-Events einplanen */
     schedule_demo_events(g_sched);
 
-    /* -------------------------------------------------------------
-       7) Refresh the UI (snapshot + dead‑lock counter).
-       ------------------------------------------------------------- */
+    /* 7) GUI aktualisieren */
     gui_update_snapshot();
     gui_update_deadlock_label();
 
-    /* -------------------------------------------------------------
-       8) Restart the periodic timeout (1‑second step).
-       ------------------------------------------------------------- */
-    g_timeout_id = g_timeout_add_seconds(1, (GSourceFunc)gui_step, NULL);
+    /* 8) Periodischen Timer neu starten */
+    g_timeout_id = g_timeout_add_seconds(1,
+        (GSourceFunc)gui_step, NULL);
 }
 
 /* -----------------------------------------------------------------
-   Callbacks for the three “Run …” buttons.
+   Callbacks für die drei „Run …“-Buttons
    ----------------------------------------------------------------- */
 static void on_run_graph_detect(GtkButton *button, gpointer user_data)
 {
     (void)button; (void)user_data;
-    Policy *pol = detect_policy_create(3, 2);   /* 3 processes, 2 resource classes */
+    Policy *pol = detect_policy_create(3, 2);
     gui_set_policy(pol);
 }
+
 static void on_run_banker(GtkButton *button, gpointer user_data)
 {
     (void)button; (void)user_data;
     Policy *pol = banker_policy_create(3, 2);
     gui_set_policy(pol);
 }
+
 static void on_run_holdwait(GtkButton *button, gpointer user_data)
 {
     (void)button; (void)user_data;
@@ -293,7 +284,7 @@ static void on_run_holdwait(GtkButton *button, gpointer user_data)
 }
 
 /* -----------------------------------------------------------------
-   Callback for the “Step” button (manual advance).
+   Callback für den „Step“-Button (manueller Schritt)
    ----------------------------------------------------------------- */
 static void on_step_clicked(GtkButton *button, gpointer user_data)
 {
@@ -302,55 +293,77 @@ static void on_step_clicked(GtkButton *button, gpointer user_data)
 }
 
 /* -----------------------------------------------------------------
-   Build the whole window.
+   Erstellt das komplette Fenster
    ----------------------------------------------------------------- */
 GtkWidget *gui_create_window(void)
 {
     GtkWidget *window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-    gtk_window_set_title(GTK_WINDOW(window), "Dead‑Lock Simulator");
+    gtk_window_set_title(GTK_WINDOW(window), "Deadlock-Simulator");
     gtk_window_set_default_size(GTK_WINDOW(window), 800, 600);
-    g_signal_connect(window, "destroy", G_CALLBACK(gtk_main_quit), NULL);
+    g_signal_connect(window, "destroy",
+                     G_CALLBACK(gtk_main_quit), NULL);
 
-    /* ---------------------------------------------------------
-       Layout: vertical box (buttons on top, text view below)
-       --------------------------------------------------------- */
+    /* Layout Vertikale Box
+       (Buttons oben, Textansicht darunter) */
     GtkWidget *vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 5);
     gtk_container_add(GTK_CONTAINER(window), vbox);
 
-    /* ---- Buttons ------------------------------------------------ */
-    GtkWidget *hbox_buttons = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
-    gtk_box_pack_start(GTK_BOX(vbox), hbox_buttons, FALSE, FALSE, 0);
+    /* Buttons */
+    GtkWidget *hbox_buttons =
+        gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
+    gtk_box_pack_start(GTK_BOX(vbox),
+                       hbox_buttons, FALSE, FALSE, 0);
 
-    GtkWidget *btn_graph = gtk_button_new_with_label("Run Graph‑Detect");
-    GtkWidget *btn_banker = gtk_button_new_with_label("Run Banker");
-    GtkWidget *btn_hw = gtk_button_new_with_label("Run Hold‑and‑Wait");
-    GtkWidget *btn_step = gtk_button_new_with_label("Step");
+    GtkWidget *btn_graph =
+        gtk_button_new_with_label("Run Graph-Detect");
+    GtkWidget *btn_banker =
+        gtk_button_new_with_label("Run Banker");
+    GtkWidget *btn_hw =
+        gtk_button_new_with_label("Run Hold-and-Wait");
+    GtkWidget *btn_step =
+        gtk_button_new_with_label("Step");
 
-    gtk_box_pack_start(GTK_BOX(hbox_buttons), btn_graph, FALSE, FALSE, 0);
-    gtk_box_pack_start(GTK_BOX(hbox_buttons), btn_banker, FALSE, FALSE, 0);
-    gtk_box_pack_start(GTK_BOX(hbox_buttons), btn_hw, FALSE, FALSE, 0);
-    gtk_box_pack_start(GTK_BOX(hbox_buttons), btn_step, FALSE, FALSE, 0);
+    gtk_box_pack_start(GTK_BOX(hbox_buttons),
+                       btn_graph, FALSE, FALSE, 0);
+    gtk_box_pack_start(GTK_BOX(hbox_buttons),
+                       btn_banker, FALSE, FALSE, 0);
+    gtk_box_pack_start(GTK_BOX(hbox_buttons),
+                       btn_hw, FALSE, FALSE, 0);
+    gtk_box_pack_start(GTK_BOX(hbox_buttons),
+                       btn_step, FALSE, FALSE, 0);
 
-    g_signal_connect(btn_graph, "clicked", G_CALLBACK(on_run_graph_detect), NULL);
-    g_signal_connect(btn_banker, "clicked", G_CALLBACK(on_run_banker), NULL);
-    g_signal_connect(btn_hw,    "clicked", G_CALLBACK(on_run_holdwait), NULL);
-    g_signal_connect(btn_step,  "clicked", G_CALLBACK(on_step_clicked), NULL);
+    g_signal_connect(btn_graph, "clicked",
+                     G_CALLBACK(on_run_graph_detect), NULL);
+    g_signal_connect(btn_banker, "clicked",
+                     G_CALLBACK(on_run_banker), NULL);
+    g_signal_connect(btn_hw, "clicked",
+                     G_CALLBACK(on_run_holdwait), NULL);
+    g_signal_connect(btn_step, "clicked",
+                     G_CALLBACK(on_step_clicked), NULL);
 
-    /* ---- Dead‑lock counter label -------------------------------- */
-    g_deadlock_label = GTK_LABEL(gtk_label_new("Dead‑locks / postpones: 0"));
-    gtk_box_pack_start(GTK_BOX(vbox), GTK_WIDGET(g_deadlock_label), FALSE, FALSE, 0);
+    /* Deadlock-Zähler */
+    g_deadlock_label =
+        GTK_LABEL(gtk_label_new("Deadlocks / Verschiebungen: 0"));
+    gtk_box_pack_start(GTK_BOX(vbox),
+                       GTK_WIDGET(g_deadlock_label),
+                       FALSE, FALSE, 0);
 
-    /* ---- Text view (snapshot) ----------------------------------- */
+    /* Textansicht */
     g_text_view = GTK_TEXT_VIEW(gtk_text_view_new());
     gtk_text_view_set_editable(g_text_view, FALSE);
     gtk_text_view_set_cursor_visible(g_text_view, FALSE);
-    GtkWidget *scrolled = gtk_scrolled_window_new(NULL, NULL);
-    gtk_container_add(GTK_CONTAINER(scrolled), GTK_WIDGET(g_text_view));
-    gtk_box_pack_start(GTK_BOX(vbox), scrolled, TRUE, TRUE, 0);
 
-    /* ---- Start the 1‑second timeout (will be paused/re‑started
-           automatically when we switch policies) ----------------- */
-    g_timeout_id = g_timeout_add_seconds(1, (GSourceFunc)gui_step, NULL);
+    GtkWidget *scrolled =
+        gtk_scrolled_window_new(NULL, NULL);
+    gtk_container_add(GTK_CONTAINER(scrolled),
+                      GTK_WIDGET(g_text_view));
+    gtk_box_pack_start(GTK_BOX(vbox),
+                       scrolled, TRUE, TRUE, 0);
+
+    /* Start des 1-Sekunden-Timers */
+    g_timeout_id =
+        g_timeout_add_seconds(1,
+            (GSourceFunc)gui_step, NULL);
 
     gtk_widget_show_all(window);
     return window;

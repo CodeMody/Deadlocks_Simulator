@@ -4,15 +4,16 @@
 #include <stdbool.h>
 
 struct EventHeap {
-    Event *data;      /* 1‑based indexing for easier parent/child math */
-    size_t size;      /* number of elements stored */
-    size_t capacity;  /* allocated slots (including dummy at index 0) */
+    Event *data;      /* Array von Events, 1-Basierte Indizierung (Index 0 bleibt leer) */
+    size_t size;      /* Aktuelle Anzahl der gespeicherten Elemente */
+    size_t capacity;  /* Gesamtkapazität des Arrays (einschließlich unbenutzem Index 0) */
 };
 
-#define LEFT(i)   ((i) << 1)
-#define RIGHT(i)  (((i) << 1) + 1)
-#define PARENT(i) ((i) >> 1)
+#define LEFT(i)   ((i) << 1)        /* Linkes Kind = i * 2 */
+#define RIGHT(i)  (((i) << 1) + 1)  /* Rechtes Kind = i * 2 +1 */
+#define PARENT(i) ((i) >> 1)        /* Elternknoten = i / 2*/
 
+/* Hilfsfunktion: Tauscht zwei Events */
 static void heap_swap(Event *a, Event *b)
 {
     Event tmp = *a;
@@ -25,15 +26,15 @@ EventHeap *event_heap_create(void)
 {
     EventHeap *h = calloc(1, sizeof(*h));
     h->capacity = 16;
-    h->data = calloc(h->capacity, sizeof(Event));   /* index 0 unused */
+    h->data = calloc(h->capacity, sizeof(Event));   /* Der Index 0 ist unbenutzt */
     return h;
 }
 
 void event_heap_destroy(EventHeap *h)
 {
-    if (!h) return;
-    free(h->data);
-    free(h);
+    if (!h) return; /* macht den Sicherheitscheck: NULL-Pointer abfangen */
+    free(h->data);  /* Event-Array freigeben */
+    free(h);        /* Heap-Struktur freigeben*/
 }
 
 /* -------------------------------------------------------------- */

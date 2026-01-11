@@ -1,7 +1,7 @@
 /*=====================================================================
- *  policy.h
+*  policy.h
  *  ---------------------------------------------------------------
- *  Public interface for all dead‑lock handling policies.
+ *  Öffentliches Interface für alle Deadlock-Behandlungsstrategien.
  *====================================================================*/
 
 #ifndef POLICY_H
@@ -10,27 +10,27 @@
 #include "../core/types.h"
 
 /* -----------------------------------------------------------------
-   The concrete Policy object – full definition (only here!).
+   Konkretes Policy-Objekt vollständige Definition
    ----------------------------------------------------------------- */
 typedef struct Policy {
-    const char        *name;        /**< human‑readable name                */
-    policy_request_f   on_request;  /**< called for every request event     */
-    policy_tick_f      on_tick;     /**< optional periodic housekeeping      */
-    policy_cleanup_f   cleanup;     /**< free internal data                  */
-    void              *private;     /**< policy‑specific context (opaque)    */
+    const char        *name;        /* menschenlesbarer Name der Policy     */
+    policy_request_f   on_request;  /* wird bei jedem Request-Event aufgerufen */
+    policy_tick_f      on_tick;     /* optionale periodische Wartungsfunktion */
+    policy_cleanup_f   cleanup;     /* gibt interne Daten der Policy frei     */
+    void              *private;     /* policy-spezifischer Kontext (opaque)   */
 } Policy;
 
 /* -----------------------------------------------------------------
-   Factory functions – each policy now receives the size of the
-   system it will work on.
+   Factory-Funktionen jede Policy erhält die Größe des Systems,
+   auf dem sie arbeiten soll.
    ----------------------------------------------------------------- */
 Policy *detect_policy_create(uint32_t n_procs,
-                             uint32_t n_classes);   /* graph detection */
+                             uint32_t n_classes);   /* Graph-Erkennung */
 
 Policy *banker_policy_create(uint32_t n_procs,
-                             uint32_t n_res);       /* Banker (multi)   */
+                             uint32_t n_res);       /* Banker (mehrere Ressourcen) */
 
 Policy *holdwait_policy_create(uint32_t n_procs,
-                               uint32_t n_res);     /* Hold‑and‑Wait    */
+                               uint32_t n_res);     /* Hold-and-Wait-Eliminierung */
 
 #endif /* POLICY_H */

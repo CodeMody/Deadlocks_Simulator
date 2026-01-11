@@ -4,17 +4,15 @@
 #include <stdbool.h>
 #include <stdio.h>
 
-/* Private context – just a counter */
 typedef struct {
-    uint64_t deadlocks;   /* how many times we refused a request */
-    uint32_t n_procs;
-    uint32_t n_classes;
+    uint64_t deadlocks;   /* Anzahl der abgelehnten bzw. verschobenen Requests */
+    uint32_t n_procs;     /* Anzahl der Prozesse */
+    uint32_t n_classes;   /* Anzahl der Ressourcenklassen */
 } DetectCtx;
 
 /* --------------------------------------------------------------
-   on_request – real graph detection (simplified for the demo).
-   If a cycle would appear we *refuse* the request and increment
-   the counter.  Otherwise we grant it.
+   on_request echte Graph-Erkennung. Falls ein Zyklus entstehen würde, wird die Anfrage abgelehnt
+   und der Zähler erhöht. Andernfalls wird die Anfrage genehmigt.
    -------------------------------------------------------------- */
 static bool detect_on_request(Policy *p,
                               SystemState *st,
@@ -23,22 +21,22 @@ static bool detect_on_request(Policy *p,
     DetectCtx *ctx = (DetectCtx *)p->private;
 
     /* ---------------------------------------------------------
-       Very small “is there enough free resource?” check.
-       The real cycle‑detection algorithm can be inserted here.
+       Einfache Prüfung Sind genügend freie Ressourcen vorhanden?
+       Der eigentliche Zyklenerkennungs-Algorithmus könnte hier
+       implementiert werden.
        --------------------------------------------------------- */
     uint32_t rc  = ev->class_id;
     uint32_t amt = ev->amount;
     if (amt > st->available[rc]) {
-        ctx->deadlocks++;          /* request cannot be satisfied now */
-        return false;              /* postpone */
+        ctx->deadlocks++;          /* Anfrage momentan nicht erfüllbar */
+        return false;              /* Anfrage verschieben */
     }
 
-    /* No cycle detection for the demo – always grant if enough free */
     return true;
 }
 
 /* --------------------------------------------------------------
-   on_tick – nothing needed for this policy.
+   on_tick für diese Policy ist keine Aktion erforderlich
    -------------------------------------------------------------- */
 static void detect_on_tick(Policy *p,
                            SystemState *st,
@@ -48,7 +46,7 @@ static void detect_on_tick(Policy *p,
 }
 
 /* --------------------------------------------------------------
-   cleanup – free the private context.
+   cleanup gibt den privaten Kontext frei
    -------------------------------------------------------------- */
 static void detect_cleanup(Policy *p)
 {
@@ -57,22 +55,24 @@ static void detect_cleanup(Policy *p)
 }
 
 /* --------------------------------------------------------------
-   Factory – allocate the context and store the size values.
+   Factory-Funktion erzeugt die Policy und speichert
+   die Größenparameter im Kontext
    -------------------------------------------------------------- */
 Policy *detect_policy_create(uint32_t n_procs,
                              uint32_t n_classes)
 {
-    Policy   *pol = calloc(1, sizeof(*pol));
+    Policy    *pol = calloc(1, sizeof(*pol));
     DetectCtx *ctx = calloc(1, sizeof(*ctx));
 
-    ctx->deadlocks  = 0;
-    ctx->n_procs    = n_procs;
-    ctx->n_classes  = n_classes;
+    ctx->deadlocks = 0;
+    ctx->n_procs   = n_procs;
+    ctx->n_classes = n_classes;
 
-    pol->name       = "Graph‑Detect";
+    pol->name       = "Graph-Detect";
     pol->on_request = detect_on_request;
     pol->on_tick    = detect_on_tick;
     pol->cleanup    = detect_cleanup;
     pol->private    = ctx;
+
     return pol;
 }
