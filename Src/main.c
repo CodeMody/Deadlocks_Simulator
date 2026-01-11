@@ -13,3 +13,5 @@ int main(int argc, char *argv[])
     gtk_main();          /* startet die GTK-Ereignisschleife */
     return 0;
 }
+
+//this is a rrandaksjhbd somsebzujk
