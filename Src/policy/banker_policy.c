@@ -12,8 +12,8 @@ typedef struct {
 } BankerCtx;
 
 /* --------------------------------------------------------------
-   on_request – simulate the request, run the safety check,
-   and grant only if the resulting state is safe.
+on_request – Simuliert die Anfrage, führt die Sicherheitsprüfung durch,
+und gewährt die Berechtigung nur, wenn der resultierende Zustand sicher ist.
    -------------------------------------------------------------- */
 static bool banker_on_request(Policy *p,
                               SystemState *st,
