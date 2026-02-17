@@ -21,9 +21,13 @@ typedef struct {
     uint32_t   pid;        /* Prozess-ID    */
     uint32_t   class_id;   /* betroffene Ressourcenklasse             */
     uint32_t   amount;     /* Anzahl der Instanzen      */
+    uint32_t   retries;    /* Anzahl der bisherigen Wiederholungen (für Retry-Limit) */
 } Event;
 
 struct Policy;
+
+/* Vorwärts-Deklaration damit SystemState in den Funktionszeigern sichtbar ist */
+typedef struct SystemState SystemState;
 
 /* Funktionszeiger für Policy-Callbacks */
 typedef bool  (*policy_request_f)(struct Policy *p,
@@ -37,13 +41,13 @@ typedef void  (*policy_cleanup_f)(struct Policy *p);
 /* --------------------------------------------------------------
    Hauptstruktur für den Ressourcen-Zustand des Systems
    -------------------------------------------------------------- */
-typedef struct SystemState {
+struct SystemState {
     uint32_t n_classes;      /* Anzahl verschiedener Ressourcenklassen*/
     uint32_t n_procs;        /* Anzahl der Prozesse*/
     uint32_t *instances;    /* Gesamtklasse je Klasse (E) */
     uint32_t *available;    /* Verfügbare Instanzen je Klasse   (A)*/
     uint32_t **allocation;  /* C-Matrix -> gehaltene Instanzen (Prozess x Klasse */
     uint32_t **request;     /* R-Matrix -> noch benötigte Instanzen (Prozess x Klasse) */
-} SystemState;
+};
 
 #endif /* TYPES_H */

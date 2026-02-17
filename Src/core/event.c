@@ -1,6 +1,7 @@
 #define _XOPEN_SOURCE 600
 #include "../core/event.h"
 #include <stdlib.h>
+#include <stdio.h>
 #include <stdbool.h>
 
 struct EventHeap {
@@ -25,8 +26,10 @@ static void heap_swap(Event *a, Event *b)
 EventHeap *event_heap_create(void)
 {
     EventHeap *h = calloc(1, sizeof(*h));
+    if (!h) { fprintf(stderr, "event_heap_create: out of memory\n"); exit(EXIT_FAILURE); }
     h->capacity = 16;
     h->data = calloc(h->capacity, sizeof(Event));   /* Der Index 0 ist unbenutzt */
+    if (!h->data) { fprintf(stderr, "event_heap_create: out of memory\n"); exit(EXIT_FAILURE); }
     return h;
 }
 
@@ -64,7 +67,9 @@ void event_push(EventHeap *h, const Event *ev)
 {
     if (h->size + 1 >= h->capacity) {
         h->capacity *= 2;
-        h->data = realloc(h->data, h->capacity * sizeof(Event));
+        Event *tmp = realloc(h->data, h->capacity * sizeof(Event));
+        if (!tmp) { fprintf(stderr, "event_push: out of memory\n"); exit(EXIT_FAILURE); }
+        h->data = tmp;
     }
     h->size++;
     h->data[h->size] = *ev;
