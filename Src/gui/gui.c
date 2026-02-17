@@ -649,7 +649,7 @@ GtkWidget *gui_create_window(void)
     gtk_label_set_xalign(GTK_LABEL(title_lbl), 0.0);
     gtk_box_pack_start(GTK_BOX(title_vbox), title_lbl, FALSE, FALSE, 0);
 
-    GtkWidget *sub_lbl = gtk_label_new("OPERATING SYSTEMS · RESOURCE MANAGEMENT");
+    GtkWidget *sub_lbl = gtk_label_new("BETRIEB SYSTEME");
     gtk_widget_set_name(sub_lbl, "subtitle-label");
     gtk_label_set_xalign(GTK_LABEL(sub_lbl), 0.0);
     gtk_box_pack_start(GTK_BOX(title_vbox), sub_lbl, FALSE, FALSE, 0);
@@ -767,7 +767,7 @@ GtkWidget *gui_create_window(void)
     }
 
     /* Hinweistext unten in der Legende */
-    GtkWidget *idle_lbl = gtk_label_new("Select a policy\nto begin.");
+    GtkWidget *idle_lbl = gtk_label_new("Wähle einen Policy\nzum starten.");
     gtk_widget_set_name(idle_lbl, "idle-indicator");
     gtk_label_set_xalign(GTK_LABEL(idle_lbl), 0.0);
     gtk_label_set_line_wrap(GTK_LABEL(idle_lbl), TRUE);
