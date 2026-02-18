@@ -5,7 +5,7 @@ set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 
 # -------------------------------------------------------------
-# Find GTK‑3 (the library we use for the GUI)
+# Find GTK‑3 (GUI Library)
 # -------------------------------------------------------------
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(GTK3 REQUIRED gtk+-3.0)
