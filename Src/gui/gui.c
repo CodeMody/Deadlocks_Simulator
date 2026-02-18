@@ -586,7 +586,7 @@ static const char *GUI_CSS =
     "#subtitle-label { font-family: 'Courier New', monospace; font-size: 12px; color: #546e7a; letter-spacing: 2px; }"
 
     "#btn-bar { background-color: #111318; padding: 14px 24px; border-bottom: 1px solid #1e2530; }"
-    ".policy-btn { font-family: 'Courier New', monospace; font-size: 15px; font-weight: bold; letter-spacing: 1px; color: #90a4ae; background-color: #1a1f2b; border: 2px solid #2a3240; border-radius: 4px; padding: 10px 20px; min-width: 200px; }"
+    ".policy-btn { font-family: 'Courier New', monospace; font-size: 15px; font-weight: bold; letter-spacing: 1px; color: #FF0000; background-color: #1a1f2b; border: 2px solid #2a3240; border-radius: 4px; padding: 10px 20px; min-width: 200px; }"
     ".policy-btn:hover { background-color: #1e2840; border-color: #00e5ff; color: #ffffff; }"
     ".policy-btn.active { background-color: #003d4d; border-color: #00e5ff; color: #00e5ff; }"
 
