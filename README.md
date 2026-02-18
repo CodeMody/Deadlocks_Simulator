@@ -95,23 +95,23 @@ Das Fenster öffnet sich. Die Simulation startet **noch nicht** — erst nach Au
 Die Benutzeroberfläche ist in vier Bereiche gegliedert:
 
 ```
-┌─────────────────────────────────────────────────────────┐
-│  DEADLOCK SIMULATOR          BETRIEB SYSTEME            │  ← Header
-├─────────────────────────────────────────────────────────┤
-│  ⬡ GRAPH DETECT  ⬡ BANKER'S ALGO  ⬡ HOLD & WAIT  ▶ STEP│  ← Buttons
-├─────────────────────────────────────────────────────────┤
-│  POLICY  —   ·   POSTPONED  0   ·   TICK  0             │  ← Statusleiste
-├──────────────────────────────────┬──────────────────────┤
-│                                  │  KEY                  │
-│  === time 5 ==================   │  alloc  resources     │
-│  Available per class : 1 2       │  need   still req.    │
-│  P0  alloc: 1 0   need: 0 2      │  avail  free inst.    │
-│  P1  alloc: 0 1   need: 2 0      │  POSTPONED  blocked   │
-│  P2  alloc: 0 0   need: 1 1      │  TICK   sim clock     │
+┌──────────────────────────────────────────────────────────┐
+│  DEADLOCK SIMULATOR          BETRIEB SYSTEME             │  ← Header
+├──────────────────────────────────────────────────────────┤
+│  ⬡ GRAPH DETECT  ⬡ BANKER'S ALGO  ⬡ HOLD & WAIT  ▶ STEP │  ← Buttons
+├──────────────────────────────────────────────────────────┤
+│  STRATIGIE  —   ·   VERSCHOBEN  0   ·   TICK  0          │  ← Statusleiste
+├──────────────────────────────────┬───────────────────────┤
+│                                  │  LEGENDE              │
+│  === Takt 5 ==================   │  Gehaltene Ressourcen │
+│  Verfügbar je Klasse : 1 2       │  bedarf noch benötigt │
+│  P0  zugeteilt: 1 0   bedarf: 0 2│  Verfügbar freeie Ins.│
+│  P1  zugeteilt: 0 1   bedarf: 2 0│  Verschoben block. anf│
+│  P2  zugeteilt: 0 0   bedarf: 1 1│  TAKT Simulationsuhr  │
 │                                  │                       │
 │                                  │  Wähle einen Policy   │
 │                                  │  zum starten.         │
-└──────────────────────────────────┴──────────────────────┘
+└──────────────────────────────────┴───────────────────────┘
 ```
 
 #### Schaltflächen
