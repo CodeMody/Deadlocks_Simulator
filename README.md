@@ -98,7 +98,7 @@ Die Benutzeroberfläche ist in vier Bereiche gegliedert:
 ┌──────────────────────────────────────────────────────────┐
 │  DEADLOCK SIMULATOR          BETRIEB SYSTEME             │  ← Header
 ├──────────────────────────────────────────────────────────┤
-│  ⬡ GRAPH DETECT  ⬡ BANKER'S ALGO  ⬡ HOLD & WAIT  ▶ STEP│  ← Buttons
+│ ⬡ GRAPH DETECT  ⬡ BANKER'S ALGO  ⬡ HOLD & WAIT  ▶ STEP │  ← Buttons
 ├──────────────────────────────────────────────────────────┤
 │  STRATIGIE  —   ·   VERSCHOBEN  0   ·   TICK  0          │  ← Statusleiste
 ├──────────────────────────────────┬───────────────────────┤
