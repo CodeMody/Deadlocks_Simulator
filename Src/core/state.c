@@ -1,4 +1,3 @@
-#define _XOPEN_SOURCE 600          /* für das usleep() falls es gebracuht wird  */
 #include "../core/state.h"
 #include <stdlib.h>
 #include <string.h>
@@ -11,8 +10,11 @@
 static uint32_t **alloc_matrix(uint32_t rows, uint32_t cols)
 {
     uint32_t **m = calloc(rows, sizeof(uint32_t *));
-    for (uint32_t i = 0; i < rows; ++i)
+    if (!m) { fprintf(stderr, "alloc_matrix: out of memory\n"); exit(EXIT_FAILURE); }
+    for (uint32_t i = 0; i < rows; ++i) {
         m[i] = calloc(cols, sizeof(uint32_t));
+        if (!m[i]) { fprintf(stderr, "alloc_matrix: out of memory\n"); exit(EXIT_FAILURE); }
+    }
     return m;
 }
 
@@ -34,11 +36,13 @@ SystemState *state_create(uint32_t n_classes,
                           const uint32_t *instances)
 {
     SystemState *st = calloc(1, sizeof(*st));
+    if (!st) { fprintf(stderr, "state_create: out of memory\n"); exit(EXIT_FAILURE); }
     st->n_classes = n_classes;
     st->n_procs   = 0;
 
     st->instances = calloc(n_classes, sizeof(uint32_t));
     st->available = calloc(n_classes, sizeof(uint32_t));
+    if (!st->instances || !st->available) { fprintf(stderr, "state_create: out of memory\n"); exit(EXIT_FAILURE); }
 
     memcpy(st->instances, instances, n_classes * sizeof(uint32_t));
     memcpy(st->available, instances, n_classes * sizeof(uint32_t));
@@ -112,9 +116,11 @@ bool state_is_safe(const SystemState *st)
     uint32_t n_r = st->n_classes;
 
     uint32_t *work = calloc(n_r, sizeof(uint32_t));
+    if (!work) { fprintf(stderr, "state_is_safe: out of memory\n"); exit(EXIT_FAILURE); }
     memcpy(work, st->available, n_r * sizeof(uint32_t));
 
     bool *finished = calloc(n_p, sizeof(bool));
+    if (!finished) { fprintf(stderr, "state_is_safe: out of memory\n"); free(work); exit(EXIT_FAILURE); }
 
     bool progress;
     do {

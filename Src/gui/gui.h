@@ -46,8 +46,9 @@ void gui_set_policy(Policy *new_policy);
 /* -----------------------------------------------------------------
    Führt die Simulation um einen logischen Zeitschritt weiter
    und aktualisiert die grafische Oberfläche.
+   Gibt G_SOURCE_CONTINUE zurück, damit GTK den Timer weiter laufen lässt.
    ----------------------------------------------------------------- */
-void gui_step(void);
+gboolean gui_step(gpointer user_data);
 
 /* -----------------------------------------------------------------
    Gibt den aktuellen Deadlock- bzw. Verschiebungszähler zurück

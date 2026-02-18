@@ -20,6 +20,7 @@ struct Scheduler {
 Scheduler *scheduler_create(SystemState *st, Policy *policy)
 {
     Scheduler *s = calloc(1, sizeof(*s));
+    if (!s) { fprintf(stderr, "scheduler_create: out of memory\n"); exit(EXIT_FAILURE); }
     s->state  = st;                     /* Systemzustand übernehmen */
     s->policy = policy;                 /* Policy-Strategie übernehmen */
     s->heap   = event_heap_create();    /* Simulationszeit startet bei 0 */
@@ -83,10 +84,19 @@ static void handle_request(Scheduler *s, const Event *ev)
         s->state->request[pid][rc]    -= amt;
         s->state->available[rc]       -= amt;
     } else {
-        /* Anfrage wird aufgeschoben */
-        Event retry = *ev;            /*Kopiert das Event*/
-        retry.time = s->now + 1;      /*Setzt Zeit auf "Jetzt +1"*/
-        event_push(s->heap, &retry);  /*Fügt es wieder in den Heap ein*/
+        /* Anfrage wird aufgeschoben — aber nur bis zum Retry-Limit */
+#define MAX_RETRIES 100
+        if (ev->retries >= MAX_RETRIES) {
+            fprintf(stderr,
+                    "scheduler: request from pid=%u class=%u amt=%u "
+                    "dropped after %u retries (unsatisfiable)\n",
+                    ev->pid, ev->class_id, ev->amount, MAX_RETRIES);
+            return;  /* Event verwerfen statt endlos wiederholen */
+        }
+        Event retry  = *ev;           /* Kopiert das Event */
+        retry.time   = s->now + 1;    /* Setzt Zeit auf "Jetzt +1" */
+        retry.retries++;              /* Erhöht den Retry-Zähler */
+        event_push(s->heap, &retry);  /* Fügt es wieder in den Heap ein */
     }
 }
 
@@ -113,12 +123,20 @@ void scheduler_run_until(Scheduler *s, uint64_t until_time)
                 break;
 
             case EV_RELEASE:
-            /*Prozess gibt Ressourcen frei
-            *Verringert die Allokation
-            * Erhöhe die verfügaren Ressourcen */
+            /*Prozess gibt Ressourcen frei */
+            {
+                uint32_t held = s->state->allocation[ev.pid][ev.class_id];
+                if (ev.amount > held) {
+                    fprintf(stderr,
+                            "scheduler: EV_RELEASE over-release pid=%u class=%u "
+                            "held=%u requested=%u — clamping to held\n",
+                            ev.pid, ev.class_id, held, ev.amount);
+                    ev.amount = held;   /* Clamp: kann nicht mehr freigeben als gehalten */
+                }
                 s->state->allocation[ev.pid][ev.class_id] -= ev.amount;
                 s->state->available[ev.class_id]          += ev.amount;
                 break;
+            }
 
             case EV_TERMINATE:
                 /*Prozess terminiert - gebe alle gehaltenen Ressourcen frei*/
@@ -127,8 +145,11 @@ void scheduler_run_until(Scheduler *s, uint64_t until_time)
                     if (held) {
                     /*Setze Allokation auf 0 und gebe ressourcen zurück */
                         s->state->allocation[ev.pid][r] = 0;
-                        s->state->available[r]        += held;
+                        s->state->available[r]         += held;
                     }
+                    /* Auch den Request-Vektor löschen, damit der
+                       Banker-Algorithmus keine veralteten Bedarfswerte sieht */
+                    s->state->request[ev.pid][r] = 0;
                 }
                 break;
 

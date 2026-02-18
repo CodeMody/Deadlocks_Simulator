@@ -27,14 +27,6 @@ static bool banker_on_request(Policy *p,
     uint32_t amt = ev->amount;
 
     /* ---------------------------------------------------------
-       Schneller test sind genügend freie Instanzen vorhanden?
-       --------------------------------------------------------- */
-    if (amt > st->available[rc]) {
-        ctx->deadlocks++;
-        return false;          /* Anfrage verschieben */
-    }
-
-    /* ---------------------------------------------------------
        Simulation der Ressourcenvergabe
        --------------------------------------------------------- */
     st->available[rc]       -= amt;
