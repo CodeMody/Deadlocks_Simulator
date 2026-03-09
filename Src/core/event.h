@@ -18,7 +18,7 @@
  * @brief Opaker Zeiger auf die interne Heap-Struktur.
  *
  * Die Implementierungsdetails sind nur in @c event.c sichtbar
- * (Information Hiding). Externe Module arbeiten ausschließlich
+ * Externe Module arbeiten ausschließlich
  * über die nachfolgenden Funktionen.
  */
 typedef struct EventHeap EventHeap;

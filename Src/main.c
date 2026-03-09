@@ -34,6 +34,6 @@ int main(int argc, char *argv[])
      */
     gui_create_window();
 
-    gtk_main();  /* Startet die GTK-Ereignisschleife; kehrt bei Fenster-Schließen zurück. */
+    gtk_main();  /* Startet die GTK-Ereignisschleife */
     return 0;
 }
