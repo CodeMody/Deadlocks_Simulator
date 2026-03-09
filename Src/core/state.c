@@ -1,12 +1,28 @@
+/**
+ * @file state.c
+ * @brief Implementierung der Systemzustandsverwaltung.
+ *
+ * Dieses Modul verwaltet den zentralen @c SystemState, der das
+ * Ressourcensystem nach dem Bankier-Modell abbildet. Es stellt
+ * Funktionen zur Allokation, Manipulation und Analyse des Zustands
+ * bereit. Der Kern des Moduls ist die Implementierung des
+ * Bankier-Algorithmus (@c state_is_safe()), der prüft, ob eine
+ * sichere Abarbeitungsreihenfolge aller Prozesse existiert.
+ */
+
 #include "../core/state.h"
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
 #include <stdbool.h>
 
-/* -----------------------------------------------------------------
-   2D-Matrix anlegen und mit 0 initialiseren
-   ----------------------------------------------------------------- */
+/**
+ * @brief Allokiert eine zweidimensionale Matrix aus uint32_t, mit 0 initialisiert.
+ *
+ * @param rows  Anzahl der Zeilen.
+ * @param cols  Anzahl der Spalten.
+ * @return      Zeiger auf die neu allokierte Matrix.
+ */
 static uint32_t **alloc_matrix(uint32_t rows, uint32_t cols)
 {
     uint32_t **m = calloc(rows, sizeof(uint32_t *));
@@ -18,9 +34,12 @@ static uint32_t **alloc_matrix(uint32_t rows, uint32_t cols)
     return m;
 }
 
-/* -----------------------------------------------------------------
-   2D-Matrix wird freigegeben
-   ----------------------------------------------------------------- */
+/**
+ * @brief Gibt eine zweidimensionale Matrix und ihre Zeilen frei.
+ *
+ * @param m     Zeiger auf die freizugebende Matrix. NULL wird sicher ignoriert.
+ * @param rows  Anzahl der Zeilen (wird benötigt, um alle Zeilenzeiger freizugeben).
+ */
 static void free_matrix(uint32_t **m, uint32_t rows)
 {
     if (!m) return;
@@ -29,9 +48,17 @@ static void free_matrix(uint32_t **m, uint32_t rows)
     free(m);
 }
 
-/* --------------------------------------------------------------
-   Öffentliche API
-   -------------------------------------------------------------- */
+/**
+ * @brief Erstellt einen neuen Systemzustand.
+ *
+ * Initialisiert die Ressourcenvektoren @c instances und @c available mit
+ * den übergebenen Werten. Die Prozess-Matrizen (@c allocation, @c request)
+ * werden erst durch @c state_allocate_process_matrices() angelegt.
+ *
+ * @param n_classes  Anzahl der Ressourcenklassen.
+ * @param instances  Array der Gesamtinstanzen je Klasse.
+ * @return           Zeiger auf den neu erstellten @c SystemState.
+ */
 SystemState *state_create(uint32_t n_classes,
                           const uint32_t *instances)
 {
@@ -42,8 +69,11 @@ SystemState *state_create(uint32_t n_classes,
 
     st->instances = calloc(n_classes, sizeof(uint32_t));
     st->available = calloc(n_classes, sizeof(uint32_t));
-    if (!st->instances || !st->available) { fprintf(stderr, "state_create: out of memory\n"); exit(EXIT_FAILURE); }
+    if (!st->instances || !st->available) {
+        fprintf(stderr, "state_create: out of memory\n"); exit(EXIT_FAILURE);
+    }
 
+    /* Gesamtinstanzen kopieren; zu Beginn sind alle Ressourcen verfügbar. */
     memcpy(st->instances, instances, n_classes * sizeof(uint32_t));
     memcpy(st->available, instances, n_classes * sizeof(uint32_t));
 
@@ -52,19 +82,31 @@ SystemState *state_create(uint32_t n_classes,
     return st;
 }
 
-/* -------------------------------------------------------------
-    Speicher für Prozess-Matrizen angelegt
-   -------------------------------------------------------------- */
+/**
+ * @brief Legt die Allokations- und Bedarfsmatrizen für die Prozesse an.
+ *
+ * Muss aufgerufen werden, sobald die Prozessanzahl bekannt ist und
+ * bevor irgendwelche Matrizeneinträge gesetzt werden. Beide Matrizen
+ * werden mit Nullen initialisiert.
+ *
+ * @param st       Zeiger auf den Systemzustand.
+ * @param n_procs  Anzahl der simulierten Prozesse.
+ */
 void state_allocate_process_matrices(SystemState *st, uint32_t n_procs)
 {
-    st->n_procs   = n_procs;               /* store it for later use */
+    st->n_procs    = n_procs;
     st->allocation = alloc_matrix(n_procs, st->n_classes);
     st->request    = alloc_matrix(n_procs, st->n_classes);
 }
 
-/* --------------------------------------------------------------
-   Alles wird freigegeben
-   -------------------------------------------------------------- */
+/**
+ * @brief Gibt den gesamten Systemzustand frei.
+ *
+ * Gibt alle dynamisch allokierten Felder des @c SystemState frei
+ * (Ressourcenvektoren sowie Prozess-Matrizen). NULL wird ignoriert.
+ *
+ * @param st  Zeiger auf den freizugebenden @c SystemState.
+ */
 void state_destroy(SystemState *st)
 {
     if (!st) return;
@@ -75,9 +117,14 @@ void state_destroy(SystemState *st)
     free(st);
 }
 
-/* --------------------------------------------------------------
-   Setzt eine Zuweisung
-   -------------------------------------------------------------- */
+/**
+ * @brief Setzt einen Eintrag in der Allokationsmatrix C.
+ *
+ * @param st        Zeiger auf den Systemzustand.
+ * @param pid       Prozess-ID (Zeilenindex).
+ * @param class_id  Ressourcenklasse (Spaltenindex).
+ * @param amount    Anzahl der als gehalten einzutragenden Instanzen.
+ */
 void state_set_allocation(SystemState *st,
                           uint32_t pid,
                           uint32_t class_id,
@@ -87,7 +134,14 @@ void state_set_allocation(SystemState *st,
     st->allocation[pid][class_id] = amount;
 }
 
-/* Setzt eine Anforderung auf*/
+/**
+ * @brief Setzt einen Eintrag in der Bedarfsmatrix R.
+ *
+ * @param st        Zeiger auf den Systemzustand.
+ * @param pid       Prozess-ID (Zeilenindex).
+ * @param class_id  Ressourcenklasse (Spaltenindex).
+ * @param amount    Anzahl der noch benötigten Instanzen.
+ */
 void state_set_request(SystemState *st,
                        uint32_t pid,
                        uint32_t class_id,
@@ -97,9 +151,17 @@ void state_set_request(SystemState *st,
     st->request[pid][class_id] = amount;
 }
 
-/* --------------------------------------------------------------
-   Prüft, ob Bedarf ≤ verfügbar (Hilfsfunktion)
-   -------------------------------------------------------------- */
+/**
+ * @brief Prüft, ob der Bedarf eines Prozesses vollständig durch den Arbeitsvektor gedeckt ist.
+ *
+ * Hilfsfunktion des Bankier-Algorithmus: Gibt @c true zurück, wenn für alle
+ * Ressourcenklassen @c r gilt: need[r] <= work[r].
+ *
+ * @param need       Bedarfsvektor eines Prozesses.
+ * @param work       Aktueller Arbeitsvektor (verfügbare Ressourcen).
+ * @param n_classes  Anzahl der Ressourcenklassen.
+ * @return           @c true, wenn der Bedarf gedeckt ist; sonst @c false.
+ */
 static bool need_leq_work(const uint32_t *need,
                           const uint32_t *work,
                           uint32_t n_classes)
@@ -109,25 +171,46 @@ static bool need_leq_work(const uint32_t *need,
     return true;
 }
 
-/*Sicherheitsprüfung nach dem Bankier-Algorithmus*/
+/**
+ * @brief Prüft mit dem Bankier-Algorithmus, ob der aktuelle Zustand sicher ist.
+ *
+ * Initialisiert den Arbeitsvektor @c work mit den aktuell verfügbaren
+ * Ressourcen. In einer Schleife werden alle noch nicht abgeschlossenen
+ * Prozesse gesucht, deren Bedarf durch @c work gedeckt werden kann.
+ * Ein solcher Prozess wird als "fertig" markiert und seine Ressourcen
+ * werden zu @c work addiert. Die Schleife wird wiederholt, bis kein
+ * Fortschritt mehr möglich ist. Konnten alle Prozesse abgeschlossen
+ * werden, ist der Zustand sicher.
+ *
+ * @param st  Zeiger auf den zu prüfenden Systemzustand (const).
+ * @return    @c true, wenn ein sicherer Ablaufplan existiert; sonst @c false.
+ */
 bool state_is_safe(const SystemState *st)
 {
     uint32_t n_p = st->n_procs;
     uint32_t n_r = st->n_classes;
 
+    /* Arbeitsvektor mit verfügbaren Ressourcen initialisieren */
     uint32_t *work = calloc(n_r, sizeof(uint32_t));
     if (!work) { fprintf(stderr, "state_is_safe: out of memory\n"); exit(EXIT_FAILURE); }
     memcpy(work, st->available, n_r * sizeof(uint32_t));
 
+    /* finished[p] = true, wenn Prozess p abgeschlossen werden konnte */
     bool *finished = calloc(n_p, sizeof(bool));
-    if (!finished) { fprintf(stderr, "state_is_safe: out of memory\n"); free(work); exit(EXIT_FAILURE); }
+    if (!finished) {
+        fprintf(stderr, "state_is_safe: out of memory\n");
+        free(work);
+        exit(EXIT_FAILURE);
+    }
 
     bool progress;
     do {
         progress = false;
         for (uint32_t p = 0; p < n_p; ++p) {
             if (finished[p]) continue;
+            /* Prüfen, ob der Bedarf von Prozess p durch work gedeckt ist */
             if (need_leq_work(st->request[p], work, n_r)) {
+                /* Prozess abgeschlossen: Ressourcen zum Arbeitsvektor addieren */
                 for (uint32_t r = 0; r < n_r; ++r)
                     work[r] += st->allocation[p][r];
                 finished[p] = true;
@@ -136,6 +219,7 @@ bool state_is_safe(const SystemState *st)
         }
     } while (progress);
 
+    /* Sicherheitsprüfung: Konnten alle Prozesse abgeschlossen werden? */
     bool safe = true;
     for (uint32_t p = 0; p < n_p; ++p)
         if (!finished[p]) { safe = false; break; }
@@ -145,9 +229,14 @@ bool state_is_safe(const SystemState *st)
     return safe;
 }
 
-/* --------------------------------------------------------------
-   Ausgabe des aktuellen Systemzustands
-   -------------------------------------------------------------- */
+/**
+ * @brief Gibt eine formatierte Übersicht des Systemzustands auf stdout aus.
+ *
+ * Zeigt Gesamtressourcen (E), verfügbare Ressourcen (A),
+ * die Allokationsmatrix C und die Bedarfsmatrix R an.
+ *
+ * @param st  Zeiger auf den auszugebenden Systemzustand (const).
+ */
 void state_print(const SystemState *st)
 {
     printf("=== System State =============================\n");
@@ -157,14 +246,14 @@ void state_print(const SystemState *st)
     printf("\nResources (free)    : ");
     for (uint32_t i = 0; i < st->n_classes; ++i)
         printf("%u ", st->available[i]);
-    printf("\nAllocation matrix C (proc × class):\n");
+    printf("\nAllocation matrix C (proc x class):\n");
     for (uint32_t p = 0; p < st->n_procs; ++p) {
         printf(" P%u : ", p);
         for (uint32_t r = 0; r < st->n_classes; ++r)
             printf("%u ", st->allocation[p][r]);
         printf("\n");
     }
-    printf("\nRequest (need) matrix R (proc × class):\n");
+    printf("\nRequest (need) matrix R (proc x class):\n");
     for (uint32_t p = 0; p < st->n_procs; ++p) {
         printf(" P%u : ", p);
         for (uint32_t r = 0; r < st->n_classes; ++r)
