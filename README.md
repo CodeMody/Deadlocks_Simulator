@@ -63,7 +63,7 @@ cd Deadlocks_Simulator
 ```bash
 mkdir -p build
 cd build
-cmake ..
+cmake .
 ```
 
 3. **Kompilieren:**
