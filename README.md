@@ -34,6 +34,7 @@ Das Programm benötigt folgende Abhängigkeiten:
 ```bash
 sudo apt update
 sudo apt install build-essential cmake libgtk-3-dev pkg-config
+sudo apt upgrade
 ```
 
 #### Abhängigkeiten installieren (Fedora / RHEL)
