@@ -28,12 +28,9 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="12b4df2e-bab5-4066-a608-fbcd691da5b7" name="Changes" comment="alles geändert und verbessert">
-      <change beforePath="$PROJECT_DIR$/.idea/Deadlocks_Simulator.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/Deadlocks_Simulator.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/editor.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/editor.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_18_02_2026_15_46_[Changes]/shelved.patch" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_18_02_2026_15_46__Changes_.xml" beforeDir="false" />
+    <list default="true" id="12b4df2e-bab5-4066-a608-fbcd691da5b7" name="Changes" comment="ende">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -118,7 +115,7 @@
       <workItem from="1771428648876" duration="599000" />
       <workItem from="1771438011073" duration="737000" />
       <workItem from="1773414310949" duration="138000" />
-      <workItem from="1773773046191" duration="699000" />
+      <workItem from="1773773046191" duration="1035000" />
     </task>
     <task id="LOCAL-00001" summary="Update main.c">
       <option name="closed" value="true" />
@@ -192,7 +189,15 @@
       <option name="project" value="LOCAL" />
       <updated>1771438264998</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="ende">
+      <option name="closed" value="true" />
+      <created>1773773952919</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1773773952919</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -206,6 +211,7 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Update main.c" />
     <MESSAGE value="Merge remote-tracking branch 'origin/master'" />
-    <option name="LAST_COMMIT_MESSAGE" value="Merge remote-tracking branch 'origin/master'" />
+    <MESSAGE value="ende" />
+    <option name="LAST_COMMIT_MESSAGE" value="ende" />
   </component>
 </project>

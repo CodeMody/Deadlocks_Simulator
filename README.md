@@ -48,7 +48,8 @@ sudo dnf install gcc cmake gtk3-devel pkg-config
 ```bash
 brew install cmake gtk+3 pkg-config
 ```
-
+#### Abhängigkeiten installieren (Windows)
+https://www.msys2.org/
 ---
 
 ### Kompilierung
