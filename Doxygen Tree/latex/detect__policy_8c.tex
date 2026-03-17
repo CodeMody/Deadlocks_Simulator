@@ -1,0 +1,67 @@
+\doxysection{Src/\+policy/\+detect\+\_\+policy.c File Reference}
+\hypertarget{detect__policy_8c}{}\label{detect__policy_8c}\index{Src/policy/detect\_policy.c@{Src/policy/detect\_policy.c}}
+
+
+Implementierung der Wait-\/\+For-\/\+Graph-\/\+Zykluserkennungs-\/\+Policy.  
+
+
+{\ttfamily \+\#include "{}policy.\+h"{}}\newline
+{\ttfamily \+\#include "{}../\+core/\+state.\+h"{}}\newline
+{\ttfamily \+\#include $<$stdlib.\+h$>$}\newline
+{\ttfamily \+\#include $<$stdbool.\+h$>$}\newline
+{\ttfamily \+\#include $<$stdio.\+h$>$}\newline
+{\ttfamily \+\#include $<$string.\+h$>$}\newline
+Include dependency graph for detect\+\_\+policy.\+c:\+
+% FIG 0
+\doxysubsubsection*{Data Structures}
+\begin{DoxyCompactItemize}
+\item 
+struct \doxymbox{\hyperlink{struct_detect_ctx}{Detect\+Ctx}}
+\begin{DoxyCompactList}\small\item\em Privater Kontext der Graph-\/\+Erkennungs-\/\+Policy. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{struct_policy}{Policy}} \texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{detect__policy_8c_a158c0e3f9decd67412c048e5ce4a229e}{detect\+\_\+policy\+\_\+create}} (uint32\+\_\+t n\+\_\+procs, uint32\+\_\+t n\+\_\+classes)
+\begin{DoxyCompactList}\small\item\em Factory-\/\+Funktion:\+ Erstellt eine neue Graph-\/\+Erkennungs-\/\+Policy. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Implementierung der Wait-\/\+For-\/\+Graph-\/\+Zykluserkennungs-\/\+Policy. 
+
+Diese \doxylink{struct_policy}{Policy} erkennt potenzielle Deadlocks, indem sie nach jeder Ressourcenanforderung den Wait-\/\+For-\/\+Graphen aufbaut und mittels iterativer Tiefensuche (DFS) auf Zyklen prüft. Ein Zyklus bedeutet, dass eine zirkuläre Warteabhängigkeit entstehen würde — eine der notwendigen Bedingungen für einen Deadlock.
+
+Prozess A wartet auf Prozess B ({\ttfamily adj}\+[A]\+\+[B]\+ = true), wenn:\+
+\begin{DoxyItemize}
+\item A mindestens eine Ressource noch benötigt (request\+[A]\+\+[r]\+ \texorpdfstring{$>$}{>} 0) und
+\item B genau diese Ressourcenklasse aktuell hält (allocation\+[B]\+\+[r]\+ \texorpdfstring{$>$}{>} 0).
+\end{DoxyItemize}
+
+Die Anfrage wird nur genehmigt, wenn durch die simulierte Zuweisung kein Zyklus im Wait-\/\+For-\/\+Graphen entsteht. 
+
+\label{doc-func-members}
+\Hypertarget{detect__policy_8c_doc-func-members}
+\doxysubsection{Function Documentation}
+\Hypertarget{detect__policy_8c_a158c0e3f9decd67412c048e5ce4a229e}\index{detect\_policy.c@{detect\_policy.c}!detect\_policy\_create@{detect\_policy\_create}}
+\index{detect\_policy\_create@{detect\_policy\_create}!detect\_policy.c@{detect\_policy.c}}
+\doxysubsubsection{\texorpdfstring{detect\_policy\_create()}{detect\_policy\_create()}}
+{\footnotesize\ttfamily \label{detect__policy_8c_a158c0e3f9decd67412c048e5ce4a229e} 
+\doxymbox{\hyperlink{struct_policy}{Policy}} \texorpdfstring{$\ast$}{*} detect\+\_\+policy\+\_\+create (\begin{DoxyParamCaption}\item[{uint32\+\_\+t}]{n\+\_\+procs}{, }\item[{uint32\+\_\+t}]{n\+\_\+classes}{}\end{DoxyParamCaption})}
+
+
+
+Factory-\/\+Funktion:\+ Erstellt eine neue Graph-\/\+Erkennungs-\/\+Policy. 
+
+Erstellt eine \doxylink{struct_policy}{Policy} basierend auf Wait-\/\+For-\/\+Graph-\/\+Zykluserkennung.
+
+Allokiert und initialisiert die {\ttfamily Policy-\/\+Struktur} sowie den privaten {\ttfamily \doxylink{struct_detect_ctx}{Detect\+Ctx}}. Setzt den Namen auf "{}\+Graph-\/\+Detect"{}.
+
+
+\begin{DoxyParams}{Parameters}
+{\em n\+\_\+procs} & Anzahl der simulierten Prozesse. \\
+\hline
+{\em n\+\_\+classes} & Anzahl der Ressourcenklassen. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Zeiger auf die neu erstellte {\ttfamily \doxylink{struct_policy}{Policy}}. 
+\end{DoxyReturn}

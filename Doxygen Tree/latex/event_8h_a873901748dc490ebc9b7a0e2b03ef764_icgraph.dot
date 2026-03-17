@@ -1,0 +1,11 @@
+digraph "event_push"
+{
+ // LATEX_PDF_SIZE
+  bgcolor="transparent";
+  edge [fontname=Helvetica,fontsize=10,labelfontname=Helvetica,labelfontsize=10];
+  node [fontname=Helvetica,fontsize=10,shape=box,height=0.2,width=0.4];
+  rankdir="RL";
+  Node1 [id="Node000001",label="event_push",height=0.2,width=0.4,color="gray40", fillcolor="grey60", style="filled", fontcolor="black",tooltip="Fügt ein Ereignis in den Heap ein."];
+  Node1 -> Node2 [id="edge2_Node000001_Node000002",dir="back",color="steelblue1",style="solid",tooltip=" "];
+  Node2 [id="Node000002",label="scheduler_schedule\l_event",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$scheduler_8c.html#a4930eb7a6ad09f9550f3e89d7d67f44e",tooltip="Fügt ein Ereignis in die Event-Queue ein."];
+}

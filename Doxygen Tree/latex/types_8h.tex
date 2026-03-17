@@ -1,0 +1,164 @@
+\doxysection{Src/\+core/\+types.h File Reference}
+\hypertarget{types_8h}{}\label{types_8h}\index{Src/core/types.h@{Src/core/types.h}}
+
+
+Gemeinsame Typdefinitionen für den Deadlock-\/\+Simulator.  
+
+
+{\ttfamily \+\#include $<$stdint.\+h$>$}\newline
+{\ttfamily \+\#include $<$stdbool.\+h$>$}\newline
+{\ttfamily \+\#include $<$stddef.\+h$>$}\newline
+Include dependency graph for types.\+h:\+
+% FIG 0
+This graph shows which files directly or indirectly include this file:\+
+% FIG 1
+\doxysubsubsection*{Data Structures}
+\begin{DoxyCompactItemize}
+\item 
+struct \doxymbox{\hyperlink{struct_event}{Event}}
+\begin{DoxyCompactList}\small\item\em Einzelnes Ereignis in der zeitgesteuerten Event-\/\+Queue. \end{DoxyCompactList}\item 
+struct \doxymbox{\hyperlink{struct_system_state}{System\+State}}
+\begin{DoxyCompactList}\small\item\em Zentraler Systemzustand des Ressourcen-\/\+Managers. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+typedef struct System\+State \doxymbox{\hyperlink{types_8h_aa4d858c4b8f03d983a33822d1a7906a3}{System\+State}}
+\begin{DoxyCompactList}\small\item\em Vorwärts-\/\+Deklaration des Systemzustands. \end{DoxyCompactList}\item 
+typedef bool(\texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{types_8h_a07f520a8c3f3fd37ddffbb9adbb288c5}{policy\+\_\+request\+\_\+f}}) (struct \doxymbox{\hyperlink{struct_policy}{Policy}} \texorpdfstring{$\ast$}{*}p, struct \doxymbox{\hyperlink{struct_system_state}{System\+State}} \texorpdfstring{$\ast$}{*}st, const \doxymbox{\hyperlink{struct_event}{Event}} \texorpdfstring{$\ast$}{*}ev)
+\begin{DoxyCompactList}\small\item\em Funktionszeiger-\/\+Typ für den Request-\/\+Callback einer \doxylink{struct_policy}{Policy}. \end{DoxyCompactList}\item 
+typedef void(\texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{types_8h_ac259d71943d0f9401128902272346f29}{policy\+\_\+tick\+\_\+f}}) (struct \doxymbox{\hyperlink{struct_policy}{Policy}} \texorpdfstring{$\ast$}{*}p, struct \doxymbox{\hyperlink{struct_system_state}{System\+State}} \texorpdfstring{$\ast$}{*}st, uint64\+\_\+t now)
+\begin{DoxyCompactList}\small\item\em Funktionszeiger-\/\+Typ für den periodischen Tick-\/\+Callback einer \doxylink{struct_policy}{Policy}. \end{DoxyCompactList}\item 
+typedef void(\texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{types_8h_a45ef165c8cd8039c45a0d96a03bbf5c4}{policy\+\_\+cleanup\+\_\+f}}) (struct \doxymbox{\hyperlink{struct_policy}{Policy}} \texorpdfstring{$\ast$}{*}p)
+\begin{DoxyCompactList}\small\item\em Funktionszeiger-\/\+Typ für die Aufräumfunktion einer \doxylink{struct_policy}{Policy}. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Enumerations}
+\begin{DoxyCompactItemize}
+\item 
+enum \doxymbox{\hyperlink{types_8h_a2628ea8d12e8b2563c32f05dc7fff6fa}{Event\+Type}} \{ \doxymbox{\hyperlink{types_8h_a2628ea8d12e8b2563c32f05dc7fff6faa0558f179ed95e5cdf7bf3254ca6c33ab}{EV\+\_\+\+REQUEST}}
+, \doxymbox{\hyperlink{types_8h_a2628ea8d12e8b2563c32f05dc7fff6faa5c817c4f73cd076cb5bf5d260b88e034}{EV\+\_\+\+RELEASE}}
+, \doxymbox{\hyperlink{types_8h_a2628ea8d12e8b2563c32f05dc7fff6faa0b8e7bec5e861eee1929d874a16b9da4}{EV\+\_\+\+CHECKPOINT}}
+, \doxymbox{\hyperlink{types_8h_a2628ea8d12e8b2563c32f05dc7fff6faac6455c8e8ae31ec442f1c3e891d4a6c7}{EV\+\_\+\+TERMINATE}}
+ \}
+\begin{DoxyCompactList}\small\item\em Aufzählung aller möglichen Ereignistypen in der Simulation. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Gemeinsame Typdefinitionen für den Deadlock-\/\+Simulator. 
+
+Diese Datei definiert alle grundlegenden Datenstrukturen und Typen, die von den Modulen {\ttfamily core} und {\ttfamily policy} gemeinsam genutzt werden. Dazu gehören Ereignistypen, die Ereignisstruktur, der Systemzustand sowie Funktionszeiger für das Policy-\/\+Interface. 
+
+\label{doc-typedef-members}
+\Hypertarget{types_8h_doc-typedef-members}
+\doxysubsection{Typedef Documentation}
+\Hypertarget{types_8h_a45ef165c8cd8039c45a0d96a03bbf5c4}\index{types.h@{types.h}!policy\_cleanup\_f@{policy\_cleanup\_f}}
+\index{policy\_cleanup\_f@{policy\_cleanup\_f}!types.h@{types.h}}
+\doxysubsubsection{\texorpdfstring{policy\_cleanup\_f}{policy\_cleanup\_f}}
+{\footnotesize\ttfamily \label{types_8h_a45ef165c8cd8039c45a0d96a03bbf5c4} 
+typedef void(\texorpdfstring{$\ast$}{*} policy\+\_\+cleanup\+\_\+f) (struct \doxymbox{\hyperlink{struct_policy}{Policy}} \texorpdfstring{$\ast$}{*}p)}
+
+
+
+Funktionszeiger-\/\+Typ für die Aufräumfunktion einer \doxylink{struct_policy}{Policy}. 
+
+Gibt den gesamten dynamisch allokierten Speicher der \doxylink{struct_policy}{Policy} frei, einschließlich des privaten Kontexts und der Policy-\/\+Struktur selbst.
+
+
+\begin{DoxyParams}{Parameters}
+{\em p} & Zeiger auf das freizugebende Policy-\/\+Objekt. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{types_8h_a07f520a8c3f3fd37ddffbb9adbb288c5}\index{types.h@{types.h}!policy\_request\_f@{policy\_request\_f}}
+\index{policy\_request\_f@{policy\_request\_f}!types.h@{types.h}}
+\doxysubsubsection{\texorpdfstring{policy\_request\_f}{policy\_request\_f}}
+{\footnotesize\ttfamily \label{types_8h_a07f520a8c3f3fd37ddffbb9adbb288c5} 
+typedef bool(\texorpdfstring{$\ast$}{*} policy\+\_\+request\+\_\+f) (struct \doxymbox{\hyperlink{struct_policy}{Policy}} \texorpdfstring{$\ast$}{*}p, struct \doxymbox{\hyperlink{struct_system_state}{System\+State}} \texorpdfstring{$\ast$}{*}st, const \doxymbox{\hyperlink{struct_event}{Event}} \texorpdfstring{$\ast$}{*}ev)}
+
+
+
+Funktionszeiger-\/\+Typ für den Request-\/\+Callback einer \doxylink{struct_policy}{Policy}. 
+
+Wird vom \doxylink{struct_scheduler}{Scheduler} aufgerufen, wenn ein {\ttfamily EV\+\_\+\+REQUEST-\/\+Ereignis} verarbeitet wird. Die Funktion entscheidet, ob die Anfrage genehmigt wird.
+
+
+\begin{DoxyParams}{Parameters}
+{\em p} & Zeiger auf das Policy-\/\+Objekt (inkl. privatem Kontext). \\
+\hline
+{\em st} & Aktueller Systemzustand. \\
+\hline
+{\em ev} & Das zu bearbeitende Anforderungsereignis. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+{\ttfamily true}, wenn die Anfrage genehmigt werden soll; sonst {\ttfamily false}. 
+\end{DoxyReturn}
+\Hypertarget{types_8h_ac259d71943d0f9401128902272346f29}\index{types.h@{types.h}!policy\_tick\_f@{policy\_tick\_f}}
+\index{policy\_tick\_f@{policy\_tick\_f}!types.h@{types.h}}
+\doxysubsubsection{\texorpdfstring{policy\_tick\_f}{policy\_tick\_f}}
+{\footnotesize\ttfamily \label{types_8h_ac259d71943d0f9401128902272346f29} 
+typedef void(\texorpdfstring{$\ast$}{*} policy\+\_\+tick\+\_\+f) (struct \doxymbox{\hyperlink{struct_policy}{Policy}} \texorpdfstring{$\ast$}{*}p, struct \doxymbox{\hyperlink{struct_system_state}{System\+State}} \texorpdfstring{$\ast$}{*}st, uint64\+\_\+t now)}
+
+
+
+Funktionszeiger-\/\+Typ für den periodischen Tick-\/\+Callback einer \doxylink{struct_policy}{Policy}. 
+
+Wird nach jedem verarbeiteten Ereignis aufgerufen und ermöglicht der \doxylink{struct_policy}{Policy} periodische Wartungsaufgaben (z. B. Deadlock-\/\+Erkennung).
+
+
+\begin{DoxyParams}{Parameters}
+{\em p} & Zeiger auf das Policy-\/\+Objekt. \\
+\hline
+{\em st} & Aktueller Systemzustand. \\
+\hline
+{\em now} & Aktuelle Simulationszeit. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{types_8h_aa4d858c4b8f03d983a33822d1a7906a3}\index{types.h@{types.h}!SystemState@{SystemState}}
+\index{SystemState@{SystemState}!types.h@{types.h}}
+\doxysubsubsection{\texorpdfstring{SystemState}{SystemState}}
+{\footnotesize\ttfamily \label{types_8h_aa4d858c4b8f03d983a33822d1a7906a3} 
+typedef struct System\+State System\+State}
+
+
+
+Vorwärts-\/\+Deklaration des Systemzustands. 
+
+Notwendig, damit {\ttfamily \doxylink{struct_system_state}{System\+State}} in den Funktionszeigern des Policy-\/\+Interfaces sichtbar ist, bevor die vollständige Definition folgt. 
+
+\label{doc-enum-members}
+\Hypertarget{types_8h_doc-enum-members}
+\doxysubsection{Enumeration Type Documentation}
+\Hypertarget{types_8h_a2628ea8d12e8b2563c32f05dc7fff6fa}\index{types.h@{types.h}!EventType@{EventType}}
+\index{EventType@{EventType}!types.h@{types.h}}
+\doxysubsubsection{\texorpdfstring{EventType}{EventType}}
+{\footnotesize\ttfamily \label{types_8h_a2628ea8d12e8b2563c32f05dc7fff6fa} 
+enum \doxymbox{\hyperlink{types_8h_a2628ea8d12e8b2563c32f05dc7fff6fa}{Event\+Type}}}
+
+
+
+Aufzählung aller möglichen Ereignistypen in der Simulation. 
+
+Jedes Ereignis in der Event-\/\+Queue besitzt einen dieser Typen, der bestimmt, wie der \doxylink{struct_scheduler}{Scheduler} das Ereignis verarbeitet. \begin{DoxyEnumFields}[2]{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{EV\_REQUEST@{EV\_REQUEST}!types.h@{types.h}}
+\index{types.h@{types.h}!EV\_REQUEST@{EV\_REQUEST}}
+}\Hypertarget{types_8h_a2628ea8d12e8b2563c32f05dc7fff6faa0558f179ed95e5cdf7bf3254ca6c33ab}\label{types_8h_a2628ea8d12e8b2563c32f05dc7fff6faa0558f179ed95e5cdf7bf3254ca6c33ab} 
+EV\+\_\+\+REQUEST&Ein Prozess fordert Ressourcen einer Klasse an. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{EV\_RELEASE@{EV\_RELEASE}!types.h@{types.h}}
+\index{types.h@{types.h}!EV\_RELEASE@{EV\_RELEASE}}
+}\Hypertarget{types_8h_a2628ea8d12e8b2563c32f05dc7fff6faa5c817c4f73cd076cb5bf5d260b88e034}\label{types_8h_a2628ea8d12e8b2563c32f05dc7fff6faa5c817c4f73cd076cb5bf5d260b88e034} 
+EV\+\_\+\+RELEASE&Ein Prozess gibt zuvor gehaltene Ressourcen frei. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{EV\_CHECKPOINT@{EV\_CHECKPOINT}!types.h@{types.h}}
+\index{types.h@{types.h}!EV\_CHECKPOINT@{EV\_CHECKPOINT}}
+}\Hypertarget{types_8h_a2628ea8d12e8b2563c32f05dc7fff6faa0b8e7bec5e861eee1929d874a16b9da4}\label{types_8h_a2628ea8d12e8b2563c32f05dc7fff6faa0b8e7bec5e861eee1929d874a16b9da4} 
+EV\+\_\+\+CHECKPOINT&Prüfereignis; kann für Zustandstests genutzt werden. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{EV\_TERMINATE@{EV\_TERMINATE}!types.h@{types.h}}
+\index{types.h@{types.h}!EV\_TERMINATE@{EV\_TERMINATE}}
+}\Hypertarget{types_8h_a2628ea8d12e8b2563c32f05dc7fff6faac6455c8e8ae31ec442f1c3e891d4a6c7}\label{types_8h_a2628ea8d12e8b2563c32f05dc7fff6faac6455c8e8ae31ec442f1c3e891d4a6c7} 
+EV\+\_\+\+TERMINATE&Ein Prozess beendet sich und gibt alle Ressourcen frei. \\
+\hline
+
+\end{DoxyEnumFields}

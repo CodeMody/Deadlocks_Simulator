@@ -1,0 +1,50 @@
+\doxysection{Src/\+main.c File Reference}
+\hypertarget{main_8c}{}\label{main_8c}\index{Src/main.c@{Src/main.c}}
+
+
+Einstiegspunkt des Deadlock-\/\+Simulators.  
+
+
+{\ttfamily \+\#include $<$gtk/\+gtk.\+h$>$}\newline
+{\ttfamily \+\#include "{}gui/\+gui.\+h"{}}\newline
+Include dependency graph for main.\+c:\+
+% FIG 0
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+int \doxymbox{\hyperlink{main_8c_a0ddf1224851353fc92bfbff6f499fa97}{main}} (int argc, char \texorpdfstring{$\ast$}{*}argv\+[$\,$]\+)
+\begin{DoxyCompactList}\small\item\em Hauptfunktion des Programms. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Einstiegspunkt des Deadlock-\/\+Simulators. 
+
+Initialisiert das GTK-\/3-\/\+Framework, erstellt das Hauptfenster der grafischen Benutzeroberfläche und startet die GTK-\/\+Ereignisschleife. Die Simulation selbst beginnt erst, wenn der Benutzer über die GUI eine der drei Deadlock-\/\+Policies auswählt. 
+
+\label{doc-func-members}
+\Hypertarget{main_8c_doc-func-members}
+\doxysubsection{Function Documentation}
+\Hypertarget{main_8c_a0ddf1224851353fc92bfbff6f499fa97}\index{main.c@{main.c}!main@{main}}
+\index{main@{main}!main.c@{main.c}}
+\doxysubsubsection{\texorpdfstring{main()}{main()}}
+{\footnotesize\ttfamily \label{main_8c_a0ddf1224851353fc92bfbff6f499fa97} 
+int main (\begin{DoxyParamCaption}\item[{int}]{argc}{, }\item[{char \texorpdfstring{$\ast$}{*}}]{argv}{\+[$\,$]\+}\end{DoxyParamCaption})}
+
+
+
+Hauptfunktion des Programms. 
+
+Initialisiert GTK mit den übergebenen Kommandozeilenargumenten, erstellt das Hauptfenster und startet die GTK-\/\+Ereignisschleife. Das Programm kehrt aus {\ttfamily gtk\+\_\+main()} zurück, sobald das Fenster geschlossen wird.
+
+
+\begin{DoxyParams}{Parameters}
+{\em argc} & Anzahl der Kommandozeilenargumente. \\
+\hline
+{\em argv} & Array der Kommandozeilenargumente. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+0 bei normalem Programmende. 
+\end{DoxyReturn}
+Here is the call graph for this function:\+
+% FIG 1

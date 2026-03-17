@@ -1,0 +1,32 @@
+\doxysection{scheduler.\+h}
+\hypertarget{scheduler_8h_source}{}\label{scheduler_8h_source}\index{Src/core/scheduler.h@{Src/core/scheduler.h}}
+\doxymbox{\hyperlink{scheduler_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ }
+\DoxyCodeLine{00014\ }
+\DoxyCodeLine{00015\ \textcolor{preprocessor}{\#ifndef\ SCHEDULER\_H}}
+\DoxyCodeLine{00016\ \textcolor{preprocessor}{\#define\ SCHEDULER\_H}}
+\DoxyCodeLine{00017\ }
+\DoxyCodeLine{00018\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{types_8h}{../core/types.h}}"{}}}
+\DoxyCodeLine{00019\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{event_8h}{event.h}}"{}}}
+\DoxyCodeLine{00020\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{policy_8h}{../policy/policy.h}}"{}}}
+\DoxyCodeLine{00021\ }
+\DoxyCodeLine{00028\ \textcolor{keyword}{typedef}\ \textcolor{keyword}{struct\ }\doxymbox{\hyperlink{struct_scheduler}{Scheduler}}\ \doxymbox{\hyperlink{struct_scheduler}{Scheduler}};}
+\DoxyCodeLine{00029\ }
+\DoxyCodeLine{00042\ \doxymbox{\hyperlink{struct_scheduler}{Scheduler}}\ *\doxymbox{\hyperlink{scheduler_8h_aed8357b031cdefddc28a9a0075a9fb0b}{scheduler\_create}}(\doxymbox{\hyperlink{struct_system_state}{SystemState}}\ *st,\ \doxymbox{\hyperlink{struct_policy}{Policy}}\ *\doxymbox{\hyperlink{struct_scheduler_a8abc0cbe40448087fdbad964a2d64755}{policy}});}
+\DoxyCodeLine{00043\ }
+\DoxyCodeLine{00053\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{scheduler_8h_a69ab93b6763d0753fd7fb14eac74152f}{scheduler\_destroy}}(\doxymbox{\hyperlink{struct_scheduler}{Scheduler}}\ *sch);}
+\DoxyCodeLine{00054\ }
+\DoxyCodeLine{00065\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{scheduler_8h_a4930eb7a6ad09f9550f3e89d7d67f44e}{scheduler\_schedule\_event}}(\doxymbox{\hyperlink{struct_scheduler}{Scheduler}}\ *sch,\ \textcolor{keyword}{const}\ \doxymbox{\hyperlink{struct_event}{Event}}\ *ev);}
+\DoxyCodeLine{00066\ }
+\DoxyCodeLine{00084\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{scheduler_8h_ac9a20956dd917437d66aec66f9b0b48a}{scheduler\_run\_until}}(\doxymbox{\hyperlink{struct_scheduler}{Scheduler}}\ *sch,\ uint64\_t\ until\_time);}
+\DoxyCodeLine{00085\ }
+\DoxyCodeLine{00092\ uint64\_t\ \doxymbox{\hyperlink{scheduler_8h_a64ab2d10f2d358153a2ce969e0d19501}{scheduler\_current\_time}}(\textcolor{keyword}{const}\ \doxymbox{\hyperlink{struct_scheduler}{Scheduler}}\ *sch);}
+\DoxyCodeLine{00093\ }
+\DoxyCodeLine{00100\ \doxymbox{\hyperlink{struct_system_state}{SystemState}}\ *\doxymbox{\hyperlink{scheduler_8h_a4f6065ec841da28742eec61bdf9af10d}{scheduler\_state}}(\textcolor{keyword}{const}\ \doxymbox{\hyperlink{struct_scheduler}{Scheduler}}\ *sch);}
+\DoxyCodeLine{00101\ }
+\DoxyCodeLine{00108\ \doxymbox{\hyperlink{struct_policy}{Policy}}\ *\doxymbox{\hyperlink{scheduler_8h_af3dc3076603ec428c9ce259280f33323}{scheduler\_policy}}(\textcolor{keyword}{const}\ \doxymbox{\hyperlink{struct_scheduler}{Scheduler}}\ *sch);}
+\DoxyCodeLine{00109\ }
+\DoxyCodeLine{00110\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ SCHEDULER\_H\ */}\textcolor{preprocessor}{}}
+
+\end{DoxyCode}

@@ -1,0 +1,61 @@
+\doxysection{Scheduler Struct Reference}
+\hypertarget{struct_scheduler}{}\label{struct_scheduler}\index{Scheduler@{Scheduler}}
+
+
+Interne Repräsentation des Schedulers.  
+
+
+
+
+Collaboration diagram for Scheduler:\+
+% FIG 0
+\doxysubsubsection*{Data Fields}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{struct_system_state}{System\+State}} \texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{struct_scheduler_a71a3f813868d4c1aaf49829c74a3c822}{state}}
+\item 
+\doxymbox{\hyperlink{struct_policy}{Policy}} \texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{struct_scheduler_a8abc0cbe40448087fdbad964a2d64755}{policy}}
+\item 
+\doxymbox{\hyperlink{struct_event_heap}{Event\+Heap}} \texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{struct_scheduler_abee82166d02dd5df73c9096e58e1caac}{heap}}
+\item 
+uint64\+\_\+t \doxymbox{\hyperlink{struct_scheduler_ae2650a26345ad9acf369a29f854a3a9f}{now}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Interne Repräsentation des Schedulers. 
+
+Kapselt den Systemzustand, die aktive \doxylink{struct_policy}{Policy}, den Ereignis-\/\+Heap und die aktuelle Simulationszeit. 
+
+\label{doc-variable-members}
+\Hypertarget{struct_scheduler_doc-variable-members}
+\doxysubsection{Field Documentation}
+\Hypertarget{struct_scheduler_abee82166d02dd5df73c9096e58e1caac}\index{Scheduler@{Scheduler}!heap@{heap}}
+\index{heap@{heap}!Scheduler@{Scheduler}}
+\doxysubsubsection{\texorpdfstring{heap}{heap}}
+{\footnotesize\ttfamily \label{struct_scheduler_abee82166d02dd5df73c9096e58e1caac} 
+\doxymbox{\hyperlink{struct_event_heap}{Event\+Heap}}\texorpdfstring{$\ast$}{*} heap}
+
+Min-\/\+Heap für zeitlich sortierte Ereignisse. \Hypertarget{struct_scheduler_ae2650a26345ad9acf369a29f854a3a9f}\index{Scheduler@{Scheduler}!now@{now}}
+\index{now@{now}!Scheduler@{Scheduler}}
+\doxysubsubsection{\texorpdfstring{now}{now}}
+{\footnotesize\ttfamily \label{struct_scheduler_ae2650a26345ad9acf369a29f854a3a9f} 
+uint64\+\_\+t now}
+
+Aktuelle Simulationszeit in logischen Ticks. \Hypertarget{struct_scheduler_a8abc0cbe40448087fdbad964a2d64755}\index{Scheduler@{Scheduler}!policy@{policy}}
+\index{policy@{policy}!Scheduler@{Scheduler}}
+\doxysubsubsection{\texorpdfstring{policy}{policy}}
+{\footnotesize\ttfamily \label{struct_scheduler_a8abc0cbe40448087fdbad964a2d64755} 
+\doxymbox{\hyperlink{struct_policy}{Policy}}\texorpdfstring{$\ast$}{*} policy}
+
+Zeiger auf die aktive Deadlock-\/\+Behandlungsstrategie. \Hypertarget{struct_scheduler_a71a3f813868d4c1aaf49829c74a3c822}\index{Scheduler@{Scheduler}!state@{state}}
+\index{state@{state}!Scheduler@{Scheduler}}
+\doxysubsubsection{\texorpdfstring{state}{state}}
+{\footnotesize\ttfamily \label{struct_scheduler_a71a3f813868d4c1aaf49829c74a3c822} 
+\doxymbox{\hyperlink{struct_system_state}{System\+State}}\texorpdfstring{$\ast$}{*} state}
+
+Zeiger auf den verwalteten Systemzustand (Ressourcen, Matrizen). 
+
+The documentation for this struct was generated from the following file:\+\begin{DoxyCompactItemize}
+\item 
+Src/\+core/\+\doxymbox{\hyperlink{scheduler_8c}{scheduler.\+c}}\end{DoxyCompactItemize}

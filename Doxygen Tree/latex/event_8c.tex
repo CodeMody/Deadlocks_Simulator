@@ -1,0 +1,231 @@
+\doxysection{Src/\+core/\+event.c File Reference}
+\hypertarget{event_8c}{}\label{event_8c}\index{Src/core/event.c@{Src/core/event.c}}
+
+
+Implementierung des Min-\/\+Heap-\/basierten Ereignis-\/\+Heaps.  
+
+
+{\ttfamily \+\#include "{}../\+core/\+event.\+h"{}}\newline
+{\ttfamily \+\#include $<$stdlib.\+h$>$}\newline
+{\ttfamily \+\#include $<$stdio.\+h$>$}\newline
+{\ttfamily \+\#include $<$stdbool.\+h$>$}\newline
+Include dependency graph for event.\+c:\+
+% FIG 0
+\doxysubsubsection*{Data Structures}
+\begin{DoxyCompactItemize}
+\item 
+struct \doxymbox{\hyperlink{struct_event_heap}{Event\+Heap}}
+\begin{DoxyCompactList}\small\item\em Interne Struktur des Ereignis-\/\+Heaps. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{event_8c_a78c99ffd76a7bb3c8c74db76207e9ab4}\label{event_8c_a78c99ffd76a7bb3c8c74db76207e9ab4} 
+\+\#define {\bfseries \+\_\+\+XOPEN\+\_\+\+SOURCE}~600
+\item 
+\+\#define \doxymbox{\hyperlink{event_8c_a25d5ae2e52c533b5f27895fcf7a4ea95}{LEFT}}(i)
+\begin{DoxyCompactList}\small\item\em Berechnet den Index des linken Kindknotens. \end{DoxyCompactList}\item 
+\+\#define \doxymbox{\hyperlink{event_8c_a134d4f19a207929c1e9716743771ae5a}{RIGHT}}(i)
+\begin{DoxyCompactList}\small\item\em Berechnet den Index des rechten Kindknotens. \end{DoxyCompactList}\item 
+\+\#define \doxymbox{\hyperlink{event_8c_a91004761621b8ef1c66f3601988fde7c}{PARENT}}(i)
+\begin{DoxyCompactList}\small\item\em Berechnet den Index des Elternknotens. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{struct_event_heap}{Event\+Heap}} \texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{event_8c_a5ad43efb17d226bf71b36b77e7b6b18e}{event\+\_\+heap\+\_\+create}} (void)
+\begin{DoxyCompactList}\small\item\em Erstellt einen neuen, leeren Ereignis-\/\+Heap. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{event_8c_ae92a9d97b964ba5ab575de880dfc6554}{event\+\_\+heap\+\_\+destroy}} (\doxymbox{\hyperlink{struct_event_heap}{Event\+Heap}} \texorpdfstring{$\ast$}{*}h)
+\begin{DoxyCompactList}\small\item\em Gibt einen Ereignis-\/\+Heap und seinen gesamten Speicher frei. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{event_8c_a873901748dc490ebc9b7a0e2b03ef764}{event\+\_\+push}} (\doxymbox{\hyperlink{struct_event_heap}{Event\+Heap}} \texorpdfstring{$\ast$}{*}h, const \doxymbox{\hyperlink{struct_event}{Event}} \texorpdfstring{$\ast$}{*}ev)
+\begin{DoxyCompactList}\small\item\em Fügt ein Ereignis in den Heap ein. \end{DoxyCompactList}\item 
+bool \doxymbox{\hyperlink{event_8c_ad89a7c688df0fe152dec6818a69b900b}{event\+\_\+pop}} (\doxymbox{\hyperlink{struct_event_heap}{Event\+Heap}} \texorpdfstring{$\ast$}{*}h, \doxymbox{\hyperlink{struct_event}{Event}} \texorpdfstring{$\ast$}{*}out)
+\begin{DoxyCompactList}\small\item\em Entfernt das zeitlich früheste Ereignis aus dem Heap. \end{DoxyCompactList}\item 
+bool \doxymbox{\hyperlink{event_8c_a813f27d1cdb7e0201a28786f82ccea89}{event\+\_\+peek}} (const \doxymbox{\hyperlink{struct_event_heap}{Event\+Heap}} \texorpdfstring{$\ast$}{*}h, \doxymbox{\hyperlink{struct_event}{Event}} \texorpdfstring{$\ast$}{*}out)
+\begin{DoxyCompactList}\small\item\em Liest das zeitlich früheste Ereignis, ohne es zu entfernen. \end{DoxyCompactList}\item 
+size\+\_\+t \doxymbox{\hyperlink{event_8c_aaba275e3eee0d5e4e080648b3c78fc4c}{event\+\_\+size}} (const \doxymbox{\hyperlink{struct_event_heap}{Event\+Heap}} \texorpdfstring{$\ast$}{*}h)
+\begin{DoxyCompactList}\small\item\em Gibt die aktuelle Anzahl der Ereignisse im Heap zurück. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Implementierung des Min-\/\+Heap-\/basierten Ereignis-\/\+Heaps. 
+
+Der {\ttfamily \doxylink{struct_event_heap}{Event\+Heap}} ist eine dynamisch wachsende Prioritätswarteschlange, die Ereignisse aufsteigend nach ihrem logischen Zeitstempel ({\ttfamily time}) sortiert. Er verwendet 1-\/basierte Indizierung, sodass der Index 0 unbenutzt bleibt und die Eltern-\/\+Kind-\/\+Beziehungen durch einfache Bit-\/\+Operationen berechnet werden können.
+
+Zur Berechnung der Heap-\/\+Positionen dienen folgende Makros:\+
+\begin{DoxyItemize}
+\item {\ttfamily \doxylink{event_8c_a25d5ae2e52c533b5f27895fcf7a4ea95}{LEFT(i)}} = linkes Kind = i × 2
+\item {\ttfamily \doxylink{event_8c_a134d4f19a207929c1e9716743771ae5a}{RIGHT(i)}} = rechtes Kind = i × 2 + 1
+\item {\ttfamily \doxylink{event_8c_a91004761621b8ef1c66f3601988fde7c}{PARENT(i)}} = Elternknoten = i /\+ 2 
+\end{DoxyItemize}
+
+\label{doc-define-members}
+\Hypertarget{event_8c_doc-define-members}
+\doxysubsection{Macro Definition Documentation}
+\Hypertarget{event_8c_a25d5ae2e52c533b5f27895fcf7a4ea95}\index{event.c@{event.c}!LEFT@{LEFT}}
+\index{LEFT@{LEFT}!event.c@{event.c}}
+\doxysubsubsection{\texorpdfstring{LEFT}{LEFT}}
+{\footnotesize\ttfamily \label{event_8c_a25d5ae2e52c533b5f27895fcf7a4ea95} 
+\+\#define LEFT(\begin{DoxyParamCaption}\item[{}]{i}{}\end{DoxyParamCaption})}
+
+{\bfseries Value:\+}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{((i)\ <<\ 1)}
+
+\end{DoxyCode}
+
+
+Berechnet den Index des linken Kindknotens. 
+
+\Hypertarget{event_8c_a91004761621b8ef1c66f3601988fde7c}\index{event.c@{event.c}!PARENT@{PARENT}}
+\index{PARENT@{PARENT}!event.c@{event.c}}
+\doxysubsubsection{\texorpdfstring{PARENT}{PARENT}}
+{\footnotesize\ttfamily \label{event_8c_a91004761621b8ef1c66f3601988fde7c} 
+\+\#define PARENT(\begin{DoxyParamCaption}\item[{}]{i}{}\end{DoxyParamCaption})}
+
+{\bfseries Value:\+}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{((i)\ >>\ 1)}
+
+\end{DoxyCode}
+
+
+Berechnet den Index des Elternknotens. 
+
+\Hypertarget{event_8c_a134d4f19a207929c1e9716743771ae5a}\index{event.c@{event.c}!RIGHT@{RIGHT}}
+\index{RIGHT@{RIGHT}!event.c@{event.c}}
+\doxysubsubsection{\texorpdfstring{RIGHT}{RIGHT}}
+{\footnotesize\ttfamily \label{event_8c_a134d4f19a207929c1e9716743771ae5a} 
+\+\#define RIGHT(\begin{DoxyParamCaption}\item[{}]{i}{}\end{DoxyParamCaption})}
+
+{\bfseries Value:\+}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{(((i)\ <<\ 1)\ +\ 1)}
+
+\end{DoxyCode}
+
+
+Berechnet den Index des rechten Kindknotens. 
+
+
+
+\label{doc-func-members}
+\Hypertarget{event_8c_doc-func-members}
+\doxysubsection{Function Documentation}
+\Hypertarget{event_8c_a5ad43efb17d226bf71b36b77e7b6b18e}\index{event.c@{event.c}!event\_heap\_create@{event\_heap\_create}}
+\index{event\_heap\_create@{event\_heap\_create}!event.c@{event.c}}
+\doxysubsubsection{\texorpdfstring{event\_heap\_create()}{event\_heap\_create()}}
+{\footnotesize\ttfamily \label{event_8c_a5ad43efb17d226bf71b36b77e7b6b18e} 
+\doxymbox{\hyperlink{struct_event_heap}{Event\+Heap}} \texorpdfstring{$\ast$}{*} event\+\_\+heap\+\_\+create (\begin{DoxyParamCaption}\item[{void}]{}{}\end{DoxyParamCaption})}
+
+
+
+Erstellt einen neuen, leeren Ereignis-\/\+Heap. 
+
+Allokiert Speicher für die Heap-\/\+Struktur und ein initiales Daten-\/\+Array der Kapazität 16 (Index 0 bleibt unbenutzt).
+
+\begin{DoxyReturn}{Returns}
+Zeiger auf den neu erstellten {\ttfamily \doxylink{struct_event_heap}{Event\+Heap}}. 
+\end{DoxyReturn}
+Here is the caller graph for this function:\+
+% FIG 1
+\Hypertarget{event_8c_ae92a9d97b964ba5ab575de880dfc6554}\index{event.c@{event.c}!event\_heap\_destroy@{event\_heap\_destroy}}
+\index{event\_heap\_destroy@{event\_heap\_destroy}!event.c@{event.c}}
+\doxysubsubsection{\texorpdfstring{event\_heap\_destroy()}{event\_heap\_destroy()}}
+{\footnotesize\ttfamily \label{event_8c_ae92a9d97b964ba5ab575de880dfc6554} 
+void event\+\_\+heap\+\_\+destroy (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{struct_event_heap}{Event\+Heap}} \texorpdfstring{$\ast$}{*}}]{h}{}\end{DoxyParamCaption})}
+
+
+
+Gibt einen Ereignis-\/\+Heap und seinen gesamten Speicher frei. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em h} & Zeiger auf den zu zerstörenden Heap. NULL wird sicher ignoriert. \\
+\hline
+\end{DoxyParams}
+Here is the caller graph for this function:\+
+% FIG 2
+\Hypertarget{event_8c_a813f27d1cdb7e0201a28786f82ccea89}\index{event.c@{event.c}!event\_peek@{event\_peek}}
+\index{event\_peek@{event\_peek}!event.c@{event.c}}
+\doxysubsubsection{\texorpdfstring{event\_peek()}{event\_peek()}}
+{\footnotesize\ttfamily \label{event_8c_a813f27d1cdb7e0201a28786f82ccea89} 
+bool event\+\_\+peek (\begin{DoxyParamCaption}\item[{const \doxymbox{\hyperlink{struct_event_heap}{Event\+Heap}} \texorpdfstring{$\ast$}{*}}]{h}{, }\item[{\doxymbox{\hyperlink{struct_event}{Event}} \texorpdfstring{$\ast$}{*}}]{out}{}\end{DoxyParamCaption})}
+
+
+
+Liest das zeitlich früheste Ereignis, ohne es zu entfernen. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em h} & Zeiger auf den Heap (const). \\
+\hline
+{\em out} & Ausgabeparameter; wird mit dem Wurzelelement befüllt. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+{\ttfamily true} bei Erfolg; {\ttfamily false}, wenn der Heap leer ist. 
+\end{DoxyReturn}
+Here is the caller graph for this function:\+
+% FIG 3
+\Hypertarget{event_8c_ad89a7c688df0fe152dec6818a69b900b}\index{event.c@{event.c}!event\_pop@{event\_pop}}
+\index{event\_pop@{event\_pop}!event.c@{event.c}}
+\doxysubsubsection{\texorpdfstring{event\_pop()}{event\_pop()}}
+{\footnotesize\ttfamily \label{event_8c_ad89a7c688df0fe152dec6818a69b900b} 
+bool event\+\_\+pop (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{struct_event_heap}{Event\+Heap}} \texorpdfstring{$\ast$}{*}}]{h}{, }\item[{\doxymbox{\hyperlink{struct_event}{Event}} \texorpdfstring{$\ast$}{*}}]{out}{}\end{DoxyParamCaption})}
+
+
+
+Entfernt das zeitlich früheste Ereignis aus dem Heap. 
+
+Das Wurzelelement (Index 1, kleinster Zeitstempel) wird in {\ttfamily out} geschrieben. Das letzte Element rückt an die Wurzel und sinkt durch {\ttfamily heap\+\_\+sift\+\_\+down()} an die richtige Position.
+
+
+\begin{DoxyParams}{Parameters}
+{\em h} & Zeiger auf den Heap. \\
+\hline
+{\em out} & Ausgabeparameter; wird mit dem entfernten Ereignis befüllt. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+{\ttfamily true} bei Erfolg; {\ttfamily false}, wenn der Heap leer ist. 
+\end{DoxyReturn}
+Here is the caller graph for this function:\+
+% FIG 4
+\Hypertarget{event_8c_a873901748dc490ebc9b7a0e2b03ef764}\index{event.c@{event.c}!event\_push@{event\_push}}
+\index{event\_push@{event\_push}!event.c@{event.c}}
+\doxysubsubsection{\texorpdfstring{event\_push()}{event\_push()}}
+{\footnotesize\ttfamily \label{event_8c_a873901748dc490ebc9b7a0e2b03ef764} 
+void event\+\_\+push (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{struct_event_heap}{Event\+Heap}} \texorpdfstring{$\ast$}{*}}]{h}{, }\item[{const \doxymbox{\hyperlink{struct_event}{Event}} \texorpdfstring{$\ast$}{*}}]{ev}{}\end{DoxyParamCaption})}
+
+
+
+Fügt ein Ereignis in den Heap ein. 
+
+Falls die Kapazität erschöpft ist, wird das interne Array auf die doppelte Größe vergrößert. Das neue Ereignis wird am Ende eingefügt und anschließend durch {\ttfamily heap\+\_\+sift\+\_\+up()} an die richtige Position verschoben.
+
+
+\begin{DoxyParams}{Parameters}
+{\em h} & Zeiger auf den Heap. \\
+\hline
+{\em ev} & Zeiger auf das einzufügende Ereignis (wird per Wert kopiert). \\
+\hline
+\end{DoxyParams}
+Here is the caller graph for this function:\+
+% FIG 5
+\Hypertarget{event_8c_aaba275e3eee0d5e4e080648b3c78fc4c}\index{event.c@{event.c}!event\_size@{event\_size}}
+\index{event\_size@{event\_size}!event.c@{event.c}}
+\doxysubsubsection{\texorpdfstring{event\_size()}{event\_size()}}
+{\footnotesize\ttfamily \label{event_8c_aaba275e3eee0d5e4e080648b3c78fc4c} 
+size\+\_\+t event\+\_\+size (\begin{DoxyParamCaption}\item[{const \doxymbox{\hyperlink{struct_event_heap}{Event\+Heap}} \texorpdfstring{$\ast$}{*}}]{h}{}\end{DoxyParamCaption})}
+
+
+
+Gibt die aktuelle Anzahl der Ereignisse im Heap zurück. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em h} & Zeiger auf den Heap (const). \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Anzahl der gespeicherten Ereignisse. 
+\end{DoxyReturn}

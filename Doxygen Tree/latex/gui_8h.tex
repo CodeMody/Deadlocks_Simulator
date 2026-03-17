@@ -1,0 +1,171 @@
+\doxysection{Src/\+gui/\+gui.h File Reference}
+\hypertarget{gui_8h}{}\label{gui_8h}\index{Src/gui/gui.h@{Src/gui/gui.h}}
+
+
+Öffentliches Interface für das GTK-\/3-\/\+Frontend des Deadlock-\/\+Simulators.  
+
+
+{\ttfamily \+\#include $<$gtk/\+gtk.\+h$>$}\newline
+{\ttfamily \+\#include $<$stdint.\+h$>$}\newline
+{\ttfamily \+\#include "{}../\+core/\+scheduler.\+h"{}}\newline
+{\ttfamily \+\#include "{}../\+policy/\+policy.\+h"{}}\newline
+Include dependency graph for gui.\+h:\+
+% FIG 0
+This graph shows which files directly or indirectly include this file:\+
+% FIG 1
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+Gtk\+Widget \texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{gui_8h_a5fc5aff1c264c831532a5d1195d5e14b}{gui\+\_\+create\+\_\+window}} (void)
+\begin{DoxyCompactList}\small\item\em Erstellt das Hauptfenster der Anwendung und zeigt es an. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{gui_8h_a5a73f9ff06aa76993e6b6d2d5b8001fd}{gui\+\_\+set\+\_\+policy}} (\doxymbox{\hyperlink{struct_policy}{Policy}} \texorpdfstring{$\ast$}{*}new\+\_\+policy)
+\begin{DoxyCompactList}\small\item\em Wechselt die aktive Deadlock-\/\+Policy und startet die Simulation neu. \end{DoxyCompactList}\item 
+gboolean \doxymbox{\hyperlink{gui_8h_ae8d1920380ab8e5b74a4ccc7965c6567}{gui\+\_\+step}} (gpointer user\+\_\+data)
+\begin{DoxyCompactList}\small\item\em Führt einen einzelnen Simulationsschritt aus und aktualisiert die GUI. \end{DoxyCompactList}\item 
+uint64\+\_\+t \doxymbox{\hyperlink{gui_8h_a3b447f56f2141b04fc09b547fad858b9}{gui\+\_\+get\+\_\+deadlock\+\_\+counter}} (void)
+\begin{DoxyCompactList}\small\item\em Gibt den aktuellen Verschiebungs-\//\+\+Deadlock-\/\+Zähler zurück. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Öffentliches Interface für das GTK-\/3-\/\+Frontend des Deadlock-\/\+Simulators. 
+
+Dieses Modul implementiert die grafische Benutzeroberfläche mit folgenden Elementen und Funktionen:\+
+\begin{DoxyItemize}
+\item Drei Policy-\/\+Schaltflächen zur Auswahl der Deadlock-\/\+Behandlungsstrategie.
+\item Eine Step-\/\+Schaltfläche für manuelle Einzelschritte der Simulation.
+\item Eine Statusleiste mit aktivem Policy-\/\+Namen, Verschiebungs-\/\+Zähler und Tick.
+\item Ein scrollbares Textfenster für den Echtzeit-\/\+Snapshot des Systemzustands.
+\item Eine Legende zur Erklärung der angezeigten Felder.
+\item Automatisches Update der Anzeige einmal pro Sekunde via GTK-\/\+Timer. 
+\end{DoxyItemize}
+
+\label{doc-func-members}
+\Hypertarget{gui_8h_doc-func-members}
+\doxysubsection{Function Documentation}
+\Hypertarget{gui_8h_a5fc5aff1c264c831532a5d1195d5e14b}\index{gui.h@{gui.h}!gui\_create\_window@{gui\_create\_window}}
+\index{gui\_create\_window@{gui\_create\_window}!gui.h@{gui.h}}
+\doxysubsubsection{\texorpdfstring{gui\_create\_window()}{gui\_create\_window()}}
+{\footnotesize\ttfamily \label{gui_8h_a5fc5aff1c264c831532a5d1195d5e14b} 
+Gtk\+Widget \texorpdfstring{$\ast$}{*} gui\+\_\+create\+\_\+window (\begin{DoxyParamCaption}\item[{void}]{}{}\end{DoxyParamCaption})}
+
+
+
+Erstellt das Hauptfenster der Anwendung und zeigt es an. 
+
+Initialisiert alle GTK-\/\+Widgets (Buttons, Labels, Text\+View, Legende), lädt das CSS-\/\+Theme und startet den periodischen Timer für automatische Simulationsschritte (1 Sekunde Intervall). Das Fenster wird sofort angezeigt, die Simulation startet jedoch erst nach Auswahl einer \doxylink{struct_policy}{Policy}.
+
+\begin{DoxyReturn}{Returns}
+Zeiger auf das erstellte Top-\/\+Level-\/\+Gtk\+Widget (Hauptfenster).
+\end{DoxyReturn}
+Erstellt das Hauptfenster der Anwendung und zeigt es an.
+
+Aufbau des Fensters (von oben nach unten):\+
+\begin{DoxyEnumerate}
+\item {\bfseries{Header}}:\+ Titel "{}\+DEADLOCK SIMULATOR"{} und Untertitel "{}\+BETRIEB SYSTEME"{}.
+\item {\bfseries{Button-\/\+Leiste}}:\+ Drei Policy-\/\+Buttons (links) und Step-\/\+Button (rechts).
+\item {\bfseries{Statusleiste}}:\+ Policy-\/\+Name · Verschiebungs-\/\+Zähler · Tick-\/\+Counter.
+\item {\bfseries{Hauptbereich}}:\+ Text\+View mit Systemzustand (links) \texorpdfstring{$\vert$}{|} Legende (rechts).
+\end{DoxyEnumerate}
+
+Nach dem Erstellen wird ein GTK-\/\+Timer gestartet, der {\ttfamily \doxylink{gui_8h_ae8d1920380ab8e5b74a4ccc7965c6567}{gui\+\_\+step()}} einmal pro Sekunde aufruft, falls bereits eine \doxylink{struct_policy}{Policy} aktiv ist.
+
+\begin{DoxyReturn}{Returns}
+Zeiger auf das erstellte Top-\/\+Level-\/\+Gtk\+Widget. 
+\end{DoxyReturn}
+Here is the call graph for this function:\+
+% FIG 2
+Here is the caller graph for this function:\+
+% FIG 3
+\Hypertarget{gui_8h_a3b447f56f2141b04fc09b547fad858b9}\index{gui.h@{gui.h}!gui\_get\_deadlock\_counter@{gui\_get\_deadlock\_counter}}
+\index{gui\_get\_deadlock\_counter@{gui\_get\_deadlock\_counter}!gui.h@{gui.h}}
+\doxysubsubsection{\texorpdfstring{gui\_get\_deadlock\_counter()}{gui\_get\_deadlock\_counter()}}
+{\footnotesize\ttfamily \label{gui_8h_a3b447f56f2141b04fc09b547fad858b9} 
+uint64\+\_\+t gui\+\_\+get\+\_\+deadlock\+\_\+counter (\begin{DoxyParamCaption}\item[{void}]{}{}\end{DoxyParamCaption})}
+
+
+
+Gibt den aktuellen Verschiebungs-\//\+\+Deadlock-\/\+Zähler zurück. 
+
+Liest das erste {\ttfamily uint64\+\_\+t-\/\+Feld} aus dem privaten Kontext der aktiven \doxylink{struct_policy}{Policy}, das bei allen drei Policy-\/\+Implementierungen als Zähler für verschobene Anfragen dient.
+
+\begin{DoxyReturn}{Returns}
+Anzahl der bisher verschobenen Anfragen, oder 0 wenn keine \doxylink{struct_policy}{Policy} aktiv ist.
+\end{DoxyReturn}
+Gibt den aktuellen Verschiebungs-\//\+\+Deadlock-\/\+Zähler zurück.
+
+\begin{DoxyReturn}{Returns}
+Anzahl verschobener Anfragen; 0, wenn keine \doxylink{struct_policy}{Policy} aktiv. 
+\end{DoxyReturn}
+\Hypertarget{gui_8h_a5a73f9ff06aa76993e6b6d2d5b8001fd}\index{gui.h@{gui.h}!gui\_set\_policy@{gui\_set\_policy}}
+\index{gui\_set\_policy@{gui\_set\_policy}!gui.h@{gui.h}}
+\doxysubsubsection{\texorpdfstring{gui\_set\_policy()}{gui\_set\_policy()}}
+{\footnotesize\ttfamily \label{gui_8h_a5a73f9ff06aa76993e6b6d2d5b8001fd} 
+void gui\+\_\+set\+\_\+policy (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{struct_policy}{Policy}} \texorpdfstring{$\ast$}{*}}]{new\+\_\+policy}{}\end{DoxyParamCaption})}
+
+
+
+Wechselt die aktive Deadlock-\/\+Policy und startet die Simulation neu. 
+
+Die Funktion führt folgende Schritte durch:\+
+\begin{DoxyEnumerate}
+\item Stoppt den periodischen GTK-\/\+Timer.
+\item Gibt den alten \doxylink{struct_scheduler}{Scheduler}, den \doxylink{struct_system_state}{System\+State} und die \doxylink{struct_policy}{Policy} frei.
+\item Erstellt einen neuen Demo-\/\+Systemzustand.
+\item Erstellt einen neuen \doxylink{struct_scheduler}{Scheduler} mit der übergebenen \doxylink{struct_policy}{Policy}.
+\item Initialisiert den Prozess-\/\+Simulator neu.
+\item Aktualisiert alle GUI-\/\+Elemente.
+\item Startet den periodischen Timer neu.
+\end{DoxyEnumerate}
+
+
+\begin{DoxyParams}{Parameters}
+{\em new\+\_\+policy} & Zeiger auf die neu zu aktivierende \doxylink{struct_policy}{Policy}. Der \doxylink{struct_scheduler}{Scheduler} übernimmt die Eigentümerschaft und gibt die \doxylink{struct_policy}{Policy} beim nächsten Aufruf von {\ttfamily \doxylink{gui_8h_a5a73f9ff06aa76993e6b6d2d5b8001fd}{gui\+\_\+set\+\_\+policy()}} oder beim Beenden automatisch frei.\\
+\hline
+\end{DoxyParams}
+Wechselt die aktive Deadlock-\/\+Policy und startet die Simulation neu.
+
+Stoppt den Timer, gibt alle bestehenden Ressourcen frei und startet die Simulation mit der neuen \doxylink{struct_policy}{Policy} und einem frischen Systemzustand neu.
+
+
+\begin{DoxyParams}{Parameters}
+{\em new\+\_\+policy} & Zeiger auf die neu zu aktivierende \doxylink{struct_policy}{Policy}. \\
+\hline
+\end{DoxyParams}
+Here is the call graph for this function:\+
+% FIG 4
+\Hypertarget{gui_8h_ae8d1920380ab8e5b74a4ccc7965c6567}\index{gui.h@{gui.h}!gui\_step@{gui\_step}}
+\index{gui\_step@{gui\_step}!gui.h@{gui.h}}
+\doxysubsubsection{\texorpdfstring{gui\_step()}{gui\_step()}}
+{\footnotesize\ttfamily \label{gui_8h_ae8d1920380ab8e5b74a4ccc7965c6567} 
+gboolean gui\+\_\+step (\begin{DoxyParamCaption}\item[{gpointer}]{user\+\_\+data}{}\end{DoxyParamCaption})}
+
+
+
+Führt einen einzelnen Simulationsschritt aus und aktualisiert die GUI. 
+
+Erzeugt prozedurale Ereignisse für den nächsten Tick, ruft {\ttfamily \doxylink{scheduler_8c_a072f99c69fdc10eabfb9883bcffcf1ee}{scheduler\+\_\+run\+\_\+until()}} auf und aktualisiert den Snapshot-\/\+Text, den Verschiebungs-\/\+Zähler und den Tick-\/\+Counter.
+
+Die Signatur ist kompatibel mit {\ttfamily GSource\+Func}, damit GTK diese Funktion als periodischen Timer-\/\+Callback verwenden kann.
+
+
+\begin{DoxyParams}{Parameters}
+{\em user\+\_\+data} & Wird nicht verwendet (GTK-\/\+Konvention). \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+{\ttfamily G\+\_\+\+SOURCE\+\_\+\+CONTINUE}, damit der Timer weiterläuft.
+\end{DoxyReturn}
+Erzeugt Ereignisse für den nächsten Tick, lässt den \doxylink{struct_scheduler}{Scheduler} sie verarbeiten und aktualisiert alle GUI-\/\+Elemente (Snapshot, Zähler, Tick).
+
+
+\begin{DoxyParams}{Parameters}
+{\em user\+\_\+data} & Nicht verwendet (GTK-\/\+Konvention für {\ttfamily GSource\+Func}). \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+{\ttfamily G\+\_\+\+SOURCE\+\_\+\+CONTINUE}, damit der GTK-\/\+Timer weiterläuft. 
+\end{DoxyReturn}
+Here is the call graph for this function:\+
+% FIG 5
+Here is the caller graph for this function:\+
+% FIG 6

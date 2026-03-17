@@ -1,0 +1,77 @@
+\doxysection{Event Struct Reference}
+\hypertarget{struct_event}{}\label{struct_event}\index{Event@{Event}}
+
+
+Einzelnes Ereignis in der zeitgesteuerten Event-\/\+Queue.  
+
+
+
+
+{\ttfamily \+\#include $<$types.\+h$>$}
+
+\doxysubsubsection*{Data Fields}
+\begin{DoxyCompactItemize}
+\item 
+uint64\+\_\+t \doxymbox{\hyperlink{struct_event_a5d34a8f2dfe25421b2b473a5fd37b0ed}{time}}
+\item 
+\doxymbox{\hyperlink{types_8h_a2628ea8d12e8b2563c32f05dc7fff6fa}{Event\+Type}} \doxymbox{\hyperlink{struct_event_a2f18e60350b641236ab0e724d0622d1d}{type}}
+\item 
+uint32\+\_\+t \doxymbox{\hyperlink{struct_event_aec32162d9dc3fde2c76d766af522dae5}{pid}}
+\item 
+uint32\+\_\+t \doxymbox{\hyperlink{struct_event_ae81ae81e0fbbe56602d14d9ed89e15c1}{class\+\_\+id}}
+\item 
+uint32\+\_\+t \doxymbox{\hyperlink{struct_event_a070da2496793ccf8efc39f311bcda914}{amount}}
+\item 
+uint32\+\_\+t \doxymbox{\hyperlink{struct_event_afae57bc4eae51730b7c5cc1ac29ea99a}{retries}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Einzelnes Ereignis in der zeitgesteuerten Event-\/\+Queue. 
+
+Ereignisse werden in einem Min-\/\+Heap nach {\ttfamily time} sortiert. Bei abgelehnten Anfragen wird das Ereignis mit erhöhtem {\ttfamily retries-\/\+Zähler} erneut in die Queue eingetragen. 
+
+\label{doc-variable-members}
+\Hypertarget{struct_event_doc-variable-members}
+\doxysubsection{Field Documentation}
+\Hypertarget{struct_event_a070da2496793ccf8efc39f311bcda914}\index{Event@{Event}!amount@{amount}}
+\index{amount@{amount}!Event@{Event}}
+\doxysubsubsection{\texorpdfstring{amount}{amount}}
+{\footnotesize\ttfamily \label{struct_event_a070da2496793ccf8efc39f311bcda914} 
+uint32\+\_\+t amount}
+
+Anzahl der angeforderten oder freigegebenen Instanzen. \Hypertarget{struct_event_ae81ae81e0fbbe56602d14d9ed89e15c1}\index{Event@{Event}!class\_id@{class\_id}}
+\index{class\_id@{class\_id}!Event@{Event}}
+\doxysubsubsection{\texorpdfstring{class\_id}{class\_id}}
+{\footnotesize\ttfamily \label{struct_event_ae81ae81e0fbbe56602d14d9ed89e15c1} 
+uint32\+\_\+t class\+\_\+id}
+
+Betroffene Ressourcenklasse (Index in den Matrizen). \Hypertarget{struct_event_aec32162d9dc3fde2c76d766af522dae5}\index{Event@{Event}!pid@{pid}}
+\index{pid@{pid}!Event@{Event}}
+\doxysubsubsection{\texorpdfstring{pid}{pid}}
+{\footnotesize\ttfamily \label{struct_event_aec32162d9dc3fde2c76d766af522dae5} 
+uint32\+\_\+t pid}
+
+ID des betroffenen Prozesses. \Hypertarget{struct_event_afae57bc4eae51730b7c5cc1ac29ea99a}\index{Event@{Event}!retries@{retries}}
+\index{retries@{retries}!Event@{Event}}
+\doxysubsubsection{\texorpdfstring{retries}{retries}}
+{\footnotesize\ttfamily \label{struct_event_afae57bc4eae51730b7c5cc1ac29ea99a} 
+uint32\+\_\+t retries}
+
+Anzahl bisheriger Wiederholungsversuche (für Retry-\/\+Limit). \Hypertarget{struct_event_a5d34a8f2dfe25421b2b473a5fd37b0ed}\index{Event@{Event}!time@{time}}
+\index{time@{time}!Event@{Event}}
+\doxysubsubsection{\texorpdfstring{time}{time}}
+{\footnotesize\ttfamily \label{struct_event_a5d34a8f2dfe25421b2b473a5fd37b0ed} 
+uint64\+\_\+t time}
+
+Logischer Zeitstempel des Ereignisses (in Ticks). \Hypertarget{struct_event_a2f18e60350b641236ab0e724d0622d1d}\index{Event@{Event}!type@{type}}
+\index{type@{type}!Event@{Event}}
+\doxysubsubsection{\texorpdfstring{type}{type}}
+{\footnotesize\ttfamily \label{struct_event_a2f18e60350b641236ab0e724d0622d1d} 
+\doxymbox{\hyperlink{types_8h_a2628ea8d12e8b2563c32f05dc7fff6fa}{Event\+Type}} type}
+
+Art des Ereignisses (Anforderung, Freigabe, …). 
+
+The documentation for this struct was generated from the following file:\+\begin{DoxyCompactItemize}
+\item 
+Src/\+core/\+\doxymbox{\hyperlink{types_8h}{types.\+h}}\end{DoxyCompactItemize}

@@ -1,0 +1,73 @@
+\doxysection{Policy Struct Reference}
+\hypertarget{struct_policy}{}\label{struct_policy}\index{Policy@{Policy}}
+
+
+Policy-\/\+Objekt, das eine Deadlock-\/\+Behandlungsstrategie darstellt.  
+
+
+
+
+{\ttfamily \+\#include $<$policy.\+h$>$}
+
+
+
+Collaboration diagram for Policy:\+
+% FIG 0
+\doxysubsubsection*{Data Fields}
+\begin{DoxyCompactItemize}
+\item 
+const char \texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{struct_policy_a8f8f80d37794cde9472343e4487ba3eb}{name}}
+\item 
+\doxymbox{\hyperlink{types_8h_a07f520a8c3f3fd37ddffbb9adbb288c5}{policy\+\_\+request\+\_\+f}} \doxymbox{\hyperlink{struct_policy_ae4d34c497fce51d6956b15f5fe834d60}{on\+\_\+request}}
+\item 
+\doxymbox{\hyperlink{types_8h_ac259d71943d0f9401128902272346f29}{policy\+\_\+tick\+\_\+f}} \doxymbox{\hyperlink{struct_policy_af51d31d4c7f04d3e768411aa0d6a4819}{on\+\_\+tick}}
+\item 
+\doxymbox{\hyperlink{types_8h_a45ef165c8cd8039c45a0d96a03bbf5c4}{policy\+\_\+cleanup\+\_\+f}} \doxymbox{\hyperlink{struct_policy_a427329a451aee7ed2ba7fb5ebe36d162}{cleanup}}
+\item 
+void \texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{struct_policy_ad8cc6e120962b4548e2f7d116c4ed560}{private}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Policy-\/\+Objekt, das eine Deadlock-\/\+Behandlungsstrategie darstellt. 
+
+Jede konkrete Strategie befüllt diese Struktur mit ihrem Namen, ihren Callback-\/\+Funktionen und einem optionalen privaten Kontext. Der \doxylink{struct_scheduler}{Scheduler} hält einen Zeiger auf dieses Objekt und ruft die Callbacks entsprechend auf. 
+
+\label{doc-variable-members}
+\Hypertarget{struct_policy_doc-variable-members}
+\doxysubsection{Field Documentation}
+\Hypertarget{struct_policy_a427329a451aee7ed2ba7fb5ebe36d162}\index{Policy@{Policy}!cleanup@{cleanup}}
+\index{cleanup@{cleanup}!Policy@{Policy}}
+\doxysubsubsection{\texorpdfstring{cleanup}{cleanup}}
+{\footnotesize\ttfamily \label{struct_policy_a427329a451aee7ed2ba7fb5ebe36d162} 
+\doxymbox{\hyperlink{types_8h_a45ef165c8cd8039c45a0d96a03bbf5c4}{policy\+\_\+cleanup\+\_\+f}} cleanup}
+
+Callback:\+ gibt den gesamten Speicher der \doxylink{struct_policy}{Policy} frei. \Hypertarget{struct_policy_a8f8f80d37794cde9472343e4487ba3eb}\index{Policy@{Policy}!name@{name}}
+\index{name@{name}!Policy@{Policy}}
+\doxysubsubsection{\texorpdfstring{name}{name}}
+{\footnotesize\ttfamily \label{struct_policy_a8f8f80d37794cde9472343e4487ba3eb} 
+const char\texorpdfstring{$\ast$}{*} name}
+
+Menschenlesbarer Name der \doxylink{struct_policy}{Policy} (z. B. "{}\+Banker (multi)"{}). \Hypertarget{struct_policy_ae4d34c497fce51d6956b15f5fe834d60}\index{Policy@{Policy}!on\_request@{on\_request}}
+\index{on\_request@{on\_request}!Policy@{Policy}}
+\doxysubsubsection{\texorpdfstring{on\_request}{on\_request}}
+{\footnotesize\ttfamily \label{struct_policy_ae4d34c497fce51d6956b15f5fe834d60} 
+\doxymbox{\hyperlink{types_8h_a07f520a8c3f3fd37ddffbb9adbb288c5}{policy\+\_\+request\+\_\+f}} on\+\_\+request}
+
+Callback:\+ wird bei jedem {\ttfamily EV\+\_\+\+REQUEST-\/\+Ereignis} aufgerufen. \Hypertarget{struct_policy_af51d31d4c7f04d3e768411aa0d6a4819}\index{Policy@{Policy}!on\_tick@{on\_tick}}
+\index{on\_tick@{on\_tick}!Policy@{Policy}}
+\doxysubsubsection{\texorpdfstring{on\_tick}{on\_tick}}
+{\footnotesize\ttfamily \label{struct_policy_af51d31d4c7f04d3e768411aa0d6a4819} 
+\doxymbox{\hyperlink{types_8h_ac259d71943d0f9401128902272346f29}{policy\+\_\+tick\+\_\+f}} on\+\_\+tick}
+
+Callback:\+ optionale Wartungsfunktion nach jedem verarbeiteten Ereignis. \Hypertarget{struct_policy_ad8cc6e120962b4548e2f7d116c4ed560}\index{Policy@{Policy}!private@{private}}
+\index{private@{private}!Policy@{Policy}}
+\doxysubsubsection{\texorpdfstring{private}{private}}
+{\footnotesize\ttfamily \label{struct_policy_ad8cc6e120962b4548e2f7d116c4ed560} 
+void\texorpdfstring{$\ast$}{*} private}
+
+Policy-\/spezifischer Kontext (opak für den \doxylink{struct_scheduler}{Scheduler}). 
+
+The documentation for this struct was generated from the following file:\+\begin{DoxyCompactItemize}
+\item 
+Src/\+policy/\+\doxymbox{\hyperlink{policy_8h}{policy.\+h}}\end{DoxyCompactItemize}

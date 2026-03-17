@@ -1,0 +1,53 @@
+\doxysection{Event\+Heap Struct Reference}
+\hypertarget{struct_event_heap}{}\label{struct_event_heap}\index{EventHeap@{EventHeap}}
+
+
+Interne Struktur des Ereignis-\/\+Heaps.  
+
+
+
+
+Collaboration diagram for Event\+Heap:\+
+% FIG 0
+\doxysubsubsection*{Data Fields}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{struct_event}{Event}} \texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{struct_event_heap_a8b1671d5a86e739acaf06544437548eb}{data}}
+\item 
+size\+\_\+t \doxymbox{\hyperlink{struct_event_heap_a854352f53b148adc24983a58a1866d66}{size}}
+\item 
+size\+\_\+t \doxymbox{\hyperlink{struct_event_heap_ad721fc6ca6a3d6ba3bc506576622aab0}{capacity}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Interne Struktur des Ereignis-\/\+Heaps. 
+
+Das Daten-\/\+Array ({\ttfamily data}) wird dynamisch verwaltet. Die Kapazität verdoppelt sich bei Bedarf. Index 0 bleibt aus Gründen der einfacheren Eltern-\/\+Kind-\/\+Berechnung unbenutzt. 
+
+\label{doc-variable-members}
+\Hypertarget{struct_event_heap_doc-variable-members}
+\doxysubsection{Field Documentation}
+\Hypertarget{struct_event_heap_ad721fc6ca6a3d6ba3bc506576622aab0}\index{EventHeap@{EventHeap}!capacity@{capacity}}
+\index{capacity@{capacity}!EventHeap@{EventHeap}}
+\doxysubsubsection{\texorpdfstring{capacity}{capacity}}
+{\footnotesize\ttfamily \label{struct_event_heap_ad721fc6ca6a3d6ba3bc506576622aab0} 
+size\+\_\+t capacity}
+
+Gesamtkapazität des Arrays (einschließlich des unbenutzten Index 0). \Hypertarget{struct_event_heap_a8b1671d5a86e739acaf06544437548eb}\index{EventHeap@{EventHeap}!data@{data}}
+\index{data@{data}!EventHeap@{EventHeap}}
+\doxysubsubsection{\texorpdfstring{data}{data}}
+{\footnotesize\ttfamily \label{struct_event_heap_a8b1671d5a86e739acaf06544437548eb} 
+\doxymbox{\hyperlink{struct_event}{Event}}\texorpdfstring{$\ast$}{*} data}
+
+Daten-\/\+Array; gültige Elemente liegen auf den Indizes 1..size. \Hypertarget{struct_event_heap_a854352f53b148adc24983a58a1866d66}\index{EventHeap@{EventHeap}!size@{size}}
+\index{size@{size}!EventHeap@{EventHeap}}
+\doxysubsubsection{\texorpdfstring{size}{size}}
+{\footnotesize\ttfamily \label{struct_event_heap_a854352f53b148adc24983a58a1866d66} 
+size\+\_\+t size}
+
+Aktuelle Anzahl der gespeicherten Ereignisse. 
+
+The documentation for this struct was generated from the following file:\+\begin{DoxyCompactItemize}
+\item 
+Src/\+core/\+\doxymbox{\hyperlink{event_8c}{event.\+c}}\end{DoxyCompactItemize}

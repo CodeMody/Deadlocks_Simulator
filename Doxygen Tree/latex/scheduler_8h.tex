@@ -1,0 +1,283 @@
+\doxysection{Src/\+core/\+scheduler.h File Reference}
+\hypertarget{scheduler_8h}{}\label{scheduler_8h}\index{Src/core/scheduler.h@{Src/core/scheduler.h}}
+
+
+Öffentliches Interface für den ereignisgesteuerten Simulator-\/\+Kern.  
+
+
+{\ttfamily \+\#include "{}../\+core/\+types.\+h"{}}\newline
+{\ttfamily \+\#include "{}event.\+h"{}}\newline
+{\ttfamily \+\#include "{}../\+policy/\+policy.\+h"{}}\newline
+Include dependency graph for scheduler.\+h:\+
+% FIG 0
+This graph shows which files directly or indirectly include this file:\+
+% FIG 1
+\doxysubsubsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+typedef struct Scheduler \doxymbox{\hyperlink{scheduler_8h_a1ef1f6f320939ca611a0caca79a97ff1}{Scheduler}}
+\begin{DoxyCompactList}\small\item\em Opaker Zeiger auf die interne Scheduler-\/\+Struktur. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{struct_scheduler}{Scheduler}} \texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{scheduler_8h_aed8357b031cdefddc28a9a0075a9fb0b}{scheduler\+\_\+create}} (\doxymbox{\hyperlink{struct_system_state}{System\+State}} \texorpdfstring{$\ast$}{*}st, \doxymbox{\hyperlink{struct_policy}{Policy}} \texorpdfstring{$\ast$}{*}policy)
+\begin{DoxyCompactList}\small\item\em Erstellt einen neuen \doxylink{struct_scheduler}{Scheduler}. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{scheduler_8h_a69ab93b6763d0753fd7fb14eac74152f}{scheduler\+\_\+destroy}} (\doxymbox{\hyperlink{struct_scheduler}{Scheduler}} \texorpdfstring{$\ast$}{*}sch)
+\begin{DoxyCompactList}\small\item\em Zerstört einen \doxylink{struct_scheduler}{Scheduler} und gibt seinen Speicher frei. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{scheduler_8h_a4930eb7a6ad09f9550f3e89d7d67f44e}{scheduler\+\_\+schedule\+\_\+event}} (\doxymbox{\hyperlink{struct_scheduler}{Scheduler}} \texorpdfstring{$\ast$}{*}sch, const \doxymbox{\hyperlink{struct_event}{Event}} \texorpdfstring{$\ast$}{*}ev)
+\begin{DoxyCompactList}\small\item\em Plant ein Ereignis in der Event-\/\+Queue ein. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{scheduler_8h_ac9a20956dd917437d66aec66f9b0b48a}{scheduler\+\_\+run\+\_\+until}} (\doxymbox{\hyperlink{struct_scheduler}{Scheduler}} \texorpdfstring{$\ast$}{*}sch, uint64\+\_\+t until\+\_\+time)
+\begin{DoxyCompactList}\small\item\em Verarbeitet alle Ereignisse bis einschließlich {\ttfamily until\+\_\+time}. \end{DoxyCompactList}\item 
+uint64\+\_\+t \doxymbox{\hyperlink{scheduler_8h_a64ab2d10f2d358153a2ce969e0d19501}{scheduler\+\_\+current\+\_\+time}} (const \doxymbox{\hyperlink{struct_scheduler}{Scheduler}} \texorpdfstring{$\ast$}{*}sch)
+\begin{DoxyCompactList}\small\item\em Gibt die aktuelle logische Simulationszeit zurück. \end{DoxyCompactList}\item 
+\doxymbox{\hyperlink{struct_system_state}{System\+State}} \texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{scheduler_8h_a4f6065ec841da28742eec61bdf9af10d}{scheduler\+\_\+state}} (const \doxymbox{\hyperlink{struct_scheduler}{Scheduler}} \texorpdfstring{$\ast$}{*}sch)
+\begin{DoxyCompactList}\small\item\em Gibt einen Zeiger auf den verwalteten Systemzustand zurück. \end{DoxyCompactList}\item 
+\doxymbox{\hyperlink{struct_policy}{Policy}} \texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{scheduler_8h_af3dc3076603ec428c9ce259280f33323}{scheduler\+\_\+policy}} (const \doxymbox{\hyperlink{struct_scheduler}{Scheduler}} \texorpdfstring{$\ast$}{*}sch)
+\begin{DoxyCompactList}\small\item\em Gibt einen Zeiger auf die aktive \doxylink{struct_policy}{Policy} zurück. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Öffentliches Interface für den ereignisgesteuerten Simulator-\/\+Kern. 
+
+Der {\ttfamily \doxylink{struct_scheduler}{Scheduler}} ist das zentrale Steuerungselement der Simulation. Er verwaltet eine zeitgeordnete Event-\/\+Queue (Min-\/\+Heap), delegiert Ressourcenanforderungen an die aktive {\ttfamily \doxylink{struct_policy}{Policy}} und aktualisiert den {\ttfamily \doxylink{struct_system_state}{System\+State}} entsprechend dem Ergebnis.
+
+Die interne Struktur ist nach dem Opaque-\/\+Pointer-\/\+Muster versteckt (Information Hiding):\+ Externe Module können nur über die hier deklarierten Funktionen mit dem \doxylink{struct_scheduler}{Scheduler} interagieren. 
+
+\label{doc-typedef-members}
+\Hypertarget{scheduler_8h_doc-typedef-members}
+\doxysubsection{Typedef Documentation}
+\Hypertarget{scheduler_8h_a1ef1f6f320939ca611a0caca79a97ff1}\index{scheduler.h@{scheduler.h}!Scheduler@{Scheduler}}
+\index{Scheduler@{Scheduler}!scheduler.h@{scheduler.h}}
+\doxysubsubsection{\texorpdfstring{Scheduler}{Scheduler}}
+{\footnotesize\ttfamily \label{scheduler_8h_a1ef1f6f320939ca611a0caca79a97ff1} 
+typedef struct Scheduler Scheduler}
+
+
+
+Opaker Zeiger auf die interne Scheduler-\/\+Struktur. 
+
+Die vollständige Definition von {\ttfamily \doxylink{struct_scheduler}{Scheduler}} ist nur in {\ttfamily \doxylink{scheduler_8c}{scheduler.\+c}} sichtbar. Alle externen Module arbeiten ausschließlich mit diesem Zeiger. 
+
+\label{doc-func-members}
+\Hypertarget{scheduler_8h_doc-func-members}
+\doxysubsection{Function Documentation}
+\Hypertarget{scheduler_8h_aed8357b031cdefddc28a9a0075a9fb0b}\index{scheduler.h@{scheduler.h}!scheduler\_create@{scheduler\_create}}
+\index{scheduler\_create@{scheduler\_create}!scheduler.h@{scheduler.h}}
+\doxysubsubsection{\texorpdfstring{scheduler\_create()}{scheduler\_create()}}
+{\footnotesize\ttfamily \label{scheduler_8h_aed8357b031cdefddc28a9a0075a9fb0b} 
+\doxymbox{\hyperlink{struct_scheduler}{Scheduler}} \texorpdfstring{$\ast$}{*} scheduler\+\_\+create (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{struct_system_state}{System\+State}} \texorpdfstring{$\ast$}{*}}]{st}{, }\item[{\doxymbox{\hyperlink{struct_policy}{Policy}} \texorpdfstring{$\ast$}{*}}]{policy}{}\end{DoxyParamCaption})}
+
+
+
+Erstellt einen neuen \doxylink{struct_scheduler}{Scheduler}. 
+
+Initialisiert den \doxylink{struct_scheduler}{Scheduler} mit dem angegebenen Systemzustand und der gewählten \doxylink{struct_policy}{Policy}. Die Simulationszeit startet bei 0. Der \doxylink{struct_scheduler}{Scheduler} übernimmt {\bfseries{keine}} Eigentümerschaft über {\ttfamily st} oder {\ttfamily policy}; deren Lebensdauer muss vom Aufrufer verwaltet werden.
+
+
+\begin{DoxyParams}{Parameters}
+{\em st} & Zeiger auf den zu verwaltenden Systemzustand. \\
+\hline
+{\em policy} & Zeiger auf die zu verwendende Deadlock-\/\+Policy. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Zeiger auf den neu erstellten {\ttfamily \doxylink{struct_scheduler}{Scheduler}}.
+\end{DoxyReturn}
+Initialisiert den \doxylink{struct_scheduler}{Scheduler} mit dem übergebenen Systemzustand und der \doxylink{struct_policy}{Policy}. Der Ereignis-\/\+Heap wird leer erstellt. Die Simulationszeit beginnt bei 0.
+
+
+\begin{DoxyParams}{Parameters}
+{\em st} & Zeiger auf den Systemzustand (Eigentümerschaft verbleibt beim Aufrufer). \\
+\hline
+{\em policy} & Zeiger auf die aktive \doxylink{struct_policy}{Policy} (Eigentümerschaft verbleibt beim Aufrufer). \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Zeiger auf den neu erstellten {\ttfamily \doxylink{struct_scheduler}{Scheduler}}. 
+\end{DoxyReturn}
+Here is the call graph for this function:\+
+% FIG 2
+Here is the caller graph for this function:\+
+% FIG 3
+\Hypertarget{scheduler_8h_a64ab2d10f2d358153a2ce969e0d19501}\index{scheduler.h@{scheduler.h}!scheduler\_current\_time@{scheduler\_current\_time}}
+\index{scheduler\_current\_time@{scheduler\_current\_time}!scheduler.h@{scheduler.h}}
+\doxysubsubsection{\texorpdfstring{scheduler\_current\_time()}{scheduler\_current\_time()}}
+{\footnotesize\ttfamily \label{scheduler_8h_a64ab2d10f2d358153a2ce969e0d19501} 
+uint64\+\_\+t scheduler\+\_\+current\+\_\+time (\begin{DoxyParamCaption}\item[{const \doxymbox{\hyperlink{struct_scheduler}{Scheduler}} \texorpdfstring{$\ast$}{*}}]{s}{}\end{DoxyParamCaption})}
+
+
+
+Gibt die aktuelle logische Simulationszeit zurück. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em sch} & Zeiger auf den \doxylink{struct_scheduler}{Scheduler} (const). \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Aktueller Zeitstempel in Ticks.
+\end{DoxyReturn}
+
+\begin{DoxyParams}{Parameters}
+{\em s} & Zeiger auf den \doxylink{struct_scheduler}{Scheduler} (const). \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Aktueller Zeitstempel in Ticks. 
+\end{DoxyReturn}
+Here is the caller graph for this function:\+
+% FIG 4
+\Hypertarget{scheduler_8h_a69ab93b6763d0753fd7fb14eac74152f}\index{scheduler.h@{scheduler.h}!scheduler\_destroy@{scheduler\_destroy}}
+\index{scheduler\_destroy@{scheduler\_destroy}!scheduler.h@{scheduler.h}}
+\doxysubsubsection{\texorpdfstring{scheduler\_destroy()}{scheduler\_destroy()}}
+{\footnotesize\ttfamily \label{scheduler_8h_a69ab93b6763d0753fd7fb14eac74152f} 
+void scheduler\+\_\+destroy (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{struct_scheduler}{Scheduler}} \texorpdfstring{$\ast$}{*}}]{s}{}\end{DoxyParamCaption})}
+
+
+
+Zerstört einen \doxylink{struct_scheduler}{Scheduler} und gibt seinen Speicher frei. 
+
+Gibt den internen Ereignis-\/\+Heap frei und ruft die {\ttfamily cleanup-\/\+Funktion} der aktiven \doxylink{struct_policy}{Policy} auf. Der {\ttfamily \doxylink{struct_system_state}{System\+State}} wird {\bfseries{nicht}} freigegeben und muss vom Aufrufer separat zerstört werden.
+
+
+\begin{DoxyParams}{Parameters}
+{\em sch} & Zeiger auf den zu zerstörenden \doxylink{struct_scheduler}{Scheduler}. NULL wird ignoriert.\\
+\hline
+\end{DoxyParams}
+Gibt den internen Ereignis-\/\+Heap frei und ruft die {\ttfamily cleanup-\/\+Funktion} der aktiven \doxylink{struct_policy}{Policy} auf. Der {\ttfamily \doxylink{struct_system_state}{System\+State}} wird {\bfseries{nicht}} freigegeben.
+
+
+\begin{DoxyParams}{Parameters}
+{\em s} & Zeiger auf den zu zerstörenden \doxylink{struct_scheduler}{Scheduler}. NULL wird ignoriert. \\
+\hline
+\end{DoxyParams}
+Here is the call graph for this function:\+
+% FIG 5
+Here is the caller graph for this function:\+
+% FIG 6
+\Hypertarget{scheduler_8h_af3dc3076603ec428c9ce259280f33323}\index{scheduler.h@{scheduler.h}!scheduler\_policy@{scheduler\_policy}}
+\index{scheduler\_policy@{scheduler\_policy}!scheduler.h@{scheduler.h}}
+\doxysubsubsection{\texorpdfstring{scheduler\_policy()}{scheduler\_policy()}}
+{\footnotesize\ttfamily \label{scheduler_8h_af3dc3076603ec428c9ce259280f33323} 
+\doxymbox{\hyperlink{struct_policy}{Policy}} \texorpdfstring{$\ast$}{*} scheduler\+\_\+policy (\begin{DoxyParamCaption}\item[{const \doxymbox{\hyperlink{struct_scheduler}{Scheduler}} \texorpdfstring{$\ast$}{*}}]{s}{}\end{DoxyParamCaption})}
+
+
+
+Gibt einen Zeiger auf die aktive \doxylink{struct_policy}{Policy} zurück. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em sch} & Zeiger auf den \doxylink{struct_scheduler}{Scheduler} (const). \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Zeiger auf die aktive {\ttfamily \doxylink{struct_policy}{Policy}}.
+\end{DoxyReturn}
+
+\begin{DoxyParams}{Parameters}
+{\em s} & Zeiger auf den \doxylink{struct_scheduler}{Scheduler} (const). \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Zeiger auf die aktive {\ttfamily \doxylink{struct_policy}{Policy}}. 
+\end{DoxyReturn}
+\Hypertarget{scheduler_8h_ac9a20956dd917437d66aec66f9b0b48a}\index{scheduler.h@{scheduler.h}!scheduler\_run\_until@{scheduler\_run\_until}}
+\index{scheduler\_run\_until@{scheduler\_run\_until}!scheduler.h@{scheduler.h}}
+\doxysubsubsection{\texorpdfstring{scheduler\_run\_until()}{scheduler\_run\_until()}}
+{\footnotesize\ttfamily \label{scheduler_8h_ac9a20956dd917437d66aec66f9b0b48a} 
+void scheduler\+\_\+run\+\_\+until (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{struct_scheduler}{Scheduler}} \texorpdfstring{$\ast$}{*}}]{s}{, }\item[{uint64\+\_\+t}]{until\+\_\+time}{}\end{DoxyParamCaption})}
+
+
+
+Verarbeitet alle Ereignisse bis einschließlich {\ttfamily until\+\_\+time}. 
+
+In einer Schleife werden Ereignisse aus dem Heap entnommen und typ-\/abhängig verarbeitet:\+
+\begin{DoxyItemize}
+\item {\ttfamily EV\+\_\+\+REQUEST:\+} Delegiert an die \doxylink{struct_policy}{Policy}; bei Ablehnung wird das Ereignis mit erhöhtem {\ttfamily retries-\/\+Zähler} erneut eingeplant (max. {\ttfamily MAX\+\_\+\+RETRIES} mal).
+\item {\ttfamily EV\+\_\+\+RELEASE:\+} Gibt die angegebene Menge einer Ressourcenklasse frei.
+\item {\ttfamily EV\+\_\+\+TERMINATE:\+} Gibt alle vom Prozess gehaltenen Ressourcen frei.
+\item {\ttfamily EV\+\_\+\+CHECKPOINT:\+} Platzhalter, aktuell ohne Aktion.
+\end{DoxyItemize}
+
+Nach jedem verarbeiteten Ereignis wird der {\ttfamily on\+\_\+tick-\/\+Callback} der \doxylink{struct_policy}{Policy} aufgerufen, falls vorhanden.
+
+
+\begin{DoxyParams}{Parameters}
+{\em sch} & Zeiger auf den \doxylink{struct_scheduler}{Scheduler}. \\
+\hline
+{\em until\+\_\+time} & Logischer Zeitstempel, bis zu dem Events verarbeitet werden.\\
+\hline
+\end{DoxyParams}
+Verarbeitet alle Ereignisse bis einschließlich {\ttfamily until\+\_\+time}.
+
+Die Hauptschleife der Simulation:\+ Solange der Heap nicht leer ist und das nächste Ereignis im Zeitfenster liegt, wird es entnommen und typ-\/abhängig verarbeitet. Nach jedem Ereignis wird der {\ttfamily on\+\_\+tick-\/\+Callback} der \doxylink{struct_policy}{Policy} aufgerufen, sofern vorhanden.
+
+
+\begin{DoxyParams}{Parameters}
+{\em s} & Zeiger auf den \doxylink{struct_scheduler}{Scheduler}. \\
+\hline
+{\em until\+\_\+time} & Obergrenze des zu verarbeitenden Zeitfensters (inklusiv). \\
+\hline
+\end{DoxyParams}
+Here is the call graph for this function:\+
+% FIG 7
+Here is the caller graph for this function:\+
+% FIG 8
+\Hypertarget{scheduler_8h_a4930eb7a6ad09f9550f3e89d7d67f44e}\index{scheduler.h@{scheduler.h}!scheduler\_schedule\_event@{scheduler\_schedule\_event}}
+\index{scheduler\_schedule\_event@{scheduler\_schedule\_event}!scheduler.h@{scheduler.h}}
+\doxysubsubsection{\texorpdfstring{scheduler\_schedule\_event()}{scheduler\_schedule\_event()}}
+{\footnotesize\ttfamily \label{scheduler_8h_a4930eb7a6ad09f9550f3e89d7d67f44e} 
+void scheduler\+\_\+schedule\+\_\+event (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{struct_scheduler}{Scheduler}} \texorpdfstring{$\ast$}{*}}]{sch}{, }\item[{const \doxymbox{\hyperlink{struct_event}{Event}} \texorpdfstring{$\ast$}{*}}]{ev}{}\end{DoxyParamCaption})}
+
+
+
+Plant ein Ereignis in der Event-\/\+Queue ein. 
+
+Das Ereignis wird nach seinem Zeitstempel in den Min-\/\+Heap eingefügt und beim nächsten Aufruf von {\ttfamily \doxylink{scheduler_8h_ac9a20956dd917437d66aec66f9b0b48a}{scheduler\+\_\+run\+\_\+until()}} verarbeitet, sofern es im angegebenen Zeitfenster liegt.
+
+
+\begin{DoxyParams}{Parameters}
+{\em sch} & Zeiger auf den \doxylink{struct_scheduler}{Scheduler}. \\
+\hline
+{\em ev} & Zeiger auf das einzuplanende Ereignis (wird per Wert kopiert).\\
+\hline
+\end{DoxyParams}
+Plant ein Ereignis in der Event-\/\+Queue ein.
+
+
+\begin{DoxyParams}{Parameters}
+{\em sch} & Zeiger auf den \doxylink{struct_scheduler}{Scheduler}. \\
+\hline
+{\em ev} & Zeiger auf das einzuplanende Ereignis (wird per Wert kopiert). \\
+\hline
+\end{DoxyParams}
+Here is the call graph for this function:\+
+% FIG 9
+\Hypertarget{scheduler_8h_a4f6065ec841da28742eec61bdf9af10d}\index{scheduler.h@{scheduler.h}!scheduler\_state@{scheduler\_state}}
+\index{scheduler\_state@{scheduler\_state}!scheduler.h@{scheduler.h}}
+\doxysubsubsection{\texorpdfstring{scheduler\_state()}{scheduler\_state()}}
+{\footnotesize\ttfamily \label{scheduler_8h_a4f6065ec841da28742eec61bdf9af10d} 
+\doxymbox{\hyperlink{struct_system_state}{System\+State}} \texorpdfstring{$\ast$}{*} scheduler\+\_\+state (\begin{DoxyParamCaption}\item[{const \doxymbox{\hyperlink{struct_scheduler}{Scheduler}} \texorpdfstring{$\ast$}{*}}]{s}{}\end{DoxyParamCaption})}
+
+
+
+Gibt einen Zeiger auf den verwalteten Systemzustand zurück. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em sch} & Zeiger auf den \doxylink{struct_scheduler}{Scheduler} (const). \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Zeiger auf den {\ttfamily \doxylink{struct_system_state}{System\+State}}.
+\end{DoxyReturn}
+
+\begin{DoxyParams}{Parameters}
+{\em s} & Zeiger auf den \doxylink{struct_scheduler}{Scheduler} (const). \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Zeiger auf den {\ttfamily \doxylink{struct_system_state}{System\+State}}. 
+\end{DoxyReturn}
+Here is the caller graph for this function:\+
+% FIG 10

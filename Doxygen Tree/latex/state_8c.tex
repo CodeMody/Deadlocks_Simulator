@@ -1,0 +1,192 @@
+\doxysection{Src/\+core/\+state.c File Reference}
+\hypertarget{state_8c}{}\label{state_8c}\index{Src/core/state.c@{Src/core/state.c}}
+
+
+Implementierung der Systemzustandsverwaltung.  
+
+
+{\ttfamily \+\#include "{}../\+core/\+state.\+h"{}}\newline
+{\ttfamily \+\#include $<$stdlib.\+h$>$}\newline
+{\ttfamily \+\#include $<$string.\+h$>$}\newline
+{\ttfamily \+\#include $<$stdio.\+h$>$}\newline
+{\ttfamily \+\#include $<$stdbool.\+h$>$}\newline
+Include dependency graph for state.\+c:\+
+% FIG 0
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{struct_system_state}{System\+State}} \texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{state_8c_abc5efbfb6d0718e8e27f29daf74ee098}{state\+\_\+create}} (uint32\+\_\+t n\+\_\+classes, const uint32\+\_\+t \texorpdfstring{$\ast$}{*}instances)
+\begin{DoxyCompactList}\small\item\em Erstellt einen neuen Systemzustand. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{state_8c_acd8ca67baa7374453a7beda740c34c34}{state\+\_\+allocate\+\_\+process\+\_\+matrices}} (\doxymbox{\hyperlink{struct_system_state}{System\+State}} \texorpdfstring{$\ast$}{*}st, uint32\+\_\+t n\+\_\+procs)
+\begin{DoxyCompactList}\small\item\em Legt die Allokations-\/ und Bedarfsmatrizen für die Prozesse an. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{state_8c_a65c8f4d6eebcb40a7c0aef6a3946574d}{state\+\_\+destroy}} (\doxymbox{\hyperlink{struct_system_state}{System\+State}} \texorpdfstring{$\ast$}{*}st)
+\begin{DoxyCompactList}\small\item\em Gibt den gesamten Systemzustand frei. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{state_8c_a6a67509ed1e28e49a1e51f0a8579b06d}{state\+\_\+set\+\_\+allocation}} (\doxymbox{\hyperlink{struct_system_state}{System\+State}} \texorpdfstring{$\ast$}{*}st, uint32\+\_\+t pid, uint32\+\_\+t class\+\_\+id, uint32\+\_\+t amount)
+\begin{DoxyCompactList}\small\item\em Setzt einen Eintrag in der Allokationsmatrix C. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{state_8c_aefc89eacf40881fbf0fd030c570d2d13}{state\+\_\+set\+\_\+request}} (\doxymbox{\hyperlink{struct_system_state}{System\+State}} \texorpdfstring{$\ast$}{*}st, uint32\+\_\+t pid, uint32\+\_\+t class\+\_\+id, uint32\+\_\+t amount)
+\begin{DoxyCompactList}\small\item\em Setzt einen Eintrag in der Bedarfsmatrix R. \end{DoxyCompactList}\item 
+bool \doxymbox{\hyperlink{state_8c_ac779f30c104c22742abebaac163c7329}{state\+\_\+is\+\_\+safe}} (const \doxymbox{\hyperlink{struct_system_state}{System\+State}} \texorpdfstring{$\ast$}{*}st)
+\begin{DoxyCompactList}\small\item\em Prüft mit dem Bankier-\/\+Algorithmus, ob der aktuelle Zustand sicher ist. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{state_8c_a94fbef28e43e4a07224c61a538c46f2b}{state\+\_\+print}} (const \doxymbox{\hyperlink{struct_system_state}{System\+State}} \texorpdfstring{$\ast$}{*}st)
+\begin{DoxyCompactList}\small\item\em Gibt eine formatierte Übersicht des Systemzustands auf stdout aus. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Implementierung der Systemzustandsverwaltung. 
+
+Dieses Modul verwaltet den zentralen {\ttfamily \doxylink{struct_system_state}{System\+State}}, der das Ressourcensystem nach dem Bankier-\/\+Modell abbildet. Es stellt Funktionen zur Allokation, Manipulation und Analyse des Zustands bereit. Der Kern des Moduls ist die Implementierung des Bankier-\/\+Algorithmus ({\ttfamily \doxylink{state_8c_ac779f30c104c22742abebaac163c7329}{state\+\_\+is\+\_\+safe()}}), der prüft, ob eine sichere Abarbeitungsreihenfolge aller Prozesse existiert. 
+
+\label{doc-func-members}
+\Hypertarget{state_8c_doc-func-members}
+\doxysubsection{Function Documentation}
+\Hypertarget{state_8c_acd8ca67baa7374453a7beda740c34c34}\index{state.c@{state.c}!state\_allocate\_process\_matrices@{state\_allocate\_process\_matrices}}
+\index{state\_allocate\_process\_matrices@{state\_allocate\_process\_matrices}!state.c@{state.c}}
+\doxysubsubsection{\texorpdfstring{state\_allocate\_process\_matrices()}{state\_allocate\_process\_matrices()}}
+{\footnotesize\ttfamily \label{state_8c_acd8ca67baa7374453a7beda740c34c34} 
+void state\+\_\+allocate\+\_\+process\+\_\+matrices (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{struct_system_state}{System\+State}} \texorpdfstring{$\ast$}{*}}]{st}{, }\item[{uint32\+\_\+t}]{n\+\_\+procs}{}\end{DoxyParamCaption})}
+
+
+
+Legt die Allokations-\/ und Bedarfsmatrizen für die Prozesse an. 
+
+Allokiert die Prozess-\/\+Matrizen für einen gegebenen Systemzustand.
+
+Muss aufgerufen werden, sobald die Prozessanzahl bekannt ist und bevor irgendwelche Matrizeneinträge gesetzt werden. Beide Matrizen werden mit Nullen initialisiert.
+
+
+\begin{DoxyParams}{Parameters}
+{\em st} & Zeiger auf den Systemzustand. \\
+\hline
+{\em n\+\_\+procs} & Anzahl der simulierten Prozesse. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{state_8c_abc5efbfb6d0718e8e27f29daf74ee098}\index{state.c@{state.c}!state\_create@{state\_create}}
+\index{state\_create@{state\_create}!state.c@{state.c}}
+\doxysubsubsection{\texorpdfstring{state\_create()}{state\_create()}}
+{\footnotesize\ttfamily \label{state_8c_abc5efbfb6d0718e8e27f29daf74ee098} 
+\doxymbox{\hyperlink{struct_system_state}{System\+State}} \texorpdfstring{$\ast$}{*} state\+\_\+create (\begin{DoxyParamCaption}\item[{uint32\+\_\+t}]{n\+\_\+classes}{, }\item[{const uint32\+\_\+t \texorpdfstring{$\ast$}{*}}]{instances}{}\end{DoxyParamCaption})}
+
+
+
+Erstellt einen neuen Systemzustand. 
+
+Erstellt einen neuen Systemzustand mit gegebenen Ressourcenklassen.
+
+Initialisiert die Ressourcenvektoren {\ttfamily instances} und {\ttfamily available} mit den übergebenen Werten. Die Prozess-\/\+Matrizen ({\ttfamily allocation}, {\ttfamily request}) werden erst durch {\ttfamily \doxylink{state_8h_acd8ca67baa7374453a7beda740c34c34}{state\+\_\+allocate\+\_\+process\+\_\+matrices()}} angelegt.
+
+
+\begin{DoxyParams}{Parameters}
+{\em n\+\_\+classes} & Anzahl der Ressourcenklassen. \\
+\hline
+{\em instances} & Array der Gesamtinstanzen je Klasse. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Zeiger auf den neu erstellten {\ttfamily \doxylink{struct_system_state}{System\+State}}. 
+\end{DoxyReturn}
+\Hypertarget{state_8c_a65c8f4d6eebcb40a7c0aef6a3946574d}\index{state.c@{state.c}!state\_destroy@{state\_destroy}}
+\index{state\_destroy@{state\_destroy}!state.c@{state.c}}
+\doxysubsubsection{\texorpdfstring{state\_destroy()}{state\_destroy()}}
+{\footnotesize\ttfamily \label{state_8c_a65c8f4d6eebcb40a7c0aef6a3946574d} 
+void state\+\_\+destroy (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{struct_system_state}{System\+State}} \texorpdfstring{$\ast$}{*}}]{st}{}\end{DoxyParamCaption})}
+
+
+
+Gibt den gesamten Systemzustand frei. 
+
+Gibt den gesamten Systemzustand und seinen Speicher frei.
+
+Gibt alle dynamisch allokierten Felder des {\ttfamily \doxylink{struct_system_state}{System\+State}} frei (Ressourcenvektoren sowie Prozess-\/\+Matrizen). NULL wird ignoriert.
+
+
+\begin{DoxyParams}{Parameters}
+{\em st} & Zeiger auf den freizugebenden {\ttfamily \doxylink{struct_system_state}{System\+State}}. \\
+\hline
+\end{DoxyParams}
+Here is the caller graph for this function:\+
+% FIG 1
+\Hypertarget{state_8c_ac779f30c104c22742abebaac163c7329}\index{state.c@{state.c}!state\_is\_safe@{state\_is\_safe}}
+\index{state\_is\_safe@{state\_is\_safe}!state.c@{state.c}}
+\doxysubsubsection{\texorpdfstring{state\_is\_safe()}{state\_is\_safe()}}
+{\footnotesize\ttfamily \label{state_8c_ac779f30c104c22742abebaac163c7329} 
+bool state\+\_\+is\+\_\+safe (\begin{DoxyParamCaption}\item[{const \doxymbox{\hyperlink{struct_system_state}{System\+State}} \texorpdfstring{$\ast$}{*}}]{st}{}\end{DoxyParamCaption})}
+
+
+
+Prüft mit dem Bankier-\/\+Algorithmus, ob der aktuelle Zustand sicher ist. 
+
+Initialisiert den Arbeitsvektor {\ttfamily work} mit den aktuell verfügbaren Ressourcen. In einer Schleife werden alle noch nicht abgeschlossenen Prozesse gesucht, deren Bedarf durch {\ttfamily work} gedeckt werden kann. Ein solcher Prozess wird als "{}fertig"{} markiert und seine Ressourcen werden zu {\ttfamily work} addiert. Die Schleife wird wiederholt, bis kein Fortschritt mehr möglich ist. Konnten alle Prozesse abgeschlossen werden, ist der Zustand sicher.
+
+
+\begin{DoxyParams}{Parameters}
+{\em st} & Zeiger auf den zu prüfenden Systemzustand (const). \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+{\ttfamily true}, wenn ein sicherer Ablaufplan existiert; sonst {\ttfamily false}. 
+\end{DoxyReturn}
+\Hypertarget{state_8c_a94fbef28e43e4a07224c61a538c46f2b}\index{state.c@{state.c}!state\_print@{state\_print}}
+\index{state\_print@{state\_print}!state.c@{state.c}}
+\doxysubsubsection{\texorpdfstring{state\_print()}{state\_print()}}
+{\footnotesize\ttfamily \label{state_8c_a94fbef28e43e4a07224c61a538c46f2b} 
+void state\+\_\+print (\begin{DoxyParamCaption}\item[{const \doxymbox{\hyperlink{struct_system_state}{System\+State}} \texorpdfstring{$\ast$}{*}}]{st}{}\end{DoxyParamCaption})}
+
+
+
+Gibt eine formatierte Übersicht des Systemzustands auf stdout aus. 
+
+Gibt eine formatierte Übersicht des Systemzustands auf {\ttfamily stdout} aus.
+
+Zeigt Gesamtressourcen (E), verfügbare Ressourcen (A), die Allokationsmatrix C und die Bedarfsmatrix R an.
+
+
+\begin{DoxyParams}{Parameters}
+{\em st} & Zeiger auf den auszugebenden Systemzustand (const). \\
+\hline
+\end{DoxyParams}
+\Hypertarget{state_8c_a6a67509ed1e28e49a1e51f0a8579b06d}\index{state.c@{state.c}!state\_set\_allocation@{state\_set\_allocation}}
+\index{state\_set\_allocation@{state\_set\_allocation}!state.c@{state.c}}
+\doxysubsubsection{\texorpdfstring{state\_set\_allocation()}{state\_set\_allocation()}}
+{\footnotesize\ttfamily \label{state_8c_a6a67509ed1e28e49a1e51f0a8579b06d} 
+void state\+\_\+set\+\_\+allocation (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{struct_system_state}{System\+State}} \texorpdfstring{$\ast$}{*}}]{st}{, }\item[{uint32\+\_\+t}]{pid}{, }\item[{uint32\+\_\+t}]{class\+\_\+id}{, }\item[{uint32\+\_\+t}]{amount}{}\end{DoxyParamCaption})}
+
+
+
+Setzt einen Eintrag in der Allokationsmatrix C. 
+
+Setzt einen Eintrag in der Allokationsmatrix.
+
+
+\begin{DoxyParams}{Parameters}
+{\em st} & Zeiger auf den Systemzustand. \\
+\hline
+{\em pid} & Prozess-\/\+ID (Zeilenindex). \\
+\hline
+{\em class\+\_\+id} & Ressourcenklasse (Spaltenindex). \\
+\hline
+{\em amount} & Anzahl der als gehalten einzutragenden Instanzen. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{state_8c_aefc89eacf40881fbf0fd030c570d2d13}\index{state.c@{state.c}!state\_set\_request@{state\_set\_request}}
+\index{state\_set\_request@{state\_set\_request}!state.c@{state.c}}
+\doxysubsubsection{\texorpdfstring{state\_set\_request()}{state\_set\_request()}}
+{\footnotesize\ttfamily \label{state_8c_aefc89eacf40881fbf0fd030c570d2d13} 
+void state\+\_\+set\+\_\+request (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{struct_system_state}{System\+State}} \texorpdfstring{$\ast$}{*}}]{st}{, }\item[{uint32\+\_\+t}]{pid}{, }\item[{uint32\+\_\+t}]{class\+\_\+id}{, }\item[{uint32\+\_\+t}]{amount}{}\end{DoxyParamCaption})}
+
+
+
+Setzt einen Eintrag in der Bedarfsmatrix R. 
+
+Setzt einen Eintrag in der Bedarfsmatrix.
+
+
+\begin{DoxyParams}{Parameters}
+{\em st} & Zeiger auf den Systemzustand. \\
+\hline
+{\em pid} & Prozess-\/\+ID (Zeilenindex). \\
+\hline
+{\em class\+\_\+id} & Ressourcenklasse (Spaltenindex). \\
+\hline
+{\em amount} & Anzahl der noch benötigten Instanzen. \\
+\hline
+\end{DoxyParams}

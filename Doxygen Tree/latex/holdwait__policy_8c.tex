@@ -1,0 +1,60 @@
+\doxysection{Src/\+policy/\+holdwait\+\_\+policy.c File Reference}
+\hypertarget{holdwait__policy_8c}{}\label{holdwait__policy_8c}\index{Src/policy/holdwait\_policy.c@{Src/policy/holdwait\_policy.c}}
+
+
+Implementierung der Hold-\/and-\/\+Wait-\/\+Eliminierungs-\/\+Policy.  
+
+
+{\ttfamily \+\#include "{}policy.\+h"{}}\newline
+{\ttfamily \+\#include "{}../\+core/\+state.\+h"{}}\newline
+{\ttfamily \+\#include $<$stdlib.\+h$>$}\newline
+{\ttfamily \+\#include $<$stdbool.\+h$>$}\newline
+{\ttfamily \+\#include $<$stdio.\+h$>$}\newline
+Include dependency graph for holdwait\+\_\+policy.\+c:\+
+% FIG 0
+\doxysubsubsection*{Data Structures}
+\begin{DoxyCompactItemize}
+\item 
+struct \doxymbox{\hyperlink{struct_h_w_ctx}{HWCtx}}
+\begin{DoxyCompactList}\small\item\em Privater Kontext der Hold-\/and-\/\+Wait-\/\+Policy. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{struct_policy}{Policy}} \texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{holdwait__policy_8c_ad505adf2b3e697eeb364a3e513562e56}{holdwait\+\_\+policy\+\_\+create}} (uint32\+\_\+t n\+\_\+procs, uint32\+\_\+t n\+\_\+res)
+\begin{DoxyCompactList}\small\item\em Factory-\/\+Funktion:\+ Erstellt eine neue Hold-\/and-\/\+Wait-\/\+Policy. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Implementierung der Hold-\/and-\/\+Wait-\/\+Eliminierungs-\/\+Policy. 
+
+Diese \doxylink{struct_policy}{Policy} verhindert Deadlocks durch das Unterbinden der Hold-\/and-\/\+Wait-\/\+Bedingung:\+ Hält ein Prozess bereits Ressourcen irgendeiner Klasse, wird jede neue Anforderung desselben Prozesses abgelehnt und verschoben. Nur Prozesse ohne gehaltene Ressourcen dürfen neue Ressourcen anfordern.
+
+Dieses Verfahren ist einfach umzusetzen und sehr effizient, kann jedoch zu Starvation führen, da Prozesse unter Umständen dauerhaft auf das vollständige Freigeben warten müssen, bevor sie neu anfordern können. 
+
+\label{doc-func-members}
+\Hypertarget{holdwait__policy_8c_doc-func-members}
+\doxysubsection{Function Documentation}
+\Hypertarget{holdwait__policy_8c_ad505adf2b3e697eeb364a3e513562e56}\index{holdwait\_policy.c@{holdwait\_policy.c}!holdwait\_policy\_create@{holdwait\_policy\_create}}
+\index{holdwait\_policy\_create@{holdwait\_policy\_create}!holdwait\_policy.c@{holdwait\_policy.c}}
+\doxysubsubsection{\texorpdfstring{holdwait\_policy\_create()}{holdwait\_policy\_create()}}
+{\footnotesize\ttfamily \label{holdwait__policy_8c_ad505adf2b3e697eeb364a3e513562e56} 
+\doxymbox{\hyperlink{struct_policy}{Policy}} \texorpdfstring{$\ast$}{*} holdwait\+\_\+policy\+\_\+create (\begin{DoxyParamCaption}\item[{uint32\+\_\+t}]{n\+\_\+procs}{, }\item[{uint32\+\_\+t}]{n\+\_\+res}{}\end{DoxyParamCaption})}
+
+
+
+Factory-\/\+Funktion:\+ Erstellt eine neue Hold-\/and-\/\+Wait-\/\+Policy. 
+
+Erstellt eine \doxylink{struct_policy}{Policy} zur Eliminierung der Hold-\/and-\/\+Wait-\/\+Bedingung.
+
+Allokiert und initialisiert die {\ttfamily Policy-\/\+Struktur} sowie den privaten {\ttfamily \doxylink{struct_h_w_ctx}{HWCtx}}. Setzt den Namen auf "{}\+Hold-\/and-\/\+Wait Elim"{}.
+
+
+\begin{DoxyParams}{Parameters}
+{\em n\+\_\+procs} & Anzahl der simulierten Prozesse. \\
+\hline
+{\em n\+\_\+res} & Anzahl der Ressourcenklassen. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Zeiger auf die neu erstellte {\ttfamily \doxylink{struct_policy}{Policy}}. 
+\end{DoxyReturn}

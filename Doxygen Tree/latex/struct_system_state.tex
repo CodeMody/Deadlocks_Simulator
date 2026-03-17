@@ -1,0 +1,82 @@
+\doxysection{System\+State Struct Reference}
+\hypertarget{struct_system_state}{}\label{struct_system_state}\index{SystemState@{SystemState}}
+
+
+Zentraler Systemzustand des Ressourcen-\/\+Managers.  
+
+
+
+
+{\ttfamily \+\#include $<$types.\+h$>$}
+
+\doxysubsubsection*{Data Fields}
+\begin{DoxyCompactItemize}
+\item 
+uint32\+\_\+t \doxymbox{\hyperlink{struct_system_state_ae9121d70a4f61880460a5e0a7cecfa36}{n\+\_\+classes}}
+\item 
+uint32\+\_\+t \doxymbox{\hyperlink{struct_system_state_aca9f5a7940c89dd514151bb90eddfc75}{n\+\_\+procs}}
+\item 
+uint32\+\_\+t \texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{struct_system_state_ac9cfd9535b2d5201fba3c4369b72bb16}{instances}}
+\item 
+uint32\+\_\+t \texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{struct_system_state_ab2a30405816323d0dde8aa5557a917e7}{available}}
+\item 
+uint32\+\_\+t \texorpdfstring{$\ast$}{*}\texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{struct_system_state_ad003472bc4d1888f27a367a757c11a94}{allocation}}
+\item 
+uint32\+\_\+t \texorpdfstring{$\ast$}{*}\texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{struct_system_state_aff49963f4dd4004b359ab7da4e625305}{request}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Zentraler Systemzustand des Ressourcen-\/\+Managers. 
+
+Enthält alle Informationen über Ressourcenklassen und Prozesse:\+ Gesamtanzahl, verfügbare Instanzen sowie die Allokations-\/ und Anforderungsmatrizen. Der Banker-\/\+Algorithmus operiert auf dieser Struktur.
+
+\begin{DoxyNote}{Note}
+Die Matrizen {\ttfamily allocation} und {\ttfamily request} werden erst nach dem Aufruf von {\ttfamily \doxylink{state_8c_acd8ca67baa7374453a7beda740c34c34}{state\+\_\+allocate\+\_\+process\+\_\+matrices()}} gültig. 
+\end{DoxyNote}
+
+
+\label{doc-variable-members}
+\Hypertarget{struct_system_state_doc-variable-members}
+\doxysubsection{Field Documentation}
+\Hypertarget{struct_system_state_ad003472bc4d1888f27a367a757c11a94}\index{SystemState@{SystemState}!allocation@{allocation}}
+\index{allocation@{allocation}!SystemState@{SystemState}}
+\doxysubsubsection{\texorpdfstring{allocation}{allocation}}
+{\footnotesize\ttfamily \label{struct_system_state_ad003472bc4d1888f27a367a757c11a94} 
+uint32\+\_\+t\texorpdfstring{$\ast$}{*}\texorpdfstring{$\ast$}{*} allocation}
+
+Allokationsmatrix C:\+ allocation\+[pid]\+\+[class]\+ = gehaltene Instanzen. \Hypertarget{struct_system_state_ab2a30405816323d0dde8aa5557a917e7}\index{SystemState@{SystemState}!available@{available}}
+\index{available@{available}!SystemState@{SystemState}}
+\doxysubsubsection{\texorpdfstring{available}{available}}
+{\footnotesize\ttfamily \label{struct_system_state_ab2a30405816323d0dde8aa5557a917e7} 
+uint32\+\_\+t\texorpdfstring{$\ast$}{*} available}
+
+Derzeit verfügbare Instanzen je Klasse (Vektor A). \Hypertarget{struct_system_state_ac9cfd9535b2d5201fba3c4369b72bb16}\index{SystemState@{SystemState}!instances@{instances}}
+\index{instances@{instances}!SystemState@{SystemState}}
+\doxysubsubsection{\texorpdfstring{instances}{instances}}
+{\footnotesize\ttfamily \label{struct_system_state_ac9cfd9535b2d5201fba3c4369b72bb16} 
+uint32\+\_\+t\texorpdfstring{$\ast$}{*} instances}
+
+Gesamtanzahl der Instanzen je Klasse (Vektor E). \Hypertarget{struct_system_state_ae9121d70a4f61880460a5e0a7cecfa36}\index{SystemState@{SystemState}!n\_classes@{n\_classes}}
+\index{n\_classes@{n\_classes}!SystemState@{SystemState}}
+\doxysubsubsection{\texorpdfstring{n\_classes}{n\_classes}}
+{\footnotesize\ttfamily \label{struct_system_state_ae9121d70a4f61880460a5e0a7cecfa36} 
+uint32\+\_\+t n\+\_\+classes}
+
+Anzahl verschiedener Ressourcenklassen. \Hypertarget{struct_system_state_aca9f5a7940c89dd514151bb90eddfc75}\index{SystemState@{SystemState}!n\_procs@{n\_procs}}
+\index{n\_procs@{n\_procs}!SystemState@{SystemState}}
+\doxysubsubsection{\texorpdfstring{n\_procs}{n\_procs}}
+{\footnotesize\ttfamily \label{struct_system_state_aca9f5a7940c89dd514151bb90eddfc75} 
+uint32\+\_\+t n\+\_\+procs}
+
+Anzahl der simulierten Prozesse. \Hypertarget{struct_system_state_aff49963f4dd4004b359ab7da4e625305}\index{SystemState@{SystemState}!request@{request}}
+\index{request@{request}!SystemState@{SystemState}}
+\doxysubsubsection{\texorpdfstring{request}{request}}
+{\footnotesize\ttfamily \label{struct_system_state_aff49963f4dd4004b359ab7da4e625305} 
+uint32\+\_\+t\texorpdfstring{$\ast$}{*}\texorpdfstring{$\ast$}{*} request}
+
+Bedarfsmatrix R:\+ request\+[pid]\+\+[class]\+ = noch benötigte Instanzen. 
+
+The documentation for this struct was generated from the following file:\+\begin{DoxyCompactItemize}
+\item 
+Src/\+core/\+\doxymbox{\hyperlink{types_8h}{types.\+h}}\end{DoxyCompactItemize}

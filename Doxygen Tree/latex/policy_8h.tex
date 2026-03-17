@@ -1,0 +1,171 @@
+\doxysection{Src/\+policy/\+policy.h File Reference}
+\hypertarget{policy_8h}{}\label{policy_8h}\index{Src/policy/policy.h@{Src/policy/policy.h}}
+
+
+Öffentliches Interface für alle Deadlock-\/\+Behandlungsstrategien.  
+
+
+{\ttfamily \+\#include "{}../\+core/\+types.\+h"{}}\newline
+Include dependency graph for policy.\+h:\+
+% FIG 0
+This graph shows which files directly or indirectly include this file:\+
+% FIG 1
+\doxysubsubsection*{Data Structures}
+\begin{DoxyCompactItemize}
+\item 
+struct \doxymbox{\hyperlink{struct_policy}{Policy}}
+\begin{DoxyCompactList}\small\item\em Policy-\/\+Objekt, das eine Deadlock-\/\+Behandlungsstrategie darstellt. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+typedef struct Policy \doxymbox{\hyperlink{policy_8h_a0854621fa1b30986fc36a40d66ed2693}{Policy}}
+\begin{DoxyCompactList}\small\item\em Policy-\/\+Objekt, das eine Deadlock-\/\+Behandlungsstrategie darstellt. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{struct_policy}{Policy}} \texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{policy_8h_a158c0e3f9decd67412c048e5ce4a229e}{detect\+\_\+policy\+\_\+create}} (uint32\+\_\+t n\+\_\+procs, uint32\+\_\+t n\+\_\+classes)
+\begin{DoxyCompactList}\small\item\em Erstellt eine \doxylink{struct_policy}{Policy} basierend auf Wait-\/\+For-\/\+Graph-\/\+Zykluserkennung. \end{DoxyCompactList}\item 
+\doxymbox{\hyperlink{struct_policy}{Policy}} \texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{policy_8h_acffd2e141aa31a1744e308c6bfffecd3}{banker\+\_\+policy\+\_\+create}} (uint32\+\_\+t n\+\_\+procs, uint32\+\_\+t n\+\_\+res)
+\begin{DoxyCompactList}\small\item\em Erstellt eine \doxylink{struct_policy}{Policy} basierend auf dem Bankier-\/\+Algorithmus. \end{DoxyCompactList}\item 
+\doxymbox{\hyperlink{struct_policy}{Policy}} \texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{policy_8h_ad505adf2b3e697eeb364a3e513562e56}{holdwait\+\_\+policy\+\_\+create}} (uint32\+\_\+t n\+\_\+procs, uint32\+\_\+t n\+\_\+res)
+\begin{DoxyCompactList}\small\item\em Erstellt eine \doxylink{struct_policy}{Policy} zur Eliminierung der Hold-\/and-\/\+Wait-\/\+Bedingung. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Öffentliches Interface für alle Deadlock-\/\+Behandlungsstrategien. 
+
+Eine {\ttfamily \doxylink{struct_policy}{Policy}} kapselt eine konkrete Strategie zur Vermeidung oder Erkennung von Deadlocks. Das Interface basiert auf Funktionszeigern und ermöglicht so einen austauschbaren Strategy-\/\+Pattern-\/\+Ansatz:\+ Der \doxylink{struct_scheduler}{Scheduler} ruft stets dieselben Callbacks auf, unabhängig davon, welche konkrete \doxylink{struct_policy}{Policy} gerade aktiv ist.
+
+Aktuell werden drei Strategien unterstützt:\+
+\begin{DoxyItemize}
+\item {\bfseries{Graph-\/\+Erkennung}}:\+ Baut den Wait-\/\+For-\/\+Graphen auf und prüft auf Zyklen.
+\item {\bfseries{Bankier-\/\+Algorithmus}}:\+ Genehmigt Anfragen nur bei nachgewiesener Sicherheit.
+\item {\bfseries{Hold-\/and-\/\+Wait-\/\+Eliminierung}}:\+ Lehnt Anfragen von Prozessen ab, die bereits Ressourcen halten. 
+\end{DoxyItemize}
+
+\label{doc-typedef-members}
+\Hypertarget{policy_8h_doc-typedef-members}
+\doxysubsection{Typedef Documentation}
+\Hypertarget{policy_8h_a0854621fa1b30986fc36a40d66ed2693}\index{policy.h@{policy.h}!Policy@{Policy}}
+\index{Policy@{Policy}!policy.h@{policy.h}}
+\doxysubsubsection{\texorpdfstring{Policy}{Policy}}
+{\footnotesize\ttfamily \label{policy_8h_a0854621fa1b30986fc36a40d66ed2693} 
+typedef struct Policy Policy}
+
+
+
+Policy-\/\+Objekt, das eine Deadlock-\/\+Behandlungsstrategie darstellt. 
+
+Jede konkrete Strategie befüllt diese Struktur mit ihrem Namen, ihren Callback-\/\+Funktionen und einem optionalen privaten Kontext. Der \doxylink{struct_scheduler}{Scheduler} hält einen Zeiger auf dieses Objekt und ruft die Callbacks entsprechend auf. 
+
+\label{doc-func-members}
+\Hypertarget{policy_8h_doc-func-members}
+\doxysubsection{Function Documentation}
+\Hypertarget{policy_8h_acffd2e141aa31a1744e308c6bfffecd3}\index{policy.h@{policy.h}!banker\_policy\_create@{banker\_policy\_create}}
+\index{banker\_policy\_create@{banker\_policy\_create}!policy.h@{policy.h}}
+\doxysubsubsection{\texorpdfstring{banker\_policy\_create()}{banker\_policy\_create()}}
+{\footnotesize\ttfamily \label{policy_8h_acffd2e141aa31a1744e308c6bfffecd3} 
+\doxymbox{\hyperlink{struct_policy}{Policy}} \texorpdfstring{$\ast$}{*} banker\+\_\+policy\+\_\+create (\begin{DoxyParamCaption}\item[{uint32\+\_\+t}]{n\+\_\+procs}{, }\item[{uint32\+\_\+t}]{n\+\_\+res}{}\end{DoxyParamCaption})}
+
+
+
+Erstellt eine \doxylink{struct_policy}{Policy} basierend auf dem Bankier-\/\+Algorithmus. 
+
+Vor jeder Ressourcenvergabe wird die Zuweisung temporär simuliert und der Sicherheitszustand des Systems geprüft. Nur bei einem sicheren Zustand wird die Anfrage genehmigt.
+
+
+\begin{DoxyParams}{Parameters}
+{\em n\+\_\+procs} & Anzahl der simulierten Prozesse. \\
+\hline
+{\em n\+\_\+res} & Anzahl der Ressourcenklassen. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Zeiger auf die neue {\ttfamily \doxylink{struct_policy}{Policy}}.
+\end{DoxyReturn}
+Erstellt eine \doxylink{struct_policy}{Policy} basierend auf dem Bankier-\/\+Algorithmus.
+
+Allokiert und initialisiert die {\ttfamily Policy-\/\+Struktur} sowie den privaten {\ttfamily \doxylink{struct_banker_ctx}{Banker\+Ctx}}. Belegt die Callbacks mit den entsprechenden Funktionen und setzt den Namen auf "{}\+Banker (multi)"{}.
+
+
+\begin{DoxyParams}{Parameters}
+{\em n\+\_\+procs} & Anzahl der simulierten Prozesse. \\
+\hline
+{\em n\+\_\+res} & Anzahl der Ressourcenklassen. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Zeiger auf die neu erstellte {\ttfamily \doxylink{struct_policy}{Policy}}. 
+\end{DoxyReturn}
+\Hypertarget{policy_8h_a158c0e3f9decd67412c048e5ce4a229e}\index{policy.h@{policy.h}!detect\_policy\_create@{detect\_policy\_create}}
+\index{detect\_policy\_create@{detect\_policy\_create}!policy.h@{policy.h}}
+\doxysubsubsection{\texorpdfstring{detect\_policy\_create()}{detect\_policy\_create()}}
+{\footnotesize\ttfamily \label{policy_8h_a158c0e3f9decd67412c048e5ce4a229e} 
+\doxymbox{\hyperlink{struct_policy}{Policy}} \texorpdfstring{$\ast$}{*} detect\+\_\+policy\+\_\+create (\begin{DoxyParamCaption}\item[{uint32\+\_\+t}]{n\+\_\+procs}{, }\item[{uint32\+\_\+t}]{n\+\_\+classes}{}\end{DoxyParamCaption})}
+
+
+
+Erstellt eine \doxylink{struct_policy}{Policy} basierend auf Wait-\/\+For-\/\+Graph-\/\+Zykluserkennung. 
+
+Bei jeder Ressourcenanfrage wird der Wait-\/\+For-\/\+Graph um die neue Zuweisung erweitert und mittels Tiefensuche auf Zyklen geprüft. Eine Anfrage wird nur genehmigt, wenn kein Zyklus entsteht.
+
+
+\begin{DoxyParams}{Parameters}
+{\em n\+\_\+procs} & Anzahl der simulierten Prozesse. \\
+\hline
+{\em n\+\_\+classes} & Anzahl der Ressourcenklassen. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Zeiger auf die neue {\ttfamily \doxylink{struct_policy}{Policy}}.
+\end{DoxyReturn}
+Erstellt eine \doxylink{struct_policy}{Policy} basierend auf Wait-\/\+For-\/\+Graph-\/\+Zykluserkennung.
+
+Allokiert und initialisiert die {\ttfamily Policy-\/\+Struktur} sowie den privaten {\ttfamily \doxylink{struct_detect_ctx}{Detect\+Ctx}}. Setzt den Namen auf "{}\+Graph-\/\+Detect"{}.
+
+
+\begin{DoxyParams}{Parameters}
+{\em n\+\_\+procs} & Anzahl der simulierten Prozesse. \\
+\hline
+{\em n\+\_\+classes} & Anzahl der Ressourcenklassen. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Zeiger auf die neu erstellte {\ttfamily \doxylink{struct_policy}{Policy}}. 
+\end{DoxyReturn}
+\Hypertarget{policy_8h_ad505adf2b3e697eeb364a3e513562e56}\index{policy.h@{policy.h}!holdwait\_policy\_create@{holdwait\_policy\_create}}
+\index{holdwait\_policy\_create@{holdwait\_policy\_create}!policy.h@{policy.h}}
+\doxysubsubsection{\texorpdfstring{holdwait\_policy\_create()}{holdwait\_policy\_create()}}
+{\footnotesize\ttfamily \label{policy_8h_ad505adf2b3e697eeb364a3e513562e56} 
+\doxymbox{\hyperlink{struct_policy}{Policy}} \texorpdfstring{$\ast$}{*} holdwait\+\_\+policy\+\_\+create (\begin{DoxyParamCaption}\item[{uint32\+\_\+t}]{n\+\_\+procs}{, }\item[{uint32\+\_\+t}]{n\+\_\+res}{}\end{DoxyParamCaption})}
+
+
+
+Erstellt eine \doxylink{struct_policy}{Policy} zur Eliminierung der Hold-\/and-\/\+Wait-\/\+Bedingung. 
+
+Verhindert Deadlocks durch das Unterbinden der Hold-\/and-\/\+Wait-\/\+Bedingung:\+ Hält ein Prozess bereits Ressourcen irgendeiner Klasse, wird jede neue Anfrage desselben Prozesses abgelehnt.
+
+
+\begin{DoxyParams}{Parameters}
+{\em n\+\_\+procs} & Anzahl der simulierten Prozesse. \\
+\hline
+{\em n\+\_\+res} & Anzahl der Ressourcenklassen. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Zeiger auf die neue {\ttfamily \doxylink{struct_policy}{Policy}}.
+\end{DoxyReturn}
+Erstellt eine \doxylink{struct_policy}{Policy} zur Eliminierung der Hold-\/and-\/\+Wait-\/\+Bedingung.
+
+Allokiert und initialisiert die {\ttfamily Policy-\/\+Struktur} sowie den privaten {\ttfamily \doxylink{struct_h_w_ctx}{HWCtx}}. Setzt den Namen auf "{}\+Hold-\/and-\/\+Wait Elim"{}.
+
+
+\begin{DoxyParams}{Parameters}
+{\em n\+\_\+procs} & Anzahl der simulierten Prozesse. \\
+\hline
+{\em n\+\_\+res} & Anzahl der Ressourcenklassen. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Zeiger auf die neu erstellte {\ttfamily \doxylink{struct_policy}{Policy}}. 
+\end{DoxyReturn}

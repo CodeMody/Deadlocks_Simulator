@@ -1,0 +1,183 @@
+\doxysection{Src/\+gui/\+gui.c File Reference}
+\hypertarget{gui_8c}{}\label{gui_8c}\index{Src/gui/gui.c@{Src/gui/gui.c}}
+
+
+Implementierung des GTK-\/3-\/\+Frontends für den Deadlock-\/\+Simulator.  
+
+
+{\ttfamily \+\#include "{}../\+gui/\+gui.\+h"{}}\newline
+{\ttfamily \+\#include "{}../\+core/\+state.\+h"{}}\newline
+{\ttfamily \+\#include "{}../\+core/\+event.\+h"{}}\newline
+{\ttfamily \+\#include "{}../\+core/\+types.\+h"{}}\newline
+{\ttfamily \+\#include $<$stdlib.\+h$>$}\newline
+{\ttfamily \+\#include $<$stdio.\+h$>$}\newline
+{\ttfamily \+\#include $<$string.\+h$>$}\newline
+{\ttfamily \+\#include $<$time.\+h$>$}\newline
+Include dependency graph for gui.\+c:\+
+% FIG 0
+\doxysubsubsection*{Data Structures}
+\begin{DoxyCompactItemize}
+\item 
+struct \doxymbox{\hyperlink{struct_proc_sim}{Proc\+Sim}}
+\begin{DoxyCompactList}\small\item\em Laufzeit-\/\+Zustand eines einzelnen simulierten Prozesses. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Enumerations}
+\begin{DoxyCompactItemize}
+\item 
+enum \doxymbox{\hyperlink{gui_8c_a0b84722aecaf2d73cc0df2e290ae8fdd}{Proc\+Life\+State}} \{ \doxymbox{\hyperlink{gui_8c_a0b84722aecaf2d73cc0df2e290ae8fdda6b461cf08706e8456cfd0c5e46c88f5c}{PROC\+\_\+\+IDLE}}
+, \doxymbox{\hyperlink{gui_8c_a0b84722aecaf2d73cc0df2e290ae8fdda4f8e3722918567a5d152312e9afab857}{PROC\+\_\+\+RUNNING}}
+, \doxymbox{\hyperlink{gui_8c_a0b84722aecaf2d73cc0df2e290ae8fdda356349f5c99d03c7721d011d08ccd624}{PROC\+\_\+\+DONE}}
+ \}
+\begin{DoxyCompactList}\small\item\em Lebenszyklus-\/\+Zustände eines simulierten Prozesses. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+gboolean \doxymbox{\hyperlink{gui_8c_ae8d1920380ab8e5b74a4ccc7965c6567}{gui\+\_\+step}} (gpointer user\+\_\+data)
+\begin{DoxyCompactList}\small\item\em Führt einen einzelnen Simulationsschritt aus und aktualisiert die GUI. \end{DoxyCompactList}\item 
+uint64\+\_\+t \doxymbox{\hyperlink{gui_8c_a3b447f56f2141b04fc09b547fad858b9}{gui\+\_\+get\+\_\+deadlock\+\_\+counter}} (void)
+\begin{DoxyCompactList}\small\item\em Gibt den aktuellen Verschiebungs-\/\+Zähler der aktiven \doxylink{struct_policy}{Policy} zurück. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{gui_8c_a5a73f9ff06aa76993e6b6d2d5b8001fd}{gui\+\_\+set\+\_\+policy}} (\doxymbox{\hyperlink{struct_policy}{Policy}} \texorpdfstring{$\ast$}{*}new\+\_\+policy)
+\begin{DoxyCompactList}\small\item\em Wechselt die aktive \doxylink{struct_policy}{Policy} und setzt die Simulation zurück. \end{DoxyCompactList}\item 
+Gtk\+Widget \texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{gui_8c_a5fc5aff1c264c831532a5d1195d5e14b}{gui\+\_\+create\+\_\+window}} (void)
+\begin{DoxyCompactList}\small\item\em Erstellt das vollständige Hauptfenster der Anwendung. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Implementierung des GTK-\/3-\/\+Frontends für den Deadlock-\/\+Simulator. 
+
+Diese Datei implementiert die gesamte grafische Benutzeroberfläche. Das Fenster besteht aus folgenden Bereichen:\+
+\begin{DoxyItemize}
+\item {\bfseries{Header}}:\+ Titel und Untertitel der Anwendung.
+\item {\bfseries{Button-\/\+Leiste}}:\+ Drei Policy-\/\+Buttons und ein Step-\/\+Button.
+\item {\bfseries{Statusleiste}}:\+ Aktive \doxylink{struct_policy}{Policy}, Verschiebungs-\/\+Zähler, aktueller Tick.
+\item {\bfseries{Hauptbereich}}:\+ Scrollbares Textfenster mit Systemzustand-\/\+Snapshot (links) und statische Legende (rechts).
+\end{DoxyItemize}
+
+Die Simulation arbeitet mit einem prozeduralen Prozessmodell:\+ Jeder Prozess durchläuft die Zustände IDLE → RUNNING → DONE und wird dann neu gestartet. Alle Ressourcenanforderungen und -\/freigaben werden als Ereignisse in den \doxylink{struct_scheduler}{Scheduler} eingespeist. 
+
+\label{doc-enum-members}
+\Hypertarget{gui_8c_doc-enum-members}
+\doxysubsection{Enumeration Type Documentation}
+\Hypertarget{gui_8c_a0b84722aecaf2d73cc0df2e290ae8fdd}\index{gui.c@{gui.c}!ProcLifeState@{ProcLifeState}}
+\index{ProcLifeState@{ProcLifeState}!gui.c@{gui.c}}
+\doxysubsubsection{\texorpdfstring{ProcLifeState}{ProcLifeState}}
+{\footnotesize\ttfamily \label{gui_8c_a0b84722aecaf2d73cc0df2e290ae8fdd} 
+enum \doxymbox{\hyperlink{gui_8c_a0b84722aecaf2d73cc0df2e290ae8fdd}{Proc\+Life\+State}}}
+
+
+
+Lebenszyklus-\/\+Zustände eines simulierten Prozesses. 
+
+\begin{DoxyEnumFields}[2]{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{PROC\_IDLE@{PROC\_IDLE}!gui.c@{gui.c}}
+\index{gui.c@{gui.c}!PROC\_IDLE@{PROC\_IDLE}}
+}\Hypertarget{gui_8c_a0b84722aecaf2d73cc0df2e290ae8fdda6b461cf08706e8456cfd0c5e46c88f5c}\label{gui_8c_a0b84722aecaf2d73cc0df2e290ae8fdda6b461cf08706e8456cfd0c5e46c88f5c} 
+PROC\+\_\+\+IDLE&Prozess besitzt keine Ressourcen und wartet auf seinen nächsten Start. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{PROC\_RUNNING@{PROC\_RUNNING}!gui.c@{gui.c}}
+\index{gui.c@{gui.c}!PROC\_RUNNING@{PROC\_RUNNING}}
+}\Hypertarget{gui_8c_a0b84722aecaf2d73cc0df2e290ae8fdda4f8e3722918567a5d152312e9afab857}\label{gui_8c_a0b84722aecaf2d73cc0df2e290ae8fdda4f8e3722918567a5d152312e9afab857} 
+PROC\+\_\+\+RUNNING&Prozess hält Ressourcen und führt seine Arbeit aus. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{PROC\_DONE@{PROC\_DONE}!gui.c@{gui.c}}
+\index{gui.c@{gui.c}!PROC\_DONE@{PROC\_DONE}}
+}\Hypertarget{gui_8c_a0b84722aecaf2d73cc0df2e290ae8fdda356349f5c99d03c7721d011d08ccd624}\label{gui_8c_a0b84722aecaf2d73cc0df2e290ae8fdda356349f5c99d03c7721d011d08ccd624} 
+PROC\+\_\+\+DONE&Prozess hat seine Arbeit abgeschlossen und gibt Ressourcen frei. \\
+\hline
+
+\end{DoxyEnumFields}
+
+
+\label{doc-func-members}
+\Hypertarget{gui_8c_doc-func-members}
+\doxysubsection{Function Documentation}
+\Hypertarget{gui_8c_a5fc5aff1c264c831532a5d1195d5e14b}\index{gui.c@{gui.c}!gui\_create\_window@{gui\_create\_window}}
+\index{gui\_create\_window@{gui\_create\_window}!gui.c@{gui.c}}
+\doxysubsubsection{\texorpdfstring{gui\_create\_window()}{gui\_create\_window()}}
+{\footnotesize\ttfamily \label{gui_8c_a5fc5aff1c264c831532a5d1195d5e14b} 
+Gtk\+Widget \texorpdfstring{$\ast$}{*} gui\+\_\+create\+\_\+window (\begin{DoxyParamCaption}\item[{void}]{}{}\end{DoxyParamCaption})}
+
+
+
+Erstellt das vollständige Hauptfenster der Anwendung. 
+
+Erstellt das Hauptfenster der Anwendung und zeigt es an.
+
+Aufbau des Fensters (von oben nach unten):\+
+\begin{DoxyEnumerate}
+\item {\bfseries{Header}}:\+ Titel "{}\+DEADLOCK SIMULATOR"{} und Untertitel "{}\+BETRIEB SYSTEME"{}.
+\item {\bfseries{Button-\/\+Leiste}}:\+ Drei Policy-\/\+Buttons (links) und Step-\/\+Button (rechts).
+\item {\bfseries{Statusleiste}}:\+ Policy-\/\+Name · Verschiebungs-\/\+Zähler · Tick-\/\+Counter.
+\item {\bfseries{Hauptbereich}}:\+ Text\+View mit Systemzustand (links) \texorpdfstring{$\vert$}{|} Legende (rechts).
+\end{DoxyEnumerate}
+
+Nach dem Erstellen wird ein GTK-\/\+Timer gestartet, der {\ttfamily \doxylink{gui_8h_ae8d1920380ab8e5b74a4ccc7965c6567}{gui\+\_\+step()}} einmal pro Sekunde aufruft, falls bereits eine \doxylink{struct_policy}{Policy} aktiv ist.
+
+\begin{DoxyReturn}{Returns}
+Zeiger auf das erstellte Top-\/\+Level-\/\+Gtk\+Widget. 
+\end{DoxyReturn}
+Here is the call graph for this function:\+
+% FIG 1
+Here is the caller graph for this function:\+
+% FIG 2
+\Hypertarget{gui_8c_a3b447f56f2141b04fc09b547fad858b9}\index{gui.c@{gui.c}!gui\_get\_deadlock\_counter@{gui\_get\_deadlock\_counter}}
+\index{gui\_get\_deadlock\_counter@{gui\_get\_deadlock\_counter}!gui.c@{gui.c}}
+\doxysubsubsection{\texorpdfstring{gui\_get\_deadlock\_counter()}{gui\_get\_deadlock\_counter()}}
+{\footnotesize\ttfamily \label{gui_8c_a3b447f56f2141b04fc09b547fad858b9} 
+uint64\+\_\+t gui\+\_\+get\+\_\+deadlock\+\_\+counter (\begin{DoxyParamCaption}\item[{void}]{}{}\end{DoxyParamCaption})}
+
+
+
+Gibt den aktuellen Verschiebungs-\/\+Zähler der aktiven \doxylink{struct_policy}{Policy} zurück. 
+
+Gibt den aktuellen Verschiebungs-\//\+\+Deadlock-\/\+Zähler zurück.
+
+\begin{DoxyReturn}{Returns}
+Anzahl verschobener Anfragen; 0, wenn keine \doxylink{struct_policy}{Policy} aktiv. 
+\end{DoxyReturn}
+\Hypertarget{gui_8c_a5a73f9ff06aa76993e6b6d2d5b8001fd}\index{gui.c@{gui.c}!gui\_set\_policy@{gui\_set\_policy}}
+\index{gui\_set\_policy@{gui\_set\_policy}!gui.c@{gui.c}}
+\doxysubsubsection{\texorpdfstring{gui\_set\_policy()}{gui\_set\_policy()}}
+{\footnotesize\ttfamily \label{gui_8c_a5a73f9ff06aa76993e6b6d2d5b8001fd} 
+void gui\+\_\+set\+\_\+policy (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{struct_policy}{Policy}} \texorpdfstring{$\ast$}{*}}]{new\+\_\+policy}{}\end{DoxyParamCaption})}
+
+
+
+Wechselt die aktive \doxylink{struct_policy}{Policy} und setzt die Simulation zurück. 
+
+Wechselt die aktive Deadlock-\/\+Policy und startet die Simulation neu.
+
+Stoppt den Timer, gibt alle bestehenden Ressourcen frei und startet die Simulation mit der neuen \doxylink{struct_policy}{Policy} und einem frischen Systemzustand neu.
+
+
+\begin{DoxyParams}{Parameters}
+{\em new\+\_\+policy} & Zeiger auf die neu zu aktivierende \doxylink{struct_policy}{Policy}. \\
+\hline
+\end{DoxyParams}
+Here is the call graph for this function:\+
+% FIG 3
+\Hypertarget{gui_8c_ae8d1920380ab8e5b74a4ccc7965c6567}\index{gui.c@{gui.c}!gui\_step@{gui\_step}}
+\index{gui\_step@{gui\_step}!gui.c@{gui.c}}
+\doxysubsubsection{\texorpdfstring{gui\_step()}{gui\_step()}}
+{\footnotesize\ttfamily \label{gui_8c_ae8d1920380ab8e5b74a4ccc7965c6567} 
+gboolean gui\+\_\+step (\begin{DoxyParamCaption}\item[{gpointer}]{user\+\_\+data}{}\end{DoxyParamCaption})}
+
+
+
+Führt einen einzelnen Simulationsschritt aus und aktualisiert die GUI. 
+
+Erzeugt Ereignisse für den nächsten Tick, lässt den \doxylink{struct_scheduler}{Scheduler} sie verarbeiten und aktualisiert alle GUI-\/\+Elemente (Snapshot, Zähler, Tick).
+
+
+\begin{DoxyParams}{Parameters}
+{\em user\+\_\+data} & Nicht verwendet (GTK-\/\+Konvention für {\ttfamily GSource\+Func}). \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+{\ttfamily G\+\_\+\+SOURCE\+\_\+\+CONTINUE}, damit der GTK-\/\+Timer weiterläuft. 
+\end{DoxyReturn}
+Here is the call graph for this function:\+
+% FIG 4
+Here is the caller graph for this function:\+
+% FIG 5

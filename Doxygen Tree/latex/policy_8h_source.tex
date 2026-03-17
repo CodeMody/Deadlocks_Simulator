@@ -1,0 +1,31 @@
+\doxysection{policy.\+h}
+\hypertarget{policy_8h_source}{}\label{policy_8h_source}\index{Src/policy/policy.h@{Src/policy/policy.h}}
+\doxymbox{\hyperlink{policy_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ }
+\DoxyCodeLine{00016\ }
+\DoxyCodeLine{00017\ \textcolor{preprocessor}{\#ifndef\ POLICY\_H}}
+\DoxyCodeLine{00018\ \textcolor{preprocessor}{\#define\ POLICY\_H}}
+\DoxyCodeLine{00019\ }
+\DoxyCodeLine{00020\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{types_8h}{../core/types.h}}"{}}}
+\DoxyCodeLine{00021\ }
+\DoxyCodeLine{00030\ \textcolor{keyword}{typedef}\ \textcolor{keyword}{struct\ }\doxymbox{\hyperlink{struct_policy}{Policy}}\ \{}
+\DoxyCodeLine{00031\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}\ \ \ \ \ \ \ *\doxymbox{\hyperlink{struct_policy_a8f8f80d37794cde9472343e4487ba3eb}{name}};\ \ \ \ \ \ \ }
+\DoxyCodeLine{00032\ \ \ \ \ \doxymbox{\hyperlink{types_8h_a07f520a8c3f3fd37ddffbb9adbb288c5}{policy\_request\_f}}\ \ \doxymbox{\hyperlink{struct_policy_ae4d34c497fce51d6956b15f5fe834d60}{on\_request}};\ }
+\DoxyCodeLine{00033\ \ \ \ \ \doxymbox{\hyperlink{types_8h_ac259d71943d0f9401128902272346f29}{policy\_tick\_f}}\ \ \ \ \ \doxymbox{\hyperlink{struct_policy_af51d31d4c7f04d3e768411aa0d6a4819}{on\_tick}};\ \ \ \ }
+\DoxyCodeLine{00034\ \ \ \ \ \doxymbox{\hyperlink{types_8h_a45ef165c8cd8039c45a0d96a03bbf5c4}{policy\_cleanup\_f}}\ \ \doxymbox{\hyperlink{struct_policy_a427329a451aee7ed2ba7fb5ebe36d162}{cleanup}};\ \ \ \ }
+\DoxyCodeLine{00035\ \ \ \ \ \textcolor{keywordtype}{void}\ \ \ \ \ \ \ \ \ \ \ \ \ *\textcolor{keyword}{private};\ \ \ \ }
+\DoxyCodeLine{00036\ \}\ \doxymbox{\hyperlink{struct_policy}{Policy}};}
+\DoxyCodeLine{00037\ }
+\DoxyCodeLine{00049\ \doxymbox{\hyperlink{struct_policy}{Policy}}\ *\doxymbox{\hyperlink{policy_8h_a158c0e3f9decd67412c048e5ce4a229e}{detect\_policy\_create}}(uint32\_t\ n\_procs,}
+\DoxyCodeLine{00050\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ uint32\_t\ n\_classes);}
+\DoxyCodeLine{00051\ }
+\DoxyCodeLine{00063\ \doxymbox{\hyperlink{struct_policy}{Policy}}\ *\doxymbox{\hyperlink{policy_8h_acffd2e141aa31a1744e308c6bfffecd3}{banker\_policy\_create}}(uint32\_t\ n\_procs,}
+\DoxyCodeLine{00064\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ uint32\_t\ n\_res);}
+\DoxyCodeLine{00065\ }
+\DoxyCodeLine{00077\ \doxymbox{\hyperlink{struct_policy}{Policy}}\ *\doxymbox{\hyperlink{policy_8h_ad505adf2b3e697eeb364a3e513562e56}{holdwait\_policy\_create}}(uint32\_t\ n\_procs,}
+\DoxyCodeLine{00078\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ uint32\_t\ n\_res);}
+\DoxyCodeLine{00079\ }
+\DoxyCodeLine{00080\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ POLICY\_H\ */}\textcolor{preprocessor}{}}
+
+\end{DoxyCode}

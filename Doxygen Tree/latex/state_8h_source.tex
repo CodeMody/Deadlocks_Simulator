@@ -1,0 +1,36 @@
+\doxysection{state.\+h}
+\hypertarget{state_8h_source}{}\label{state_8h_source}\index{Src/core/state.h@{Src/core/state.h}}
+\doxymbox{\hyperlink{state_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ }
+\DoxyCodeLine{00010\ }
+\DoxyCodeLine{00011\ \textcolor{preprocessor}{\#ifndef\ STATE\_H}}
+\DoxyCodeLine{00012\ \textcolor{preprocessor}{\#define\ STATE\_H}}
+\DoxyCodeLine{00013\ }
+\DoxyCodeLine{00014\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{types_8h}{../core/types.h}}"{}}}
+\DoxyCodeLine{00015\ }
+\DoxyCodeLine{00027\ \doxymbox{\hyperlink{struct_system_state}{SystemState}}\ *\doxymbox{\hyperlink{state_8h_abc5efbfb6d0718e8e27f29daf74ee098}{state\_create}}(uint32\_t\ n\_classes,}
+\DoxyCodeLine{00028\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ uint32\_t\ *instances);}
+\DoxyCodeLine{00029\ }
+\DoxyCodeLine{00038\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{state_8h_a65c8f4d6eebcb40a7c0aef6a3946574d}{state\_destroy}}(\doxymbox{\hyperlink{struct_system_state}{SystemState}}\ *st);}
+\DoxyCodeLine{00039\ }
+\DoxyCodeLine{00050\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{state_8h_acd8ca67baa7374453a7beda740c34c34}{state\_allocate\_process\_matrices}}(\doxymbox{\hyperlink{struct_system_state}{SystemState}}\ *st,}
+\DoxyCodeLine{00051\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ uint32\_t\ n\_procs);}
+\DoxyCodeLine{00052\ }
+\DoxyCodeLine{00064\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{state_8h_a6a67509ed1e28e49a1e51f0a8579b06d}{state\_set\_allocation}}(\doxymbox{\hyperlink{struct_system_state}{SystemState}}\ *st,}
+\DoxyCodeLine{00065\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ uint32\_t\ pid,}
+\DoxyCodeLine{00066\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ uint32\_t\ class\_id,}
+\DoxyCodeLine{00067\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ uint32\_t\ amount);}
+\DoxyCodeLine{00068\ }
+\DoxyCodeLine{00079\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{state_8h_aefc89eacf40881fbf0fd030c570d2d13}{state\_set\_request}}(\doxymbox{\hyperlink{struct_system_state}{SystemState}}\ *st,}
+\DoxyCodeLine{00080\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ uint32\_t\ pid,}
+\DoxyCodeLine{00081\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ uint32\_t\ class\_id,}
+\DoxyCodeLine{00082\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ uint32\_t\ amount);}
+\DoxyCodeLine{00083\ }
+\DoxyCodeLine{00096\ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{state_8h_ac779f30c104c22742abebaac163c7329}{state\_is\_safe}}(\textcolor{keyword}{const}\ \doxymbox{\hyperlink{struct_system_state}{SystemState}}\ *st);}
+\DoxyCodeLine{00097\ }
+\DoxyCodeLine{00106\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{state_8h_a94fbef28e43e4a07224c61a538c46f2b}{state\_print}}(\textcolor{keyword}{const}\ \doxymbox{\hyperlink{struct_system_state}{SystemState}}\ *st);}
+\DoxyCodeLine{00107\ }
+\DoxyCodeLine{00108\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ STATE\_H\ */}\textcolor{preprocessor}{}}
+
+\end{DoxyCode}

@@ -1,0 +1,29 @@
+\doxysection{event.\+h}
+\hypertarget{event_8h_source}{}\label{event_8h_source}\index{Src/core/event.h@{Src/core/event.h}}
+\doxymbox{\hyperlink{event_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ }
+\DoxyCodeLine{00010\ }
+\DoxyCodeLine{00011\ \textcolor{preprocessor}{\#ifndef\ EVENT\_H}}
+\DoxyCodeLine{00012\ \textcolor{preprocessor}{\#define\ EVENT\_H}}
+\DoxyCodeLine{00013\ }
+\DoxyCodeLine{00014\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{types_8h}{types.h}}"{}}}
+\DoxyCodeLine{00015\ \textcolor{preprocessor}{\#include\ <stddef.h>}}
+\DoxyCodeLine{00016\ }
+\DoxyCodeLine{00024\ \textcolor{keyword}{typedef}\ \textcolor{keyword}{struct\ }\doxymbox{\hyperlink{struct_event_heap}{EventHeap}}\ \doxymbox{\hyperlink{struct_event_heap}{EventHeap}};}
+\DoxyCodeLine{00025\ }
+\DoxyCodeLine{00034\ \doxymbox{\hyperlink{struct_event_heap}{EventHeap}}\ *\doxymbox{\hyperlink{event_8h_a5ad43efb17d226bf71b36b77e7b6b18e}{event\_heap\_create}}(\textcolor{keywordtype}{void});}
+\DoxyCodeLine{00035\ }
+\DoxyCodeLine{00041\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{event_8h_ae92a9d97b964ba5ab575de880dfc6554}{event\_heap\_destroy}}(\doxymbox{\hyperlink{struct_event_heap}{EventHeap}}\ *h);}
+\DoxyCodeLine{00042\ }
+\DoxyCodeLine{00053\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{event_8h_a873901748dc490ebc9b7a0e2b03ef764}{event\_push}}(\doxymbox{\hyperlink{struct_event_heap}{EventHeap}}\ *h,\ \textcolor{keyword}{const}\ \doxymbox{\hyperlink{struct_event}{Event}}\ *ev);}
+\DoxyCodeLine{00054\ }
+\DoxyCodeLine{00066\ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{event_8h_ad89a7c688df0fe152dec6818a69b900b}{event\_pop}}(\doxymbox{\hyperlink{struct_event_heap}{EventHeap}}\ *h,\ \doxymbox{\hyperlink{struct_event}{Event}}\ *out);}
+\DoxyCodeLine{00067\ }
+\DoxyCodeLine{00075\ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{event_8h_a813f27d1cdb7e0201a28786f82ccea89}{event\_peek}}(\textcolor{keyword}{const}\ \doxymbox{\hyperlink{struct_event_heap}{EventHeap}}\ *h,\ \doxymbox{\hyperlink{struct_event}{Event}}\ *out);}
+\DoxyCodeLine{00076\ }
+\DoxyCodeLine{00083\ \textcolor{keywordtype}{size\_t}\ \doxymbox{\hyperlink{event_8h_aaba275e3eee0d5e4e080648b3c78fc4c}{event\_size}}(\textcolor{keyword}{const}\ \doxymbox{\hyperlink{struct_event_heap}{EventHeap}}\ *h);}
+\DoxyCodeLine{00084\ }
+\DoxyCodeLine{00085\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ EVENT\_H\ */}\textcolor{preprocessor}{}}
+
+\end{DoxyCode}

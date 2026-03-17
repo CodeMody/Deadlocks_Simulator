@@ -1,0 +1,55 @@
+\doxysection{types.\+h}
+\hypertarget{types_8h_source}{}\label{types_8h_source}\index{Src/core/types.h@{Src/core/types.h}}
+\doxymbox{\hyperlink{types_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ }
+\DoxyCodeLine{00010\ }
+\DoxyCodeLine{00011\ \textcolor{preprocessor}{\#ifndef\ TYPES\_H}}
+\DoxyCodeLine{00012\ \textcolor{preprocessor}{\#define\ TYPES\_H}}
+\DoxyCodeLine{00013\ }
+\DoxyCodeLine{00014\ \textcolor{preprocessor}{\#include\ <stdint.h>}}
+\DoxyCodeLine{00015\ \textcolor{preprocessor}{\#include\ <stdbool.h>}}
+\DoxyCodeLine{00016\ \textcolor{preprocessor}{\#include\ <stddef.h>}}
+\DoxyCodeLine{00017\ }
+\DoxyCodeLine{00024\ \textcolor{keyword}{typedef}\ \textcolor{keyword}{enum}\ \{}
+\DoxyCodeLine{00025\ \ \ \ \ \doxymbox{\hyperlink{types_8h_a2628ea8d12e8b2563c32f05dc7fff6faa0558f179ed95e5cdf7bf3254ca6c33ab}{EV\_REQUEST}},\ \ \ \ }
+\DoxyCodeLine{00026\ \ \ \ \ \doxymbox{\hyperlink{types_8h_a2628ea8d12e8b2563c32f05dc7fff6faa5c817c4f73cd076cb5bf5d260b88e034}{EV\_RELEASE}},\ \ \ \ }
+\DoxyCodeLine{00027\ \ \ \ \ \doxymbox{\hyperlink{types_8h_a2628ea8d12e8b2563c32f05dc7fff6faa0b8e7bec5e861eee1929d874a16b9da4}{EV\_CHECKPOINT}},\ }
+\DoxyCodeLine{00028\ \ \ \ \ \doxymbox{\hyperlink{types_8h_a2628ea8d12e8b2563c32f05dc7fff6faac6455c8e8ae31ec442f1c3e891d4a6c7}{EV\_TERMINATE}}\ \ \ }
+\DoxyCodeLine{00029\ \}\ \doxymbox{\hyperlink{types_8h_a2628ea8d12e8b2563c32f05dc7fff6fa}{EventType}};}
+\DoxyCodeLine{00030\ }
+\DoxyCodeLine{00038\ \textcolor{keyword}{typedef}\ \textcolor{keyword}{struct\ }\{}
+\DoxyCodeLine{00039\ \ \ \ \ uint64\_t\ \ \doxymbox{\hyperlink{struct_event_a5d34a8f2dfe25421b2b473a5fd37b0ed}{time}};\ \ \ \ \ \ }
+\DoxyCodeLine{00040\ \ \ \ \ \doxymbox{\hyperlink{types_8h_a2628ea8d12e8b2563c32f05dc7fff6fa}{EventType}}\ \doxymbox{\hyperlink{struct_event_a2f18e60350b641236ab0e724d0622d1d}{type}};\ \ \ \ \ \ }
+\DoxyCodeLine{00041\ \ \ \ \ uint32\_t\ \ \doxymbox{\hyperlink{struct_event_aec32162d9dc3fde2c76d766af522dae5}{pid}};\ \ \ \ \ \ \ }
+\DoxyCodeLine{00042\ \ \ \ \ uint32\_t\ \ \doxymbox{\hyperlink{struct_event_ae81ae81e0fbbe56602d14d9ed89e15c1}{class\_id}};\ \ }
+\DoxyCodeLine{00043\ \ \ \ \ uint32\_t\ \ \doxymbox{\hyperlink{struct_event_a070da2496793ccf8efc39f311bcda914}{amount}};\ \ \ \ }
+\DoxyCodeLine{00044\ \ \ \ \ uint32\_t\ \ \doxymbox{\hyperlink{struct_event_afae57bc4eae51730b7c5cc1ac29ea99a}{retries}};\ \ \ }
+\DoxyCodeLine{00045\ \}\ \doxymbox{\hyperlink{struct_event}{Event}};}
+\DoxyCodeLine{00046\ }
+\DoxyCodeLine{00047\ \textcolor{keyword}{struct\ }\doxymbox{\hyperlink{struct_policy}{Policy}};}
+\DoxyCodeLine{00048\ }
+\DoxyCodeLine{00055\ \textcolor{keyword}{typedef}\ \textcolor{keyword}{struct\ }\doxymbox{\hyperlink{struct_system_state}{SystemState}}\ \doxymbox{\hyperlink{struct_system_state}{SystemState}};}
+\DoxyCodeLine{00056\ }
+\DoxyCodeLine{00068\ \textcolor{keyword}{typedef}\ bool\ (*\doxymbox{\hyperlink{types_8h_a07f520a8c3f3fd37ddffbb9adbb288c5}{policy\_request\_f}})(\textcolor{keyword}{struct\ }\doxymbox{\hyperlink{struct_policy}{Policy}}\ *p,}
+\DoxyCodeLine{00069\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{struct\ }\doxymbox{\hyperlink{struct_system_state}{SystemState}}\ *st,}
+\DoxyCodeLine{00070\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \doxymbox{\hyperlink{struct_event}{Event}}\ *ev);}
+\DoxyCodeLine{00071\ }
+\DoxyCodeLine{00082\ \textcolor{keyword}{typedef}\ void\ (*\doxymbox{\hyperlink{types_8h_ac259d71943d0f9401128902272346f29}{policy\_tick\_f}})(\textcolor{keyword}{struct\ }\doxymbox{\hyperlink{struct_policy}{Policy}}\ *p,}
+\DoxyCodeLine{00083\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{struct\ }\doxymbox{\hyperlink{struct_system_state}{SystemState}}\ *st,}
+\DoxyCodeLine{00084\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ uint64\_t\ now);}
+\DoxyCodeLine{00085\ }
+\DoxyCodeLine{00094\ \textcolor{keyword}{typedef}\ void\ (*\doxymbox{\hyperlink{types_8h_a45ef165c8cd8039c45a0d96a03bbf5c4}{policy\_cleanup\_f}})(\textcolor{keyword}{struct\ }\doxymbox{\hyperlink{struct_policy}{Policy}}\ *p);}
+\DoxyCodeLine{00095\ }
+\DoxyCodeLine{00106\ \textcolor{keyword}{struct\ }\doxymbox{\hyperlink{struct_system_state}{SystemState}}\ \{}
+\DoxyCodeLine{00107\ \ \ \ \ uint32\_t\ \ \doxymbox{\hyperlink{struct_system_state_ae9121d70a4f61880460a5e0a7cecfa36}{n\_classes}};\ \ \ \ }
+\DoxyCodeLine{00108\ \ \ \ \ uint32\_t\ \ \doxymbox{\hyperlink{struct_system_state_aca9f5a7940c89dd514151bb90eddfc75}{n\_procs}};\ \ \ \ \ \ }
+\DoxyCodeLine{00109\ \ \ \ \ uint32\_t\ *\doxymbox{\hyperlink{struct_system_state_ac9cfd9535b2d5201fba3c4369b72bb16}{instances}};\ \ \ \ }
+\DoxyCodeLine{00110\ \ \ \ \ uint32\_t\ *\doxymbox{\hyperlink{struct_system_state_ab2a30405816323d0dde8aa5557a917e7}{available}};\ \ \ \ }
+\DoxyCodeLine{00111\ \ \ \ \ uint32\_t\ **\doxymbox{\hyperlink{struct_system_state_ad003472bc4d1888f27a367a757c11a94}{allocation}};\ \ }
+\DoxyCodeLine{00112\ \ \ \ \ uint32\_t\ **\doxymbox{\hyperlink{struct_system_state_aff49963f4dd4004b359ab7da4e625305}{request}};\ \ \ \ \ }
+\DoxyCodeLine{00113\ \};}
+\DoxyCodeLine{00114\ }
+\DoxyCodeLine{00115\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ TYPES\_H\ */}\textcolor{preprocessor}{}}
+
+\end{DoxyCode}
