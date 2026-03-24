@@ -587,7 +587,7 @@ static const char *GUI_CSS =
 
     "#btn-bar { background-color: #111318; padding: 14px 24px; border-bottom: 1px solid #1e2530; }"
     ".policy-btn { font-family: 'Courier New', monospace; font-size: 15px; font-weight: bold; letter-spacing: 1px; color: #FF0000; background-color: #1a1f2b; border: 2px solid #2a3240; border-radius: 4px; padding: 10px 20px; min-width: 200px; }"
-    ".policy-btn:hover { background-color: #1e2840; border-color: #00e5ff; color: #ffffff; }"
+    ".policy-btn:hover { background-color: #1e2840; border-color: #00e5ff; color: #00e5ff; }"
     ".policy-btn.active { background-color: #003d4d; border-color: #00e5ff; color: #00e5ff; }"
 
     "#btn-step { font-family: 'Courier New', monospace; font-size: 15px; font-weight: bold; color: #ffd54f; background-color: #1a1a00; border: 2px solid #ffd54f; border-radius: 4px; padding: 10px 24px; }"
@@ -598,11 +598,11 @@ static const char *GUI_CSS =
     "#policy-name-label { font-family: 'Courier New', monospace; font-size: 14px; color: #00e5ff; font-weight: bold; }"
     "#tick-label { font-family: 'Courier New', monospace; font-size: 14px; color: #546e7a; }"
 
-    "textview { font-family: 'Courier New', monospace; font-size: 18px; color: #e0f7fa; background-color: #0a0c10; padding: 20px; }"
+    "textview { font-family: 'Courier New', monospace; font-size: 18px; color: #00e5ff; background-color: #0a0c10; padding: 20px; }"
     "textview text { background-color: #0a0c10; color: #e0f7fa; }"
     "scrolledwindow { background-color: #0a0c10; border: 1px solid #1e2530; margin: 12px 16px 16px 16px; }"
 
-    "#legend-box { background-color: #111318; border-left: 2px solid #1e2530; padding: 20px 16px; min-width: 220px; }"
+    "#legend-box { background-color: #ffffff; border-left: 2px solid #1e2530; padding: 20px 16px; min-width: 220px; }"
     "#legend-title { font-family: 'Courier New', monospace; font-size: 11px; color: #546e7a; letter-spacing: 2px; margin-bottom: 12px; }"
     ".legend-row { font-family: 'Courier New', monospace; font-size: 14px; color: #b0bec5; margin-bottom: 8px; }"
     ".legend-key { font-family: 'Courier New', monospace; font-size: 13px; color: #00e5ff; font-weight: bold; }"
