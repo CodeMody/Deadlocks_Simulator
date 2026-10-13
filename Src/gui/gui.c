@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @file gui.c
  * @brief Implementierung des GTK-3-Frontends für den Deadlock-Simulator.
  *
@@ -69,54 +69,6 @@ static void gui_highlight_policy_btn(GtkWidget *active_btn, const char *name);
 /* ==========================================================================
    Interne Hilfsfunktionen: Zustandsverwaltung
    ========================================================================== */
-
-/**
- * @brief Allokiert die Allokations- und Bedarfsmatrizen im Systemzustand.
- *
- * Diese lokale Variante wird verwendet, da die GUI direkten Zugriff auf die
- * Felder von @c SystemState benötigt (ohne den Umweg über @c state_allocate_process_matrices()).
- * Beide Matrizen werden mit Nullen initialisiert. @c n_procs wird im State gespeichert,
- * damit der Bankier-Algorithmus später korrekt arbeitet.
- *
- * @param st       Zeiger auf den Systemzustand.
- * @param n_procs  Anzahl der simulierten Prozesse.
- */
-static void allocate_state_matrices(SystemState *st, uint32_t n_procs)
-{
-    uint32_t n_classes = st->n_classes;
-
-    st->allocation = calloc(n_procs, sizeof(uint32_t *));
-    for (uint32_t i = 0; i < n_procs; ++i)
-        st->allocation[i] = calloc(n_classes, sizeof(uint32_t));
-
-    st->request = calloc(n_procs, sizeof(uint32_t *));
-    for (uint32_t i = 0; i < n_procs; ++i)
-        st->request[i] = calloc(n_classes, sizeof(uint32_t));
-
-    st->n_procs = n_procs;
-}
-
-/**
- * @brief Gibt die Allokations- und Bedarfsmatrizen eines Systemzustands frei.
- *
- * @param st       Zeiger auf den Systemzustand.
- * @param n_procs  Anzahl der Zeilen (Prozesse) in den Matrizen.
- */
-static void free_state_matrices(SystemState *st, uint32_t n_procs)
-{
-    if (st->allocation) {
-        for (uint32_t i = 0; i < n_procs; ++i)
-            free(st->allocation[i]);
-        free(st->allocation);
-        st->allocation = NULL;
-    }
-    if (st->request) {
-        for (uint32_t i = 0; i < n_procs; ++i)
-            free(st->request[i]);
-        free(st->request);
-        st->request = NULL;
-    }
-}
 
 /* ==========================================================================
    Prozess-Simulator
@@ -306,7 +258,7 @@ static SystemState *build_demo_state(void)
 {
     uint32_t instances[2] = {2, 3};    /* Klasse 0: 2 Drucker, Klasse 1: 3 Festplatten */
     SystemState *st = state_create(2, instances);
-    allocate_state_matrices(st, 3);    /* 3 simulierte Prozesse */
+    state_allocate_process_matrices(st, 3);    /* 3 simulierte Prozesse */
 
     /* Maximaler Bedarf je Prozess (Zeile) und Ressourcenklasse (Spalte) */
     uint32_t max0[2] = {1, 2};  /* P0: max. 1 Drucker, 2 Festplatten */
@@ -399,10 +351,7 @@ static void gui_update_snapshot(void)
  */
 static void gui_update_deadlock_label(void)
 {
-    uint64_t cnt = 0;
-    if (g_policy && g_policy->private) {
-        cnt = *((uint64_t *)g_policy->private);
-    }
+    uint64_t cnt = policy_get_deadlock_count(g_policy);
     char label[64];
     snprintf(label, sizeof(label), "VERSCHOBEN  %lu", cnt);
     gtk_label_set_text(g_deadlock_label, label);
@@ -452,9 +401,7 @@ gboolean gui_step(gpointer user_data)
  */
 uint64_t gui_get_deadlock_counter(void)
 {
-    if (g_policy && g_policy->private)
-        return *((uint64_t *)g_policy->private);
-    return 0;
+    return policy_get_deadlock_count(g_policy);
 }
 
 /**

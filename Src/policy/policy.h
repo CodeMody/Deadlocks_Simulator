@@ -18,6 +18,7 @@
 #define POLICY_H
 
 #include "../core/types.h"
+#include <string.h>
 
 /**
  * @brief Policy-Objekt, das eine Deadlock-Behandlungsstrategie darstellt.
@@ -76,5 +77,23 @@ Policy *banker_policy_create(uint32_t n_procs,
  */
 Policy *holdwait_policy_create(uint32_t n_procs,
                                uint32_t n_res);
+
+/**
+ * @brief Returns the number of rejected (postponed) requests for a policy.
+ *
+ * Each policy stores its rejection count as the first field in its private
+ * context (uint64_t). This function reads it via a type-erased accessor
+ * to avoid exposing the private struct layout to external code.
+ *
+ * @param p  Pointer to the policy object.
+ * @return   Number of rejected requests, or 0 if the policy is NULL.
+ */
+static inline uint64_t policy_get_deadlock_count(const Policy *p)
+{
+    uint64_t count = 0;
+    if (p && p->private)
+        memcpy(&count, p->private, sizeof(count));
+    return count;
+}
 
 #endif /* POLICY_H */
