@@ -62,6 +62,13 @@ static guint        g_timeout_id        = 0;
 /** @brief Referenz auf die Legende-Swatch-Labels für Farbkorrektur. */
 static GtkWidget   *g_swatch[8]         = { NULL };
 
+/** @brief GTK-Text-Tags für Syntax-Highlighting im Snapshot. */
+static GtkTextTag  *g_tag_gray          = NULL;
+static GtkTextTag  *g_tag_white         = NULL;
+static GtkTextTag  *g_tag_purple        = NULL;
+static GtkTextTag  *g_tag_green         = NULL;
+static GtkTextTag  *g_tag_red           = NULL;
+
 /* ==========================================================================
    Vorwärts-Deklarationen
    ========================================================================== */
@@ -69,6 +76,7 @@ static GtkWidget   *g_swatch[8]         = { NULL };
 static void gui_update_tick_label(void);
 static void gui_highlight_policy_btn(GtkWidget *active_btn, const char *name);
 static void gui_update_legend_swatches(void);
+static void tag_snapshot(GtkTextBuffer *buf);
 
 /* ==========================================================================
    Prozess-Simulator
@@ -355,6 +363,117 @@ static char *make_snapshot_text(void)
 }
 
 /**
+ * @brief Legt Syntax-Highlighting-Tags auf den Text-Snapshot.
+ *
+ * Parst die formatierte Ausgabe und markiert Labels (grau), Werte (weiß),
+ * Highlights (lila) und Sicherheitsergebnis (grün/rot).
+ */
+static void tag_snapshot(GtkTextBuffer *buf)
+{
+    GtkTextIter start, end;
+    gtk_text_buffer_get_start_iter(buf, &start);
+    gtk_text_buffer_get_end_iter(buf, &end);
+
+    gchar *text = gtk_text_buffer_get_text(buf, &start, &end, FALSE);
+    gchar *line = strtok(text, "\n");
+    int offset = 0;
+
+    while (line) {
+        if (strstr(line, "Available per class")) {
+            /* Werte nach ": " als lila markieren */
+            char *p = strstr(line, ": ");
+            if (p) {
+                p += 2;
+                while (*p) {
+                    if (*p >= '0' && *p <= '9') {
+                        int len = 0;
+                        while (p[len] >= '0' && p[len] <= '9') len++;
+                        GtkTextIter it1, it2;
+                        gtk_text_buffer_get_iter_at_offset(buf, &it1, offset + (int)(p - line));
+                        gtk_text_buffer_get_iter_at_offset(buf, &it2, offset + (int)(p - line) + len);
+                        gtk_text_buffer_apply_tag(buf, g_tag_purple, &it1, &it2);
+                        p += len;
+                    }
+                    if (*p == ' ') p++; else break;
+                }
+            }
+        } else if (line[0] == 'P' && line[1] >= '0' && line[1] <= '9') {
+            /* Prozesszeile: P-ID grau, alloc-Werte weiß, need-Werte lila */
+            int pid_len = 1;
+            while (line[pid_len] >= '0' && line[pid_len] <= '9') pid_len++;
+            {
+                GtkTextIter it1, it2;
+                gtk_text_buffer_get_iter_at_offset(buf, &it1, offset);
+                gtk_text_buffer_get_iter_at_offset(buf, &it2, offset + pid_len);
+                gtk_text_buffer_apply_tag(buf, g_tag_gray, &it1, &it2);
+            }
+
+            char *alloc = strstr(line, "alloc:");
+            if (alloc) {
+                GtkTextIter it1, it2;
+                gtk_text_buffer_get_iter_at_offset(buf, &it1, offset + (int)(alloc - line));
+                gtk_text_buffer_get_iter_at_offset(buf, &it2, offset + (int)(alloc - line) + 6);
+                gtk_text_buffer_apply_tag(buf, g_tag_gray, &it1, &it2);
+
+                char *v = alloc + 6;
+                while (*v == ' ') v++;
+                while (*v && *v != '\r' && *v != '\n') {
+                    int num_len = 0;
+                    for (; v[num_len] >= '0' && v[num_len] <= '9'; num_len++);
+                    if (num_len > 0) {
+                        GtkTextIter it1, it2;
+                        gtk_text_buffer_get_iter_at_offset(buf, &it1, offset + (int)(v - line));
+                        gtk_text_buffer_get_iter_at_offset(buf, &it2, offset + (int)(v - line) + num_len);
+                        gtk_text_buffer_apply_tag(buf, g_tag_white, &it1, &it2);
+                        v += num_len;
+                        while (*v == ' ') v++;
+                    } else { v++; }
+                }
+            }
+
+            char *need = strstr(line, "need:");
+            if (need) {
+                GtkTextIter it1, it2;
+                gtk_text_buffer_get_iter_at_offset(buf, &it1, offset + (int)(need - line));
+                gtk_text_buffer_get_iter_at_offset(buf, &it2, offset + (int)(need - line) + 5);
+                gtk_text_buffer_apply_tag(buf, g_tag_gray, &it1, &it2);
+
+                char *v = need + 5;
+                while (*v == ' ') v++;
+                while (*v && *v != '\r' && *v != '\n') {
+                    int num_len = 0;
+                    for (; v[num_len] >= '0' && v[num_len] <= '9'; num_len++);
+                    if (num_len > 0) {
+                        GtkTextIter it1, it2;
+                        gtk_text_buffer_get_iter_at_offset(buf, &it1, offset + (int)(v - line));
+                        gtk_text_buffer_get_iter_at_offset(buf, &it2, offset + (int)(v - line) + num_len);
+                        gtk_text_buffer_apply_tag(buf, g_tag_purple, &it1, &it2);
+                        v += num_len;
+                        while (*v == ' ') v++;
+                    } else { v++; }
+                }
+            }
+        } else if (strstr(line, "✓ SAFE")) {
+            int pos = (int)(strstr(line, "✓ SAFE") - line);
+            GtkTextIter it1, it2;
+            gtk_text_buffer_get_iter_at_offset(buf, &it1, offset + pos);
+            gtk_text_buffer_get_iter_at_offset(buf, &it2, offset + pos + 6);
+            gtk_text_buffer_apply_tag(buf, g_tag_green, &it1, &it2);
+        } else if (strstr(line, "✗ UNSAFE")) {
+            int pos = (int)(strstr(line, "✗ UNSAFE") - line);
+            GtkTextIter it1, it2;
+            gtk_text_buffer_get_iter_at_offset(buf, &it1, offset + pos);
+            gtk_text_buffer_get_iter_at_offset(buf, &it2, offset + pos + 8);
+            gtk_text_buffer_apply_tag(buf, g_tag_red, &it1, &it2);
+        }
+
+        offset += (int)strlen(line) + 1;
+        line = strtok(NULL, "\n");
+    }
+    g_free(text);
+}
+
+/**
  * @brief Aktualisiert das Systemzustand-Snapshot im TextView.
  */
 static void gui_update_snapshot(void)
@@ -363,6 +482,7 @@ static void gui_update_snapshot(void)
 
     GtkTextBuffer *buf = gtk_text_view_get_buffer(g_text_view);
     gtk_text_buffer_set_text(buf, txt, -1);
+    tag_snapshot(buf);
     free(txt);
 }
 
@@ -587,7 +707,7 @@ static const char *GUI_CSS =
     "#sim-title { font-family: 'Inter', 'Segoe UI', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 1px; color: #94a3b8; }"
     "#sim-tick { font-family: 'Inter', 'Segoe UI', sans-serif; font-size: 12px; color: #64748b; background-color: #1e2130; padding: 3px 10px; border-radius: 20px; border: 1px solid #2a2d3a; }"
 
-    "textview { font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace; font-size: 16px; color: #cbd5e1; background-color: #0f1117; padding: 12px; border-radius: 8px; border: 1px solid #2a2d3a; }"
+    "textview { font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace; font-size: 25px; color: #cbd5e1; background-color: #0f1117; padding: 12px; border-radius: 8px; border: 1px solid #2a2d3a; }"
     "textview text { background-color: #0f1117; color: #e2e8f0; }"
     "scrolledwindow { background-color: #161822; border: 1px solid #2a2d3a; border-radius: 8px; margin: 12px 0 0 0; }"
 
@@ -754,6 +874,14 @@ GtkWidget *gui_create_window(void)
     gtk_text_view_set_cursor_visible(g_text_view, FALSE);
     gtk_text_view_set_left_margin(g_text_view, 12);
     gtk_text_view_set_top_margin(g_text_view, 12);
+
+    /* Syntax-Highlighting-Tags erstellen */
+    GtkTextBuffer *buf = gtk_text_view_get_buffer(g_text_view);
+    g_tag_gray  = gtk_text_buffer_create_tag(buf, "gray",  "foreground", "#64748b", NULL);
+    g_tag_white = gtk_text_buffer_create_tag(buf, "white", "foreground", "#e2e8f0", NULL);
+    g_tag_purple= gtk_text_buffer_create_tag(buf, "purple","foreground", "#818cf8", NULL);
+    g_tag_green = gtk_text_buffer_create_tag(buf, "green", "foreground", "#34d399", NULL);
+    g_tag_red   = gtk_text_buffer_create_tag(buf, "red",   "foreground", "#f87171", NULL);
 
     GtkWidget *scrolled = gtk_scrolled_window_new(NULL, NULL);
     gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled),
