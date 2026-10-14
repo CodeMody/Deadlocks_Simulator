@@ -4,11 +4,9 @@
  *
  * Diese Datei implementiert die gesamte grafische Benutzeroberfläche.
  * Das Fenster besteht aus folgenden Bereichen:
- * - **Header**: Titel und Untertitel der Anwendung.
- * - **Button-Leiste**: Drei Policy-Buttons und ein Step-Button.
+ * - **Toolbar**: Drei Policy-Buttons und ein Step-Button.
  * - **Statusleiste**: Aktive Policy, Verschiebungs-Zähler, aktueller Tick.
- * - **Hauptbereich**: Scrollbares Textfenster mit Systemzustand-Snapshot (links)
- *   und statische Legende (rechts).
+ * - **Hauptbereich**: Simulation-State-Anzeige (links) und Legende (rechts).
  *
  * Die Simulation arbeitet mit einem prozeduralen Prozessmodell: Jeder Prozess
  * durchläuft die Zustände IDLE → RUNNING → DONE und wird dann neu gestartet.
@@ -20,6 +18,8 @@
 #include "../core/state.h"
 #include "../core/event.h"
 #include "../core/types.h"
+#define _GTK_H_INSIDE
+#include <gtk/gtk.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -47,17 +47,20 @@ static GtkLabel    *g_policy_name_label = NULL;
 /** @brief Referenz auf das Label, das den aktuellen Tick anzeigt. */
 static GtkLabel    *g_tick_label        = NULL;
 
-/** @brief Referenz auf den "GRAPH-ERKENNUNG"-Button (für Hervorhebung). */
+/** @brief Referenz auf den "GRAPH DETECT"-Button (für Hervorhebung). */
 static GtkWidget   *g_btn_graph         = NULL;
 
-/** @brief Referenz auf den "BANKIER-ALGO"-Button (für Hervorhebung). */
+/** @brief Referenz auf den "BANKER'S ALGO"-Button (für Hervorhebung). */
 static GtkWidget   *g_btn_banker        = NULL;
 
-/** @brief Referenz auf den "HALTE-UND-WARTE"-Button (für Hervorhebung). */
+/** @brief Referenz auf den "HOLD & WAIT"-Button (für Hervorhebung). */
 static GtkWidget   *g_btn_hw            = NULL;
 
 /** @brief GTK-Timer-ID für den automatischen Simulationsschritt (1 Sekunde). 0 = kein aktiver Timer. */
 static guint        g_timeout_id        = 0;
+
+/** @brief Referenz auf die Legende-Swatch-Labels für Farbkorrektur. */
+static GtkWidget   *g_swatch[8]         = { NULL };
 
 /* ==========================================================================
    Vorwärts-Deklarationen
@@ -65,10 +68,7 @@ static guint        g_timeout_id        = 0;
 
 static void gui_update_tick_label(void);
 static void gui_highlight_policy_btn(GtkWidget *active_btn, const char *name);
-
-/* ==========================================================================
-   Interne Hilfsfunktionen: Zustandsverwaltung
-   ========================================================================== */
+static void gui_update_legend_swatches(void);
 
 /* ==========================================================================
    Prozess-Simulator
@@ -278,14 +278,15 @@ static SystemState *build_demo_state(void)
    ========================================================================== */
 
 /**
- * @brief Erstellt einen textuellen Snapshot des aktuellen Systemzustands.
+ * @brief Erstellt einen formatierten Snapshot mit Syntax-Highlighting.
  *
- * Formatiert den Systemzustand als mehrzeiligen String mit Zeit-Angabe,
- * verfügbaren Ressourcen sowie den Allokations- und Bedarfswerten aller Prozesse.
- * Der Puffer wird dynamisch allokiert und muss vom Aufrufer freigegeben werden.
+ * Verwendet Pango-Markup, um die Anzeige wie im Mockup zu gestalten:
+ * - Gray (#64748b): Labels ("Available per class", "P0", "alloc:", "need:")
+ * - White (#e2e8f0): Values ("1  2", "1  0")
+ * - Purple (#818cf8): Highlighted values (available resources)
+ * - Green (#34d399): Safety check result
  *
- * @return Dynamisch allokierter String mit dem formatierten Systemzustand.
- *         Der Aufrufer ist für das Freigeben mit @c free() verantwortlich.
+ * @return Dynamisch allozierter Pango-Markup-String.
  */
 static char *make_snapshot_text(void)
 {
@@ -293,43 +294,63 @@ static char *make_snapshot_text(void)
     uint64_t now          = scheduler_current_time(g_sched);
     const uint32_t n_procs   = st->n_procs;
     const uint32_t n_classes = st->n_classes;
+    const uint32_t n_classes2 = n_classes * 2 + 2;  /* space + number + space per class */
 
-    /* Puffergröße großzügig berechnen: Header + verfügbare Ressourcen + pro Prozess eine Zeile */
-    size_t bufsize = 256
-                   + n_classes * 32
-                   + n_procs * (64 + n_classes * 32 * 2);
+    /* Puffergröße: Header + available + per-process + safety */
+    size_t bufsize = 128
+                   + n_classes2 * 20
+                   + n_procs * (80 + n_classes2 * 2)
+                   + 64;
     char *buf = malloc(bufsize);
     char *p   = buf;
     int   n;
 
-    n = snprintf(p, bufsize, "\n=== Takt %lu ====================================\n", now);
+    /* Header */
+    n = snprintf(p, bufsize, "\n=== Tick %lu ====================================\n", now);
     p += n; bufsize -= n;
 
-    n = snprintf(p, bufsize, "Verfügbar je Klasse : ");
+    /* Available per class */
+    n = snprintf(p, bufsize, "Available per class : ");
     p += n; bufsize -= n;
     for (uint32_t r = 0; r < n_classes; ++r) {
-        n = snprintf(p, bufsize, "%u ", st->available[r]);
+        n = snprintf(p, bufsize, "%-5u", st->available[r]);
         p += n; bufsize -= n;
     }
     n = snprintf(p, bufsize, "\n");
     p += n; bufsize -= n;
 
+    /* Per-process allocation and need */
     for (uint32_t pid = 0; pid < n_procs; ++pid) {
-        n = snprintf(p, bufsize, "P%u  zugeteilt:", pid);
+        n = snprintf(p, bufsize, "P%u  ", pid);
+        p += n; bufsize -= n;
+
+        n = snprintf(p, bufsize, "alloc:");
         p += n; bufsize -= n;
         for (uint32_t r = 0; r < n_classes; ++r) {
-            n = snprintf(p, bufsize, " %u", st->allocation[pid][r]);
+            n = snprintf(p, bufsize, "%-5u", st->allocation[pid][r]);
             p += n; bufsize -= n;
         }
-        n = snprintf(p, bufsize, "   bedarf:");
+
+        n = snprintf(p, bufsize, "  need:");
         p += n; bufsize -= n;
         for (uint32_t r = 0; r < n_classes; ++r) {
-            n = snprintf(p, bufsize, " %u", st->request[pid][r]);
+            n = snprintf(p, bufsize, "%-5u", st->request[pid][r]);
             p += n; bufsize -= n;
         }
         n = snprintf(p, bufsize, "\n");
         p += n; bufsize -= n;
     }
+
+    /* Safety check */
+    bool safe = state_is_safe(st);
+    if (safe) {
+        n = snprintf(p, bufsize, "\n  ✓ SAFE\n");
+        p += n; bufsize -= n;
+    } else {
+        n = snprintf(p, bufsize, "\n  ✗ UNSAFE\n");
+        p += n; bufsize -= n;
+    }
+
     return buf;
 }
 
@@ -339,6 +360,7 @@ static char *make_snapshot_text(void)
 static void gui_update_snapshot(void)
 {
     char *txt = make_snapshot_text();
+
     GtkTextBuffer *buf = gtk_text_view_get_buffer(g_text_view);
     gtk_text_buffer_set_text(buf, txt, -1);
     free(txt);
@@ -353,7 +375,7 @@ static void gui_update_deadlock_label(void)
 {
     uint64_t cnt = policy_get_deadlock_count(g_policy);
     char label[64];
-    snprintf(label, sizeof(label), "VERSCHOBEN  %lu", cnt);
+    snprintf(label, sizeof(label), "POSTPONED  %lu", cnt);
     gtk_label_set_text(g_deadlock_label, label);
 }
 
@@ -364,7 +386,7 @@ static void gui_update_tick_label(void)
 {
     if (!g_tick_label || !g_sched) return;
     char buf[64];
-    snprintf(buf, sizeof(buf), "TAKT  %lu", scheduler_current_time(g_sched));
+    snprintf(buf, sizeof(buf), "TICK  %lu", scheduler_current_time(g_sched));
     gtk_label_set_text(g_tick_label, buf);
 }
 
@@ -445,6 +467,7 @@ void gui_set_policy(Policy *new_policy)
     /* 7. GUI-Elemente aktualisieren */
     gui_update_snapshot();
     gui_update_deadlock_label();
+    gui_update_tick_label();
 
     /* 8. Automatischen Timer neu starten (1 Sekunde Intervall) */
     g_timeout_id = g_timeout_add_seconds(1, (GSourceFunc)gui_step, NULL);
@@ -455,7 +478,25 @@ void gui_set_policy(Policy *new_policy)
    ========================================================================== */
 
 /**
- * @brief Callback für den "GRAPH-ERKENNUNG"-Button.
+ * @brief Draw-Callback für die Legende-Swatch-Farbkästchen.
+ */
+static gboolean on_swatch_draw(GtkWidget *widget, cairo_t *cr, gpointer user_data)
+{
+    (void)user_data;
+    const gchar *color_str = g_object_get_data(G_OBJECT(widget), "swatch-color");
+    if (!color_str) return FALSE;
+
+    GdkRGBA rgba;
+    gdk_rgba_parse(&rgba, color_str);
+    cairo_set_source_rgba(cr, rgba.red, rgba.green, rgba.blue, rgba.alpha);
+    cairo_rectangle(cr, 0, 0, gtk_widget_get_allocated_width(widget),
+                    gtk_widget_get_allocated_height(widget));
+    cairo_fill(cr);
+    return TRUE;
+}
+
+/**
+ * @brief Callback für den "GRAPH DETECT"-Button.
  *
  * Hebt den Button optisch hervor und aktiviert die Graph-Erkennungs-Policy.
  *
@@ -465,13 +506,13 @@ void gui_set_policy(Policy *new_policy)
 static void on_run_graph_detect(GtkButton *button, gpointer user_data)
 {
     (void)button; (void)user_data;
-    gui_highlight_policy_btn(g_btn_graph, "GRAPH-ERKENNUNG");
+    gui_highlight_policy_btn(g_btn_graph, "Graph Detect");
     Policy *pol = detect_policy_create(3, 2);
     gui_set_policy(pol);
 }
 
 /**
- * @brief Callback für den "BANKIER-ALGO"-Button.
+ * @brief Callback für den "BANKER'S ALGO"-Button.
  *
  * Hebt den Button optisch hervor und aktiviert die Bankier-Policy.
  *
@@ -481,13 +522,13 @@ static void on_run_graph_detect(GtkButton *button, gpointer user_data)
 static void on_run_banker(GtkButton *button, gpointer user_data)
 {
     (void)button; (void)user_data;
-    gui_highlight_policy_btn(g_btn_banker, "BANKIER-ALGO");
+    gui_highlight_policy_btn(g_btn_banker, "Banker's Algo");
     Policy *pol = banker_policy_create(3, 2);
     gui_set_policy(pol);
 }
 
 /**
- * @brief Callback für den "HALTE-UND-WARTE"-Button.
+ * @brief Callback für den "HOLD & WAIT"-Button.
  *
  * Hebt den Button optisch hervor und aktiviert die Hold-and-Wait-Policy.
  *
@@ -497,7 +538,7 @@ static void on_run_banker(GtkButton *button, gpointer user_data)
 static void on_run_holdwait(GtkButton *button, gpointer user_data)
 {
     (void)button; (void)user_data;
-    gui_highlight_policy_btn(g_btn_hw, "HALTE-UND-WARTE");
+    gui_highlight_policy_btn(g_btn_hw, "Hold & Wait");
     Policy *pol = holdwait_policy_create(3, 2);
     gui_set_policy(pol);
 }
@@ -515,45 +556,47 @@ static void on_step_clicked(GtkButton *button, gpointer user_data)
 }
 
 /* ==========================================================================
-   CSS-Theme
+   CSS-Theme — Modern Dark (exakt nach Mockup)
    ========================================================================== */
 
 /**
- * @brief CSS-Zeichenkette für das dunkle Terminal-Design der GUI.
+ * @brief CSS-Zeichenkette für das moderne dunkle Design der GUI.
  *
- * Definiert Farben, Schriftarten und Abstände für alle GTK-Widgets.
- * Das Design verwendet eine dunkle Farbpalette mit Cyan-Akzenten
- * und einer Monospace-Schriftart für den Terminal-Look.
+ * Exakt nach Mockup: Inter-Schriftart, dunkle Panels (#1a1d27),
+ * lila Gradient-Buttons für die aktive Policy, abgerundete Ecken,
+ * dezente Trennlinien, Process-State-Badges.
  */
 static const char *GUI_CSS =
-    "window { background-color: #0d0f14; }"
+    "window { background-color: #1a1d27; }"
 
-    "#header { background-color: #0d0f14; border-bottom: 2px solid #00e5ff; padding: 16px 24px; }"
-    "#title-label { font-family: 'Courier New', monospace; font-size: 22px; font-weight: bold; color: #00e5ff; letter-spacing: 4px; }"
-    "#subtitle-label { font-family: 'Courier New', monospace; font-size: 12px; color: #546e7a; letter-spacing: 2px; }"
+    "#toolbar { background-color: #161822; padding: 12px 20px; border-bottom: 1px solid #2a2d3a; }"
+    ".policy-btn { font-family: 'Inter', 'Segoe UI', sans-serif; font-size: 13px; font-weight: 500; color: #c4c9d4; background-color: #1e2130; border: 1px solid #3b3f52; border-radius: 8px; padding: 8px 16px; min-width: 120px; }"
+    ".policy-btn:hover { background-color: #25293a; border-color: #4a4f6a; }"
+    ".policy-btn.active { background: linear-gradient(135deg, #6366f1, #8b5cf6); border-color: transparent; color: #fff; box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3); }"
 
-    "#btn-bar { background-color: #111318; padding: 14px 24px; border-bottom: 1px solid #1e2530; }"
-    ".policy-btn { font-family: 'Courier New', monospace; font-size: 15px; font-weight: bold; letter-spacing: 1px; color: #FF0000; background-color: #1a1f2b; border: 2px solid #2a3240; border-radius: 4px; padding: 10px 20px; min-width: 200px; }"
-    ".policy-btn:hover { background-color: #1e2840; border-color: #00e5ff; color: #00e5ff; }"
-    ".policy-btn.active { background-color: #003d4d; border-color: #00e5ff; color: #00e5ff; }"
+    "#btn-step { font-family: 'Inter', 'Segoe UI', sans-serif; font-size: 13px; font-weight: 600; color: #fbbf24; background-color: #25293a; border: 1px solid #4a4f6a; border-radius: 8px; padding: 8px 20px; }"
+    "#btn-step:hover { background-color: #2d3148; border-color: #fbbf24; }"
 
-    "#btn-step { font-family: 'Courier New', monospace; font-size: 15px; font-weight: bold; color: #ffd54f; background-color: #1a1a00; border: 2px solid #ffd54f; border-radius: 4px; padding: 10px 24px; }"
-    "#btn-step:hover { background-color: #332b00; color: #fff176; border-color: #fff176; }"
+    "#status-bar { background-color: #13151e; padding: 8px 20px; border-bottom: 1px solid #2a2d3a; }"
+    "#deadlock-label { font-family: 'Inter', 'Segoe UI', sans-serif; font-size: 12px; color: #f87171; font-weight: 600; }"
+    "#policy-name-label { font-family: 'Inter', 'Segoe UI', sans-serif; font-size: 12px; color: #818cf8; font-weight: 600; }"
+    "#tick-label { font-family: 'Inter', 'Segoe UI', sans-serif; font-size: 12px; color: #64748b; }"
+    "#status-sep { background-color: #2a2d3a; }"
 
-    "#status-bar { background-color: #111318; border-bottom: 1px solid #1e2530; padding: 10px 24px; }"
-    "#deadlock-label { font-family: 'Courier New', monospace; font-size: 16px; color: #ff5252; font-weight: bold; }"
-    "#policy-name-label { font-family: 'Courier New', monospace; font-size: 14px; color: #00e5ff; font-weight: bold; }"
-    "#tick-label { font-family: 'Courier New', monospace; font-size: 14px; color: #546e7a; }"
+    "#sim-area { background-color: #161822; padding: 16px 20px; }"
+    "#sim-title { font-family: 'Inter', 'Segoe UI', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 1px; color: #94a3b8; }"
+    "#sim-tick { font-family: 'Inter', 'Segoe UI', sans-serif; font-size: 12px; color: #64748b; background-color: #1e2130; padding: 3px 10px; border-radius: 20px; border: 1px solid #2a2d3a; }"
 
-    "textview { font-family: 'Courier New', monospace; font-size: 18px; color: #00e5ff; background-color: #0a0c10; padding: 20px; }"
-    "textview text { background-color: #0a0c10; color: #e0f7fa; }"
-    "scrolledwindow { background-color: #0a0c10; border: 1px solid #1e2530; margin: 12px 16px 16px 16px; }"
+    "textview { font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace; font-size: 16px; color: #cbd5e1; background-color: #0f1117; padding: 12px; border-radius: 8px; border: 1px solid #2a2d3a; }"
+    "textview text { background-color: #0f1117; color: #e2e8f0; }"
+    "scrolledwindow { background-color: #161822; border: 1px solid #2a2d3a; border-radius: 8px; margin: 12px 0 0 0; }"
 
-    "#legend-box { background-color: #ffffff; border-left: 2px solid #1e2530; padding: 20px 16px; min-width: 220px; }"
-    "#legend-title { font-family: 'Courier New', monospace; font-size: 11px; color: #546e7a; letter-spacing: 2px; margin-bottom: 12px; }"
-    ".legend-row { font-family: 'Courier New', monospace; font-size: 14px; color: #b0bec5; margin-bottom: 8px; }"
-    ".legend-key { font-family: 'Courier New', monospace; font-size: 13px; color: #00e5ff; font-weight: bold; }"
-    "#idle-indicator { font-family: 'Courier New', monospace; font-size: 13px; color: #546e7a; font-style: italic; margin-top: 24px; }";
+    "#legend-box { background-color: #161822; padding: 16px 20px; border-left: 1px solid #2a2d3a; min-width: 240px; }"
+    "#legend-title { font-family: 'Inter', 'Segoe UI', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 1px; color: #64748b; margin-bottom: 12px; }"
+    ".legend-row { font-family: 'Inter', 'Segoe UI', sans-serif; font-size: 12px; color: #94a3b8; margin-bottom: 8px; }"
+    ".legend-key { font-family: 'Inter', 'Segoe UI', sans-serif; font-size: 12px; color: #e2e8f0; font-weight: 600; }"
+    "#idle-indicator { font-family: 'Inter', 'Segoe UI', sans-serif; font-size: 12px; color: #475569; font-style: italic; margin-top: 20px; }"
+    ".legend-swatch { background-color: #475569; border-radius: 4px; }";
 
 /* ==========================================================================
    Hilfsfunktion: Policy-Button hervorheben
@@ -567,7 +610,7 @@ static const char *GUI_CSS =
  * Policy-Namen-Label in der Statusleiste.
  *
  * @param active_btn  Zeiger auf den aktuell aktiven Button.
- * @param name        Anzuzeigender Policy-Name (z. B. "GRAPH-ERKENNUNG").
+ * @param name        Anzuzeigender Policy-Name (z. B. "Graph Detect").
  */
 static void gui_highlight_policy_btn(GtkWidget *active_btn, const char *name)
 {
@@ -582,7 +625,7 @@ static void gui_highlight_policy_btn(GtkWidget *active_btn, const char *name)
     }
     if (g_policy_name_label && name) {
         char buf[64];
-        snprintf(buf, sizeof(buf), "STRATEGIE  %s", name);
+        snprintf(buf, sizeof(buf), "STRATEGY  %s", name);
         gtk_label_set_text(g_policy_name_label, buf);
     }
 }
@@ -595,10 +638,9 @@ static void gui_highlight_policy_btn(GtkWidget *active_btn, const char *name)
  * @brief Erstellt das vollständige Hauptfenster der Anwendung.
  *
  * Aufbau des Fensters (von oben nach unten):
- * 1. **Header**: Titel "DEADLOCK SIMULATOR" und Untertitel "BETRIEB SYSTEME".
- * 2. **Button-Leiste**: Drei Policy-Buttons (links) und Step-Button (rechts).
- * 3. **Statusleiste**: Policy-Name · Verschiebungs-Zähler · Tick-Counter.
- * 4. **Hauptbereich**: TextView mit Systemzustand (links) | Legende (rechts).
+ * 1. **Toolbar**: Drei Policy-Buttons (links) und Step-Button (rechts).
+ * 2. **Statusleiste**: Policy-Name · Verschiebungs-Zähler · Tick-Counter.
+ * 3. **Hauptbereich**: Simulation-State-Anzeige (links) | Legende (rechts).
  *
  * Nach dem Erstellen wird ein GTK-Timer gestartet, der @c gui_step()
  * einmal pro Sekunde aufruft, falls bereits eine Policy aktiv ist.
@@ -619,52 +661,35 @@ GtkWidget *gui_create_window(void)
 
     /* Hauptfenster */
     GtkWidget *window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-    gtk_window_set_title(GTK_WINDOW(window), "Deadlock-Simulator");
+    gtk_window_set_title(GTK_WINDOW(window), "Deadlock Simulator");
     gtk_window_set_default_size(GTK_WINDOW(window), 1100, 720);
     g_signal_connect(window, "destroy", G_CALLBACK(gtk_main_quit), NULL);
 
     GtkWidget *root_vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
     gtk_container_add(GTK_CONTAINER(window), root_vbox);
 
-    /* ── Header ── */
-    GtkWidget *header = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
-    gtk_widget_set_name(header, "header");
-    gtk_box_pack_start(GTK_BOX(root_vbox), header, FALSE, FALSE, 0);
+    /* ── Toolbar ── */
+    GtkWidget *toolbar = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 10);
+    gtk_widget_set_name(toolbar, "toolbar");
+    gtk_box_pack_start(GTK_BOX(root_vbox), toolbar, FALSE, FALSE, 0);
 
-    GtkWidget *title_vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 2);
-    gtk_box_pack_start(GTK_BOX(header), title_vbox, TRUE, TRUE, 0);
-
-    GtkWidget *title_lbl = gtk_label_new("DEADLOCK-SIMULATOR");
-    gtk_widget_set_name(title_lbl, "title-label");
-    gtk_label_set_xalign(GTK_LABEL(title_lbl), 0.0);
-    gtk_box_pack_start(GTK_BOX(title_vbox), title_lbl, FALSE, FALSE, 0);
-
-    GtkWidget *sub_lbl = gtk_label_new("BETRIEBSSYSTEME");
-    gtk_widget_set_name(sub_lbl, "subtitle-label");
-    gtk_label_set_xalign(GTK_LABEL(sub_lbl), 0.0);
-    gtk_box_pack_start(GTK_BOX(title_vbox), sub_lbl, FALSE, FALSE, 0);
-
-    /* ── Button-Leiste ── */
-    GtkWidget *btn_bar = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 10);
-    gtk_widget_set_name(btn_bar, "btn-bar");
-    gtk_box_pack_start(GTK_BOX(root_vbox), btn_bar, FALSE, FALSE, 0);
-
-    g_btn_graph  = gtk_button_new_with_label("⬡  GRAPH-ERKENNUNG");
-    g_btn_banker = gtk_button_new_with_label("⬡  BANKIER-ALGO");
-    g_btn_hw     = gtk_button_new_with_label("⬡  HALTE-UND-WARTE");
-    GtkWidget *btn_step = gtk_button_new_with_label("▶  SCHRITT");
+    g_btn_graph  = gtk_button_new_with_label("Graph Detect");
+    g_btn_banker = gtk_button_new_with_label("Banker's Algo");
+    g_btn_hw     = gtk_button_new_with_label("Hold & Wait");
+    GtkWidget *btn_step = gtk_button_new_with_label("Step");
 
     GtkWidget *policy_btns[3] = { g_btn_graph, g_btn_banker, g_btn_hw };
     for (int i = 0; i < 3; ++i) {
         gtk_style_context_add_class(
             gtk_widget_get_style_context(policy_btns[i]), "policy-btn");
-        gtk_box_pack_start(GTK_BOX(btn_bar), policy_btns[i], FALSE, FALSE, 0);
+        gtk_box_pack_start(GTK_BOX(toolbar), policy_btns[i], FALSE, FALSE, 0);
     }
-    gtk_widget_set_name(btn_step, "btn-step");
+
     /* Step-Button rechtsbündig durch Spacer */
-    GtkWidget *spacer = gtk_label_new("");
-    gtk_box_pack_start(GTK_BOX(btn_bar), spacer, TRUE, TRUE, 0);
-    gtk_box_pack_start(GTK_BOX(btn_bar), btn_step, FALSE, FALSE, 0);
+    GtkWidget *spacer = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
+    gtk_widget_set_hexpand(spacer, TRUE);
+    gtk_box_pack_start(GTK_BOX(toolbar), spacer, TRUE, TRUE, 0);
+    gtk_box_pack_start(GTK_BOX(toolbar), btn_step, FALSE, FALSE, 0);
 
     g_signal_connect(g_btn_graph,  "clicked", G_CALLBACK(on_run_graph_detect), NULL);
     g_signal_connect(g_btn_banker, "clicked", G_CALLBACK(on_run_banker),       NULL);
@@ -672,37 +697,58 @@ GtkWidget *gui_create_window(void)
     g_signal_connect(btn_step,     "clicked", G_CALLBACK(on_step_clicked),     NULL);
 
     /* ── Statusleiste ── */
-    GtkWidget *status_bar = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 16);
+    GtkWidget *status_bar = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 20);
     gtk_widget_set_name(status_bar, "status-bar");
     gtk_box_pack_start(GTK_BOX(root_vbox), status_bar, FALSE, FALSE, 0);
 
-    g_policy_name_label = GTK_LABEL(gtk_label_new("STRATEGIE  —"));
+    g_policy_name_label = GTK_LABEL(gtk_label_new("STRATEGY  —"));
     gtk_widget_set_name(GTK_WIDGET(g_policy_name_label), "policy-name-label");
     gtk_label_set_xalign(GTK_LABEL(g_policy_name_label), 0.0);
     gtk_box_pack_start(GTK_BOX(status_bar), GTK_WIDGET(g_policy_name_label), FALSE, FALSE, 0);
 
-    GtkWidget *sep_lbl = gtk_label_new("·");
-    gtk_widget_set_name(sep_lbl, "tick-label");
+    GtkWidget *sep_lbl = gtk_label_new("");
+    gtk_widget_set_name(sep_lbl, "status-sep");
     gtk_box_pack_start(GTK_BOX(status_bar), sep_lbl, FALSE, FALSE, 0);
 
-    g_deadlock_label = GTK_LABEL(gtk_label_new("VERSCHOBEN  0"));
+    g_deadlock_label = GTK_LABEL(gtk_label_new("POSTPONED  0"));
     gtk_widget_set_name(GTK_WIDGET(g_deadlock_label), "deadlock-label");
     gtk_label_set_xalign(GTK_LABEL(g_deadlock_label), 0.0);
     gtk_box_pack_start(GTK_BOX(status_bar), GTK_WIDGET(g_deadlock_label), FALSE, FALSE, 0);
 
-    GtkWidget *sep_lbl2 = gtk_label_new("·");
-    gtk_widget_set_name(sep_lbl2, "tick-label");
+    GtkWidget *sep_lbl2 = gtk_label_new("");
+    gtk_widget_set_name(sep_lbl2, "status-sep");
     gtk_box_pack_start(GTK_BOX(status_bar), sep_lbl2, FALSE, FALSE, 0);
 
-    g_tick_label = GTK_LABEL(gtk_label_new("TAKT  0"));
+    g_tick_label = GTK_LABEL(gtk_label_new("TICK  0"));
     gtk_widget_set_name(GTK_WIDGET(g_tick_label), "tick-label");
     gtk_label_set_xalign(GTK_LABEL(g_tick_label), 0.0);
     gtk_box_pack_start(GTK_BOX(status_bar), GTK_WIDGET(g_tick_label), FALSE, FALSE, 0);
 
-    /* ── Hauptbereich: Snapshot links, Legende rechts ── */
+    /* ── Hauptbereich: Simulation links, Legende rechts ── */
     GtkWidget *content_hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
     gtk_box_pack_start(GTK_BOX(root_vbox), content_hbox, TRUE, TRUE, 0);
 
+    /* Simulation area */
+    GtkWidget *sim_area = gtk_box_new(GTK_ORIENTATION_VERTICAL, 12);
+    gtk_widget_set_name(sim_area, "sim-area");
+    gtk_box_pack_start(GTK_BOX(content_hbox), sim_area, TRUE, TRUE, 0);
+
+    GtkWidget *sim_header = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
+    GtkWidget *sim_title_lbl = gtk_label_new("SIMULATION STATE");
+    gtk_widget_set_name(sim_title_lbl, "sim-title");
+    gtk_box_pack_start(GTK_BOX(sim_header), sim_title_lbl, FALSE, FALSE, 0);
+
+    GtkWidget *sim_spacer = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
+    gtk_widget_set_hexpand(sim_spacer, TRUE);
+    gtk_box_pack_start(GTK_BOX(sim_header), sim_spacer, TRUE, TRUE, 0);
+
+    GtkWidget *sim_tick_lbl = gtk_label_new("Tick 0");
+    gtk_widget_set_name(sim_tick_lbl, "sim-tick");
+    gtk_box_pack_start(GTK_BOX(sim_header), sim_tick_lbl, FALSE, FALSE, 0);
+
+    gtk_box_pack_start(GTK_BOX(sim_area), sim_header, FALSE, FALSE, 0);
+
+    /* TextView mit Scrollbar */
     g_text_view = GTK_TEXT_VIEW(gtk_text_view_new());
     gtk_text_view_set_editable(g_text_view, FALSE);
     gtk_text_view_set_cursor_visible(g_text_view, FALSE);
@@ -713,43 +759,62 @@ GtkWidget *gui_create_window(void)
     gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled),
                                    GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
     gtk_container_add(GTK_CONTAINER(scrolled), GTK_WIDGET(g_text_view));
-    gtk_box_pack_start(GTK_BOX(content_hbox), scrolled, TRUE, TRUE, 0);
+    gtk_box_pack_start(GTK_BOX(sim_area), scrolled, TRUE, TRUE, 0);
 
-    /* ── Legende ── */
+    /* Legende */
     GtkWidget *legend_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
     gtk_widget_set_name(legend_box, "legend-box");
     gtk_box_pack_start(GTK_BOX(content_hbox), legend_box, FALSE, FALSE, 0);
 
-    GtkWidget *legend_title = gtk_label_new("LEGENDE");
+    GtkWidget *legend_title = gtk_label_new("LEGEND");
     gtk_widget_set_name(legend_title, "legend-title");
     gtk_label_set_xalign(GTK_LABEL(legend_title), 0.0);
     gtk_box_pack_start(GTK_BOX(legend_box), legend_title, FALSE, FALSE, 0);
 
+    /* Farbige Swatches als kleine Boxen */
     const char *legend_entries[][2] = {
-        { "zugeteilt",   "gehaltene Ressourcen"   },
-        { "bedarf",      "noch benötigt"          },
-        { "verfügbar",   "freie Instanzen"        },
-        { "VERSCHOBEN",  "blockierte Anfragen"    },
-        { "TAKT",        "Simulationsuhr"         },
+        { "Available",   "Free instances"       },
+        { "Need",        "Still required"       },
+        { "Safe",        "State is safe"        },
+        { "Unsafe",      "Deadlock risk"        },
+        { "Postponed",   "Blocked requests"     },
+        { "IDLE",        "Waiting to start"     },
+        { "RUNNING",     "Working with resources"},
+        { "DONE",        "Finished, releasing"  },
     };
-    for (int i = 0; i < 5; ++i) {
-        GtkWidget *row = gtk_box_new(GTK_ORIENTATION_VERTICAL, 2);
+    const char *swatch_colors[8] = {
+        "#22d3ee",   /* Available — cyan */
+        "#818cf8",   /* Need — purple */
+        "#34d399",   /* Safe — green */
+        "#f87171",   /* Unsafe — red */
+        "#fbbf24",   /* Postponed — amber */
+        "#475569",   /* IDLE — gray */
+        "#34d399",   /* RUNNING — green */
+        "#fbbf24",   /* DONE — amber */
+    };
+    for (int i = 0; i < 8; ++i) {
+        GtkWidget *row = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 8);
         gtk_widget_set_name(row, "legend-row");
 
-        GtkWidget *key_lbl = gtk_label_new(legend_entries[i][0]);
-        gtk_widget_set_name(key_lbl, "legend-key");
-        gtk_label_set_xalign(GTK_LABEL(key_lbl), 0.0);
+        /* Farbkästchen — GtkDrawingArea mit draw-Callback */
+        GtkWidget *swatch = gtk_drawing_area_new();
+        gtk_widget_set_size_request(swatch, 14, 14);
+        g_swatch[i] = swatch;
+        g_object_set_data(G_OBJECT(swatch), "swatch-color", (gpointer)swatch_colors[i]);
+        g_signal_connect(swatch, "draw", G_CALLBACK(on_swatch_draw), NULL);
+        gtk_box_pack_start(GTK_BOX(row), swatch, FALSE, FALSE, 0);
 
-        GtkWidget *val_lbl = gtk_label_new(legend_entries[i][1]);
-        gtk_widget_set_name(val_lbl, "legend-row");
-        gtk_label_set_xalign(GTK_LABEL(val_lbl), 0.0);
-
-        gtk_box_pack_start(GTK_BOX(row), key_lbl, FALSE, FALSE, 0);
+        GtkWidget *val_lbl = gtk_label_new(legend_entries[i][0]);
+        gtk_widget_set_name(val_lbl, "legend-key");
         gtk_box_pack_start(GTK_BOX(row), val_lbl, FALSE, FALSE, 0);
-        gtk_box_pack_start(GTK_BOX(legend_box), row, FALSE, FALSE, 8);
+
+        GtkWidget *key_lbl = gtk_label_new(legend_entries[i][1]);
+        gtk_box_pack_start(GTK_BOX(row), key_lbl, TRUE, TRUE, 0);
+
+        gtk_box_pack_start(GTK_BOX(legend_box), row, FALSE, FALSE, 6);
     }
 
-    GtkWidget *idle_lbl = gtk_label_new("Wähle eine Strategie\nzum Starten.");
+    GtkWidget *idle_lbl = gtk_label_new("Click a policy\nbutton to start.");
     gtk_widget_set_name(idle_lbl, "idle-indicator");
     gtk_label_set_xalign(GTK_LABEL(idle_lbl), 0.0);
     gtk_label_set_line_wrap(GTK_LABEL(idle_lbl), TRUE);
